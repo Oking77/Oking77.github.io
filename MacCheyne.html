@@ -12,8 +12,8 @@
 
   table {
     border-collapse: collapse;
-    margin-bottom: 8px;
-    width: 100%;
+    margin: 0 auto 8px auto; /* 가운데 정렬 */
+    width: 80%;              /* 기존 100% -> 80% (약 20% 축소) */
     max-width: 900px;
     table-layout: fixed;
   }
@@ -63,7 +63,7 @@
   @media (max-width: 600px) {
     body { font-size: 18px; }
     h3 { font-size: 28px; }
-    table { font-size: 200%; }
+    table { font-size: 200%; width: 100%; }  /* 모바일에선 다시 100% 폭으로 */
     th, td { padding: 8px 4px; }
 
     /* 모바일에서 오늘 날짜는 더 크게 */
