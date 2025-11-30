@@ -2,23 +2,27 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>오킹의 맥체인 성경읽기</title>
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    margin: 0;
+  }
   h1 { font-size: 30px; margin-bottom: 4px; }
   h2 { margin-top: 0; margin-bottom: 4px; }
-  h3 { font-size: 35px; color: red; margin-bottom: 6px; }
-  p  { margin: 4px 0 10px 0; }
+  h3 { font-size: 28px; color: red; margin: 10px 8px 6px 8px; }
+  p  { margin: 4px 8px 10px 8px; }
 
+  /* 표 기본 설정 (폰 기준) */
   table {
     border-collapse: collapse;
     margin: 0 0 12px 0;   /* 왼쪽 정렬 */
-    width: 100%;          /* 폰 기준 100% */
-    table-layout: auto;   /* fixed -> auto */
-    font-size: 18px;      /* 기본 글자 조금 키움 */
-    display: block;       /* 가로 스크롤 허용 위한 block */
-    overflow-x: auto;     /* 넘치면 좌우 스크롤 */
+    width: 100%;
+    table-layout: auto;
+    font-size: 16px;
+    display: block;       /* 좁은 화면에서 수평 스크롤 허용 */
+    overflow-x: auto;
   }
   th, td {
     border: 1px solid #ccc;
@@ -35,20 +39,28 @@
 
   /* 오늘 날짜 강조 */
   td.date.today {
-    background: #ffe9a8;   /* 연한 노랑 배경 */
-    color: #c00;           /* 빨간색 글자 */
+    background: #ffe9a8;
+    color: #c00;
     font-weight: 700;
-    border-width: 2px;     /* 테두리 조금 두껍게 */
+    border-width: 2px;
   }
 
-  a.bible { text-decoration: none; color: #0044aa; cursor: pointer; }
-  a.bible.read { color: #888; text-decoration: line-through; }
+  a.bible {
+    text-decoration: none;
+    color: #0044aa;
+    cursor: pointer;
+    white-space: nowrap;    /* 성경구절도 한 줄로 고정 */
+  }
+  a.bible.read {
+    color: #888;
+    text-decoration: line-through;
+  }
 
   #resetRead {
     display: block;
     margin: 24px auto 30px;
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: 14px;
   }
 
   footer {
@@ -60,18 +72,26 @@
     padding-top: 10px;
   }
 
-  .month-block { margin-bottom: 40px; page-break-inside: avoid; }
+  .month-block {
+    margin: 0 8px 40px 8px;
+    page-break-inside: avoid;
+  }
 
-  /* 모바일 화면용: 표 글자 2배(200%) */
+  /* 조금 더 작은 화면용 미세 조정 */
   @media (max-width: 600px) {
-    body { font-size: 18px; }
-    h3 { font-size: 28px; }
-    table { font-size: 200%; width: 100%; }
-    th, td { padding: 8px 4px; }
+    body { font-size: 16px; }
+    h3 { font-size: 24px; }
 
-    /* 모바일에서 오늘 날짜는 더 크게 */
+    /* 200% → 120% 로 축소 */
+    table {
+      font-size: 120%;
+      width: 100%;
+    }
+
+    th, td { padding: 6px 3px; }
+
     td.date.today {
-      font-size: 1.4em;
+      font-size: 1.2em;
     }
   }
 </style>
@@ -388,7 +408,7 @@ const plan = {
     [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
     [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
   ],
-  9: [
+ 9: [
     [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
     [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
     [["1sa","27"],["1co","8"],["eze","6"],["joh","7"]],
