@@ -1,41 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>오킹의 맥체인 성경읽기</title>
 <style>
-  body {
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 18px;
-    line-height: 1.4;
-    margin: 0;
-    padding: 8px;
-  }
-
-  h1 { font-size: 26px; margin: 0 0 4px 0; }
-  h2 { font-size: 20px; margin: 20px 0 6px 2px; }
-  h3 { font-size: 24px; color: red; margin: 4px 0 10px 0; }
-
+  body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; }
+  h1 { font-size: 30px; margin-bottom: 4px; }
+  h2 { margin-top: 0; margin-bottom: 4px; }
+  h3 { font-size: 35px; color: red; margin-bottom: 6px; }
   p  { margin: 4px 0 10px 0; }
 
   table {
     border-collapse: collapse;
     margin: 0 0 12px 0;   /* 왼쪽 정렬 */
-    width: 100%;          /* 모바일 전체 폭 사용 */
-    table-layout: fixed;
-    font-size: 18px;
+    width: 100%;          /* 폰 기준 100% */
+    table-layout: auto;   /* fixed -> auto */
+    font-size: 18px;      /* 기본 글자 조금 키움 */
+    display: block;       /* 가로 스크롤 허용 위한 block */
+    overflow-x: auto;     /* 넘치면 좌우 스크롤 */
   }
-
   th, td {
     border: 1px solid #ccc;
-    padding: 8px 4px;
+    padding: 3px 5px;
     text-align: center;
   }
-
   th:first-child,
   td.date {
-    width: 52px;
+    width: 40px;
     text-align: center;
     font-weight: 600;
     white-space: nowrap;   /* 날짜 한 줄 */
@@ -47,27 +39,16 @@
     color: #c00;           /* 빨간색 글자 */
     font-weight: 700;
     border-width: 2px;     /* 테두리 조금 두껍게 */
-    font-size: 1.4em;
   }
 
-  a.bible {
-    text-decoration: none;
-    color: #0044aa;
-    cursor: pointer;
-  }
-  a.bible.read {
-    color: #888;
-    text-decoration: line-through;
-  }
+  a.bible { text-decoration: none; color: #0044aa; cursor: pointer; }
+  a.bible.read { color: #888; text-decoration: line-through; }
 
   #resetRead {
     display: block;
     margin: 24px auto 30px;
-    padding: 10px 18px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #aaa;
-    background: #f5f5f5;
+    padding: 6px 14px;
+    font-size: 13px;
   }
 
   footer {
@@ -79,9 +60,19 @@
     padding-top: 10px;
   }
 
-  .month-block {
-    margin-bottom: 32px;
-    page-break-inside: avoid;
+  .month-block { margin-bottom: 40px; page-break-inside: avoid; }
+
+  /* 모바일 화면용: 표 글자 2배(200%) */
+  @media (max-width: 600px) {
+    body { font-size: 18px; }
+    h3 { font-size: 28px; }
+    table { font-size: 200%; width: 100%; }
+    th, td { padding: 8px 4px; }
+
+    /* 모바일에서 오늘 날짜는 더 크게 */
+    td.date.today {
+      font-size: 1.4em;
+    }
   }
 </style>
 </head>
@@ -234,7 +225,7 @@ const plan = {
     [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
     [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
   ],
-  4: [
+ 4: [
     [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
     [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
     [["lev","6"],["psa","5-6"],["pro","21"],["col","4"]],
@@ -266,7 +257,7 @@ const plan = {
     [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
     [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
   ],
-  5: [
+ 5: [
     [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
     [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
     [["num","10"],["psa","46-47"],["sng","8"],["heb","8"]],
@@ -299,7 +290,7 @@ const plan = {
     [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
     [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
   ],
-  6: [
+ 6: [
     [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
     [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
     [["deu","7"],["psa","90"],["isa","35"],["rev","5"]],
@@ -331,7 +322,7 @@ const plan = {
     [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
     [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
   ],
-  7: [
+ 7: [
     [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
     [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
     [["jos","5"],["psa","132-134"],["isa","65"],["mat","13"]],
@@ -364,7 +355,7 @@ const plan = {
     [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
     [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
   ],
-  8: [
+ 8: [
     [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
     [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
     [["jdg","17"],["act","21"],["jer","30-31"],["mrk","16"]],
@@ -429,7 +420,7 @@ const plan = {
     [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
     [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
   ],
-  10: [
+ 10: [
     [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
     [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
     [["1ki","6"],["eph","3"],["eze","36"],["psa","25"]],
@@ -462,7 +453,7 @@ const plan = {
     [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
     [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
   ],
-  11: [
+ 11: [
     [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
     [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
     [["2ki","16"],["tit","2"],["hos","9"],["psa","69"]],
@@ -494,7 +485,7 @@ const plan = {
     [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
     [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
   ],
-  12: [
+ 12: [
     [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
     [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
     [["2ch","2"],["1jn","2"],["nah","1"],["psa","110-111"]],
