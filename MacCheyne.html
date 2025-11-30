@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>맥체인 성경읽기표 (개역개정, 읽음표시 저장)</title>
+<title>오킹의 맥체인 성경읽기</title>
 <style>
   body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; }
   h1 { font-size: 20px; margin-bottom: 4px; }
@@ -15,30 +15,29 @@
     margin-bottom: 8px;
     width: 100%;
     max-width: 900px;
-    table-layout: fixed;   /* 가로 칸 일정하게 */
+    table-layout: fixed;
   }
   th, td {
     border: 1px solid #ccc;
     padding: 3px 5px;
     text-align: center;
   }
-  /* 날짜 칸: 한 줄 표시 + 고정 폭 */
   th:first-child,
   td.date {
-    width: 40px;           /* 픽셀 기준 고정 */
+    width: 40px;
     text-align: center;
     font-weight: 600;
-    white-space: nowrap;   /* 줄바꿈 금지 */
+    white-space: nowrap;   /* 날짜 한 줄 */
   }
 
   a.bible { text-decoration: none; color: #0044aa; cursor: pointer; }
   a.bible.read { color: #888; text-decoration: line-through; }
 
-  #resetRead { 
+  #resetRead {
     display: block;
     margin: 24px auto 30px;
-    padding: 6px 14px; 
-    font-size: 13px; 
+    padding: 6px 14px;
+    font-size: 13px;
   }
 
   footer {
@@ -52,12 +51,12 @@
 
   .month-block { margin-bottom: 40px; page-break-inside: avoid; }
 
-  /* 모바일 화면용 (표 글자 크게) */
+  /* 모바일 화면용: 표 글자 2배(40px) */
   @media (max-width: 600px) {
     body { font-size: 18px; }
     h3 { font-size: 28px; }
-    table { font-size: 40px; }     /* 표 안 글자 크게 */
-    th, td { padding: 6px 4px; }   /* 글자 커진 만큼 패딩도 조금 키움 */
+    table { font-size: 40px; }
+    th, td { padding: 8px 4px; }
   }
 </style>
 </head>
@@ -107,7 +106,7 @@ const BOOKS = {
   "jud": "유", "rev": "계"
 };
 
-// 맥체인 계획 (1~12월)
+// 맥체인 전체 계획
 const plan = {
  1: [
     [["gen","1"],["mat","1"],["ezr","1"],["act","1"]],
@@ -500,7 +499,7 @@ const plan = {
   ]
 };
 
-// ---------- localStorage 안전 래퍼 ----------
+// localStorage 안전 래퍼
 function lsGet(key) {
   try {
     if (window.localStorage) return localStorage.getItem(key);
@@ -524,13 +523,13 @@ function lsClearMcheyne() {
   } catch (e) {}
 }
 
-// chapSpec에서 링크용 장 번호 추출 (첫 숫자)
+// chapSpec에서 장 번호 추출
 function extractChap(spec) {
   const m = String(spec).match(/^(\d+)/);
   return m ? m[1] : "1";
 }
 
-// 한 칸(본문 한 개) 생성 + localStorage 연동
+// 본문 링크 셀 생성
 function makeCell(bookCode, chapSpec, id) {
   const a = document.createElement('a');
   a.className = 'bible';
@@ -613,7 +612,7 @@ function makeCell(bookCode, chapSpec, id) {
   });
 })();
 
-// 읽음 표시 전체 초기화 버튼 동작
+// 읽음 표시 전체 초기화
 document.getElementById('resetRead').addEventListener('click', function () {
   if (!confirm('모든 읽음 표시를 초기화할까요?')) return;
 
