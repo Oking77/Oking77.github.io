@@ -2,39 +2,53 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>오킹의 맥체인 성경읽기</title>
 <style>
-  body {
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    margin: 0;
+  :root {
+    /* 기본 글자 / 제목 글자 크기: 화면 폭에 따라 자동 조절 */
+    --base-font: clamp(14px, 4vw, 18px);
+    --title-font: clamp(22px, 6vw, 30px);
   }
-  h1 { font-size: 30px; margin-bottom: 4px; }
-  h2 { margin-top: 0; margin-bottom: 4px; }
-  h3 { font-size: 28px; color: red; margin: 10px 8px 6px 8px; }
-  p  { margin: 4px 8px 10px 8px; }
 
-  /* 표 기본 설정 (폰 기준) */
+  body {
+    margin: 8px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: var(--base-font);
+  }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  h2 { margin: 0 0 4px 0; }
+  h3 {
+    font-size: var(--title-font);
+    color: red;
+    margin: 0 0 8px 0;
+  }
+  p  { margin: 4px 0 8px 0; }
+
+  /* 표 전체: 모바일 폭 100%, 내용 기준으로 열 폭 배분 */
   table {
     border-collapse: collapse;
-    margin: 0 0 12px 0;   /* 왼쪽 정렬 */
     width: 100%;
-    table-layout: auto;
-    font-size: 16px;
-    display: block;       /* 좁은 화면에서 수평 스크롤 허용 */
-    overflow-x: auto;
+    table-layout: auto;       /* fixed 제거 → 내용에 맞게 열 폭 조정 */
+    margin-bottom: 10px;
   }
   th, td {
     border: 1px solid #ccc;
-    padding: 3px 5px;
+    padding: 4px 2px;
     text-align: center;
   }
+
+  /* 날짜 칸은 좁게, 본문 칸은 넓게 → 본문 열이 예전보다 약 30% 넓어짐 */
   th:first-child,
   td.date {
-    width: 40px;
+    width: 18%;
     text-align: center;
-    font-weight: 600;
-    white-space: nowrap;   /* 날짜 한 줄 */
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  th:not(:first-child),
+  td:not(.date) {
+    width: 20.5%;   /* 네 개 본문 열이 나머지 폭을 나눠가짐 */
   }
 
   /* 오늘 날짜 강조 */
@@ -49,51 +63,28 @@
     text-decoration: none;
     color: #0044aa;
     cursor: pointer;
-    white-space: nowrap;    /* 성경구절도 한 줄로 고정 */
+    white-space: nowrap;   /* “창 1장” 한 줄 유지 */
+    font-size: 0.95em;     /* 셀 기본 글자보다 약간 작게 → 한 줄 안에 잘 들어가도록 */
   }
-  a.bible.read {
-    color: #888;
-    text-decoration: line-through;
-  }
+  a.bible.read { color: #888; text-decoration: line-through; }
 
   #resetRead {
     display: block;
-    margin: 24px auto 30px;
+    margin: 16px auto 24px;
     padding: 6px 14px;
-    font-size: 14px;
+    font-size: 0.9rem;
   }
 
   footer {
     text-align: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #666;
     margin: 20px 0 30px 0;
     border-top: 1px solid #ccc;
     padding-top: 10px;
   }
 
-  .month-block {
-    margin: 0 8px 40px 8px;
-    page-break-inside: avoid;
-  }
-
-  /* 조금 더 작은 화면용 미세 조정 */
-  @media (max-width: 600px) {
-    body { font-size: 16px; }
-    h3 { font-size: 24px; }
-
-    /* 200% → 120% 로 축소 */
-    table {
-      font-size: 120%;
-      width: 100%;
-    }
-
-    th, td { padding: 6px 3px; }
-
-    td.date.today {
-      font-size: 1.2em;
-    }
-  }
+  .month-block { margin-bottom: 32px; }
 </style>
 </head>
 <body>
