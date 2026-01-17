@@ -224,12 +224,18 @@
       font-size: 13px;
     }
     .briefItem b{ font-weight: 900; }
+
     .rank{
       display:flex;
       gap: 8px;
       align-items: baseline;
     }
-    .rank .r{ color: var(--muted); font-size: 12px; min-width: 44px; }
+    .rank .r{
+      font-size: 12px;
+      min-width: 44px;
+      font-weight: 900;
+    }
+
     .briefEmpty{
       color: var(--muted);
       font-size: 12px;
@@ -297,13 +303,13 @@
 
           <div class="btnbar">
             <button id="resetBtn" type="button">초기화</button>
-            <button id="briefBtn" type="button">브리핑</button>
+            <button id="briefBtn" type="button">입력완료</button>
           </div>
 
           <div class="briefCard">
             <div class="briefHead">
-              <div class="t">브리핑</div>
-              <div class="s" id="briefStats">기록된 컵: 0</div>
+              <div class="t">Ranking Summary</div>
+              <div class="s" id="briefStats">Recorded cups: 0</div>
             </div>
             <div id="briefing" class="briefList"></div>
           </div>
@@ -324,7 +330,7 @@
     ["Overall", "overall"]
   ];
 
-  const KEY = "cva_affective_v3";
+  const KEY = "cva_affective_v4";
 
   function defaultCup(){
     return {
@@ -336,10 +342,7 @@
     };
   }
 
-  const data = {
-    currentCup: 1,
-    cups: {}
-  };
+  const data = { currentCup: 1, cups: {} };
 
   const state = {
     cuppingNo: 1,
@@ -348,9 +351,7 @@
     defective: 0
   };
 
-  function roundToQuarter(x){
-    return Math.round(x * 4) / 4;
-  }
+  function roundToQuarter(x){ return Math.round(x * 4) / 4; }
 
   function calcFromCup(cup){
     const sum = Object.values(cup.sections).reduce((a,b)=>a+b,0);
@@ -501,50 +502,83 @@
     warn.style.display = (state.defective > state.nonUniform && state.defective !== 0) ? "block" : "none";
   }
 
+  // rank color: red(top) -> blue(bottom)
+  function rankColor(rank, total){
+    if(total <= 1) return "rgb(200, 0, 0)";
+    const t = (rank - 1) / (total - 1); // 0..1
+    const r0 = 220, g0 = 20,  b0 = 20;   // red-ish
+    const r1 = 30,  g1 = 90,  b1 = 220;  // blue-ish
+    const r = Math.round(r0 + (r1 - r0) * t);
+    const g = Math.round(g0 + (g1 - g0) * t);
+    const b = Math.round(b0 + (b1 - b0) * t);
+    return `rgb(${r},${g},${b})`;
+  }
+
   function renderBriefing(){
     saveCurrentCup();
 
     const briefing = document.getElementById("briefing");
     briefing.innerHTML = "";
 
-    const entries = Object.entries(data.cups)
+    // recorded cups
+    const recorded = Object.entries(data.cups)
       .filter(([_, cup]) => cup && cup.touched)
       .map(([no, cup]) => {
-        const n = Number(no);
+        const cupNo = Number(no);
         const {score} = calcFromCup(cup);
-        return {cupNo: n, score};
+        return {cupNo, score};
       });
 
-    entries.sort((a,b)=>{
-      if(b.score !== a.score) return b.score - a.score;
-      return a.cupNo - b.cupNo;
-    });
+    // stats
+    const total = recorded.length;
+    document.getElementById("briefStats").textContent = `Recorded cups: ${total}`;
 
-    document.getElementById("briefStats").textContent = `기록된 컵: ${entries.length}`;
-
-    if(entries.length === 0){
+    if(total === 0){
       const empty = document.createElement("div");
       empty.className = "briefEmpty";
-      empty.textContent = "기록된 컵이 없음. (값을 입력하면 자동 기록됨)";
+      empty.textContent = "No recorded cups.";
       briefing.appendChild(empty);
       return;
     }
 
+    // compute ranking based on score (desc), tie => same rank
+    const rankList = [...recorded].sort((a,b)=>{
+      if(b.score !== a.score) return b.score - a.score;
+      return a.cupNo - b.cupNo;
+    });
+
+    const cupToRank = new Map();
     let rank = 0;
-    let prev = null;
-
-    entries.forEach((e, idx)=>{
-      if(prev === null || e.score !== prev){
+    let prevScore = null;
+    rankList.forEach((e, idx)=>{
+      if(prevScore === null || e.score !== prevScore){
         rank = idx + 1;
-        prev = e.score;
+        prevScore = e.score;
       }
+      cupToRank.set(e.cupNo, rank);
+    });
 
+    // display order: cup number ascending (요구사항)
+    const display = [...recorded].sort((a,b)=>a.cupNo - b.cupNo);
+
+    display.forEach((e)=>{
+      const r = cupToRank.get(e.cupNo) || 0;
       const item = document.createElement("div");
       item.className = "briefItem";
 
       const left = document.createElement("div");
       left.className = "rank";
-      left.innerHTML = `<span class="r">#${rank}</span><b>Cup #${e.cupNo}</b>`;
+
+      const rankSpan = document.createElement("span");
+      rankSpan.className = "r";
+      rankSpan.textContent = String(r); // no '#'
+      rankSpan.style.color = rankColor(r, total); // 1=red -> lower=blue
+
+      const cupBold = document.createElement("b");
+      cupBold.textContent = `Cup #${e.cupNo}`;
+
+      left.appendChild(rankSpan);
+      left.appendChild(cupBold);
 
       const right = document.createElement("div");
       right.innerHTML = `<b>${e.score.toFixed(2)}</b>`;
@@ -575,7 +609,7 @@
     update();
 
     document.getElementById("briefing").innerHTML = "";
-    document.getElementById("briefStats").textContent = "기록된 컵: 1";
+    document.getElementById("briefStats").textContent = "Recorded cups: 1";
   });
 
   document.getElementById("briefBtn").addEventListener("click", ()=>{
