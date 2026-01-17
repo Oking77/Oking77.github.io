@@ -14,6 +14,7 @@
       --pill:#f1f1ed;
       --shadow: 0 6px 18px rgba(0,0,0,.08);
       --radius: 16px;
+      --okingOrange:#d35400;
     }
     body{
       margin:0;
@@ -40,6 +41,22 @@
     }
     header h1{ margin: 0 0 8px; font-size: 18px; letter-spacing: -.2px; }
     header p{ margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    /* 오른쪽 상단 박스: 롤박스 + 제작자 텍스트 */
+    .rightTop{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .madeBy{
+      font-weight: 900;
+      color: var(--okingOrange);
+      opacity: .7;              /* 70% */
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
 
     .cuppingBox{
       display:flex;
@@ -255,9 +272,13 @@
           </p>
         </div>
 
-        <div class="cuppingBox" aria-label="Cupping Number Selector">
-          <div class="t">Cupping No.</div>
-          <select id="cuppingNo" aria-label="Cupping Number"></select>
+        <!-- 오른쪽 상단: 롤박스 + Made by OKING -->
+        <div class="rightTop">
+          <div class="cuppingBox" aria-label="Cupping Number Selector">
+            <div class="t">Cupping No.</div>
+            <select id="cuppingNo" aria-label="Cupping Number"></select>
+          </div>
+          <div class="madeBy">Made by OKING</div>
         </div>
       </div>
     </header>
@@ -502,12 +523,11 @@
     warn.style.display = (state.defective > state.nonUniform && state.defective !== 0) ? "block" : "none";
   }
 
-  // rank color: red(top) -> blue(bottom)
   function rankColor(rank, total){
     if(total <= 1) return "rgb(200, 0, 0)";
-    const t = (rank - 1) / (total - 1); // 0..1
-    const r0 = 220, g0 = 20,  b0 = 20;   // red-ish
-    const r1 = 30,  g1 = 90,  b1 = 220;  // blue-ish
+    const t = (rank - 1) / (total - 1);
+    const r0 = 220, g0 = 20,  b0 = 20;
+    const r1 = 30,  g1 = 90,  b1 = 220;
     const r = Math.round(r0 + (r1 - r0) * t);
     const g = Math.round(g0 + (g1 - g0) * t);
     const b = Math.round(b0 + (b1 - b0) * t);
@@ -520,7 +540,6 @@
     const briefing = document.getElementById("briefing");
     briefing.innerHTML = "";
 
-    // recorded cups
     const recorded = Object.entries(data.cups)
       .filter(([_, cup]) => cup && cup.touched)
       .map(([no, cup]) => {
@@ -529,7 +548,6 @@
         return {cupNo, score};
       });
 
-    // stats
     const total = recorded.length;
     document.getElementById("briefStats").textContent = `Recorded cups: ${total}`;
 
@@ -541,7 +559,6 @@
       return;
     }
 
-    // compute ranking based on score (desc), tie => same rank
     const rankList = [...recorded].sort((a,b)=>{
       if(b.score !== a.score) return b.score - a.score;
       return a.cupNo - b.cupNo;
@@ -558,11 +575,11 @@
       cupToRank.set(e.cupNo, rank);
     });
 
-    // display order: cup number ascending (요구사항)
     const display = [...recorded].sort((a,b)=>a.cupNo - b.cupNo);
 
     display.forEach((e)=>{
       const r = cupToRank.get(e.cupNo) || 0;
+
       const item = document.createElement("div");
       item.className = "briefItem";
 
@@ -571,8 +588,8 @@
 
       const rankSpan = document.createElement("span");
       rankSpan.className = "r";
-      rankSpan.textContent = String(r); // no '#'
-      rankSpan.style.color = rankColor(r, total); // 1=red -> lower=blue
+      rankSpan.textContent = String(r);
+      rankSpan.style.color = rankColor(r, total);
 
       const cupBold = document.createElement("b");
       cupBold.textContent = `Cup #${e.cupNo}`;
@@ -616,7 +633,6 @@
     renderBriefing();
   });
 
-  // init
   loadData();
 
   const startCup = (typeof data.currentCup === "number" && data.currentCup >= 1 && data.currentCup <= 20)
