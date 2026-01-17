@@ -11,7 +11,6 @@
       --text:#111;
       --muted:#666;
       --line:#e6e6e2;
-      --accent:#111;
       --pill:#f1f1ed;
       --shadow: 0 6px 18px rgba(0,0,0,.08);
       --radius: 16px;
@@ -23,6 +22,7 @@
       color: var(--text);
     }
     .wrap{ max-width: 860px; margin: 24px auto 40px; padding: 0 14px; }
+
     header{
       background: var(--card);
       border: 1px solid var(--line);
@@ -49,7 +49,6 @@
       border: 1px solid var(--line);
       border-radius: 14px;
       background: #fff;
-      box-shadow: none;
       min-width: 220px;
     }
     .cuppingBox .t{
@@ -62,7 +61,7 @@
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 8px 10px;
-      font-weight: 700;
+      font-weight: 800;
       background: #fff;
       color: var(--text);
       outline: none;
@@ -77,6 +76,7 @@
       .grid{ grid-template-columns: 1fr 320px; align-items: start; }
       .sticky{ position: sticky; top: 14px; }
     }
+
     .card{
       background: var(--card);
       border: 1px solid var(--line);
@@ -85,7 +85,7 @@
       padding: 16px;
     }
     .section-title{
-      font-weight: 700;
+      font-weight: 800;
       margin: 0 0 10px;
       font-size: 14px;
       letter-spacing: -.2px;
@@ -108,8 +108,9 @@
       gap: 10px;
       margin-bottom: 10px;
     }
-    .label span{ font-weight: 650; }
+    .label span{ font-weight: 750; }
     .label small{ color: var(--muted); font-weight: 500; }
+
     .choices{
       display:flex;
       flex-wrap: wrap;
@@ -128,6 +129,7 @@
     }
     .pill input{ width: 16px; height: 16px; }
     .pill b{ font-size: 13px; }
+
     .twoCols{
       display:grid;
       grid-template-columns: 1fr;
@@ -136,6 +138,7 @@
     @media (min-width: 520px){
       .twoCols{ grid-template-columns: 1fr 1fr; }
     }
+
     .scoreBox{
       border-radius: 14px;
       background: #111;
@@ -146,13 +149,15 @@
       gap: 6px;
     }
     .scoreBox .k{ opacity: .85; font-size: 12px; letter-spacing: .2px; }
-    .scoreBox .v{ font-size: 44px; font-weight: 800; line-height: 1; }
+    .scoreBox .v{ font-size: 44px; font-weight: 900; line-height: 1; }
+
     .mini{
       margin-top: 10px;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.35;
     }
+
     .meta{
       display:grid;
       grid-template-columns: 1fr;
@@ -170,6 +175,7 @@
       color:#fff;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     }
+
     .btnbar{
       display:flex;
       gap: 8px;
@@ -180,11 +186,55 @@
       background: #fff;
       padding: 10px 12px;
       border-radius: 12px;
-      font-weight: 650;
+      font-weight: 800;
       cursor: pointer;
     }
     button:active{ transform: translateY(1px); }
+
     .warn{ color: #b00020; font-size: 12px; margin-top: 8px; display:none; }
+
+    /* Briefing */
+    .briefCard{
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+    }
+    .briefHead{
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .briefHead .t{ font-weight: 900; font-size: 13px; }
+    .briefHead .s{ color: var(--muted); font-size: 12px; }
+    .briefList{
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .briefItem{
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 10px;
+      font-size: 13px;
+    }
+    .briefItem b{ font-weight: 900; }
+    .rank{
+      display:flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+    .rank .r{ color: var(--muted); font-size: 12px; min-width: 44px; }
+    .briefEmpty{
+      color: var(--muted);
+      font-size: 12px;
+      padding: 10px 0;
+    }
   </style>
 </head>
 <body>
@@ -232,25 +282,33 @@
           </div>
           <div class="warn" id="warnMany">일반적으로 defective는 non-uniform에 포함(표기)되는 경우가 많습니다. 값이 논리적으로 맞는지 확인하세요.</div>
         </div>
-
       </main>
 
-      <!-- Right: score -->
+      <!-- Right: score + briefing -->
       <aside class="sticky">
         <div class="card">
           <div class="scoreBox">
             <div class="k" id="scoreLabel">Affective Score</div>
             <div class="v" id="score">--</div>
             <div class="meta">
-              <div>공식(표 기반과 동치): <code>S = 0.65625*Σh + 52.75 - 2u - 4d</code></div>
+              <div>공식: <code>S = 0.65625*Σh + 52.75 - 2u - 4d</code></div>
               <div>반올림: <code>nearest 0.25</code></div>
             </div>
           </div>
+
           <div class="mini" id="detail"></div>
 
           <div class="btnbar">
             <button id="resetBtn" type="button">초기화</button>
-            <button id="copyBtn" type="button">결과 복사</button>
+            <button id="briefBtn" type="button">브리핑</button>
+          </div>
+
+          <div class="briefCard">
+            <div class="briefHead">
+              <div class="t">브리핑</div>
+              <div class="s" id="briefStats">기록된 컵: 0</div>
+            </div>
+            <div id="briefing" class="briefList"></div>
           </div>
         </div>
       </aside>
@@ -273,8 +331,27 @@
     ["Overall", "overall"]
   ];
 
+  const KEY = "cva_affective_v3";
+
+  function defaultCup(){
+    return {
+      sections: Object.fromEntries(ATTRS.map(([_,k]) => [k, 5])),
+      nonUniform: 0,
+      defective: 0,
+      touched: false,
+      updatedAt: null
+    };
+  }
+
+  // data = 전체 기록(컵별)
+  const data = {
+    currentCup: 1,
+    cups: {} // { "1": {sections, nonUniform, defective, touched, updatedAt}, ... }
+  };
+
+  // state = 현재 화면에 보이는 컵의 값(편집용)
   const state = {
-    cuppingNo: 1, // 1~20
+    cuppingNo: 1,
     sections: Object.fromEntries(ATTRS.map(([_,k]) => [k, 5])),
     nonUniform: 0,
     defective: 0
@@ -284,13 +361,59 @@
     return Math.round(x * 4) / 4;
   }
 
-  function calc(){
-    const sum = Object.values(state.sections).reduce((a,b)=>a+b,0);
+  function calcFromCup(cup){
+    const sum = Object.values(cup.sections).reduce((a,b)=>a+b,0);
     const base = 0.65625 * sum + 52.75;
-    const penalty = 2 * state.nonUniform + 4 * state.defective;
+    const penalty = 2 * cup.nonUniform + 4 * cup.defective;
     const raw = base - penalty;
     const score = roundToQuarter(raw);
     return {sum, base, penalty, raw, score};
+  }
+
+  function calcCurrent(){
+    return calcFromCup({
+      sections: state.sections,
+      nonUniform: state.nonUniform,
+      defective: state.defective
+    });
+  }
+
+  // --- persistence ---
+  function persistData(){
+    try{ localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){}
+  }
+
+  function loadData(){
+    try{
+      const s = localStorage.getItem(KEY);
+      if(!s) return;
+      const obj = JSON.parse(s);
+      if(!obj || typeof obj !== "object") return;
+      if(typeof obj.currentCup === "number") data.currentCup = obj.currentCup;
+      if(obj.cups && typeof obj.cups === "object") data.cups = obj.cups;
+    }catch(e){}
+  }
+
+  function saveCurrentCup(){
+    const k = String(state.cuppingNo);
+    const cup = data.cups[k] || defaultCup();
+    cup.sections = {...state.sections};
+    cup.nonUniform = Number(state.nonUniform);
+    cup.defective = Number(state.defective);
+    cup.touched = true;
+    cup.updatedAt = new Date().toISOString();
+    data.cups[k] = cup;
+    data.currentCup = state.cuppingNo;
+    persistData();
+  }
+
+  function loadCupToState(cupNo){
+    const k = String(cupNo);
+    const cup = data.cups[k] || defaultCup();
+    state.cuppingNo = cupNo;
+    state.sections = {...cup.sections};
+    state.nonUniform = Number(cup.nonUniform);
+    state.defective = Number(cup.defective);
   }
 
   // --- UI helpers ---
@@ -320,11 +443,16 @@
       if(i === state.cuppingNo) opt.selected = true;
       sel.appendChild(opt);
     }
-    sel.addEventListener("change", (e)=>{
-      state.cuppingNo = Number(e.target.value);
-      persist();
+
+    sel.onchange = (e)=>{
+      // 현재 컵 저장 후 이동
+      saveCurrentCup();
+      const next = Number(e.target.value);
+      loadCupToState(next);
+      renderSections();
+      renderCupPickers();
       update();
-    });
+    };
   }
 
   function renderSections(){
@@ -344,7 +472,7 @@
         choices.appendChild(
           pillRadio(`sec_${key}`, v, state.sections[key]===v, (val)=>{
             state.sections[key] = Number(val);
-            persist();
+            saveCurrentCup();
             update();
           })
         );
@@ -363,88 +491,136 @@
     for(let v=0; v<=5; v++){
       nu.appendChild(pillRadio("nonUniform", v, state.nonUniform===v, (val)=>{
         state.nonUniform = Number(val);
-        persist();
+        saveCurrentCup();
         update();
       }));
       d.appendChild(pillRadio("defective", v, state.defective===v, (val)=>{
         state.defective = Number(val);
-        persist();
+        saveCurrentCup();
         update();
       }));
     }
   }
 
   function update(){
-    const {sum, base, penalty, raw, score} = calc();
+    const {sum, base, penalty, raw, score} = calcCurrent();
     document.getElementById("score").textContent = score.toFixed(2);
     document.getElementById("scoreLabel").textContent = `Affective Score (Cupping #${state.cuppingNo})`;
     document.getElementById("detail").textContent =
       `#${state.cuppingNo} | Σh=${sum} | base=${base.toFixed(2)} | penalty=${penalty.toFixed(2)} | raw=${raw.toFixed(2)} → rounded=${score.toFixed(2)}`;
 
-    // gentle sanity check (not a rule, just a reminder)
     const warn = document.getElementById("warnMany");
     warn.style.display = (state.defective > state.nonUniform && state.defective !== 0) ? "block" : "none";
   }
 
-  // --- Persistence (localStorage) ---
-  const KEY="cva_affective_v2";
-  function persist(){
-    try{ localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
-  }
-  function load(){
-    try{
-      const s = localStorage.getItem(KEY);
-      if(!s) return;
-      const obj = JSON.parse(s);
-      if(!obj) return;
+  function renderBriefing(){
+    // 현재 값 저장(브리핑 버튼 누르면 확정)
+    saveCurrentCup();
 
-      if(typeof obj.cuppingNo === "number" && obj.cuppingNo >= 1 && obj.cuppingNo <= 20){
-        state.cuppingNo = obj.cuppingNo;
+    const briefing = document.getElementById("briefing");
+    briefing.innerHTML = "";
+
+    // 기록된 컵만 집계(touched==true)
+    const entries = Object.entries(data.cups)
+      .filter(([_, cup]) => cup && cup.touched)
+      .map(([no, cup]) => {
+        const n = Number(no);
+        const {score} = calcFromCup(cup);
+        return {cupNo: n, score};
+      });
+
+    entries.sort((a,b)=>{
+      if(b.score !== a.score) return b.score - a.score;
+      return a.cupNo - b.cupNo;
+    });
+
+    document.getElementById("briefStats").textContent = `기록된 컵: ${entries.length}`;
+
+    if(entries.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "briefEmpty";
+      empty.textContent = "기록된 컵이 없음. (값을 입력하면 자동 기록됨)";
+      briefing.appendChild(empty);
+      return;
+    }
+
+    // 컵별 순위 계산
+    // rank: 동일 점수는 같은 rank(공동 순위)
+    let rank = 0;
+    let prev = null;
+    let shown = 0;
+
+    entries.forEach((e, idx)=>{
+      if(prev === null || e.score !== prev){
+        rank = idx + 1;
+        prev = e.score;
       }
 
-      if(obj.sections){
-        Object.keys(state.sections).forEach(k=>{
-          if(typeof obj.sections[k] === "number") state.sections[k] = obj.sections[k];
-        });
-      }
-      if(typeof obj.nonUniform === "number") state.nonUniform = obj.nonUniform;
-      if(typeof obj.defective === "number") state.defective = obj.defective;
-    } catch(e){}
+      // “간략하게 1번 컵 몇점” 요구: #1이 있으면 항상 표시
+      // + 전체 순위는 전부 표시(기본). 너무 길면 여기서 자르기 가능.
+      const item = document.createElement("div");
+      item.className = "briefItem";
+
+      const left = document.createElement("div");
+      left.className = "rank";
+      left.innerHTML = `<span class="r">#${rank}</span><b>Cup #${e.cupNo}</b>`;
+
+      const right = document.createElement("div");
+      right.innerHTML = `<b>${e.score.toFixed(2)}</b>`;
+
+      item.appendChild(left);
+      item.appendChild(right);
+      briefing.appendChild(item);
+      shown++;
+    });
   }
 
   // --- Buttons ---
   document.getElementById("resetBtn").addEventListener("click", ()=>{
+    data.currentCup = 1;
+    data.cups = {};
+
     state.cuppingNo = 1;
     state.sections = Object.fromEntries(ATTRS.map(([_,k]) => [k, 5]));
     state.nonUniform = 0;
     state.defective = 0;
-    persist();
+
+    // 기본 컵(1번)도 “기록” 상태로 만들어 브리핑에 항상 나오게 처리
+    saveCurrentCup();
+
     renderCuppingNo();
     renderSections();
     renderCupPickers();
     update();
+
+    document.getElementById("briefing").innerHTML = "";
+    document.getElementById("briefStats").textContent = "기록된 컵: 1";
   });
 
-  document.getElementById("copyBtn").addEventListener("click", async ()=>{
-    const {sum, score} = calc();
-    const lines = [
-      `CVA Affective Score (Cupping #${state.cuppingNo})`,
-      ...ATTRS.map(([lab,k]) => `${lab}: ${state.sections[k]}`),
-      `Non-uniform cups: ${state.nonUniform}`,
-      `Defective cups: ${state.defective}`,
-      `Σh: ${sum}`,
-      `Score: ${score.toFixed(2)}`
-    ].join("\n");
-    try{
-      await navigator.clipboard.writeText(lines);
-      alert("복사됨");
-    }catch(e){
-      prompt("복사(수동):", lines);
-    }
+  document.getElementById("briefBtn").addEventListener("click", ()=>{
+    renderBriefing();
   });
 
   // init
-  load();
+  loadData();
+
+  // 시작 컵 결정
+  const startCup = (typeof data.currentCup === "number" && data.currentCup >= 1 && data.currentCup <= 20)
+    ? data.currentCup
+    : 1;
+
+  loadCupToState(startCup);
+
+  // “현재까지 올린 데이터 기반” + “1번 컵 몇점” 요구 대응:
+  // 첫 실행이라도 1번은 기록 상태로 저장해 둠
+  if(!data.cups["1"]){
+    state.cuppingNo = 1;
+    saveCurrentCup();
+    if(startCup !== 1){
+      loadCupToState(startCup);
+    }
+  }
+
   renderCuppingNo();
   renderSections();
   renderCupPickers();
