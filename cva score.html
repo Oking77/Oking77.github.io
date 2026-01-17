@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Oking의 결합평가 계산기</title>
+  <title>CVA Affective Score Calculator (SCA-104-2024 방식)</title>
   <style>
     :root{
       --bg:#f6f6f4;
@@ -14,7 +14,6 @@
       --pill:#f1f1ed;
       --shadow: 0 6px 18px rgba(0,0,0,.08);
       --radius: 16px;
-      --orange:#d35400; /* 진한 오렌지 */
     }
     body{
       margin:0;
@@ -39,14 +38,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-    header h1{
-      margin: 0 0 8px;
-      font-size: 28px;      /* 크게 */
-      font-weight: 900;     /* 굵게 */
-      letter-spacing: -.6px;
-      line-height: 1.12;
-      color: var(--orange); /* 진한 오렌지 */
-    }
+    header h1{ margin: 0 0 8px; font-size: 18px; letter-spacing: -.2px; }
     header p{ margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
 
     .cuppingBox{
@@ -201,6 +193,7 @@
 
     .warn{ color: #b00020; font-size: 12px; margin-top: 8px; display:none; }
 
+    /* Briefing */
     .briefCard{
       margin-top: 12px;
       border-top: 1px solid var(--line);
@@ -255,7 +248,7 @@
     <header>
       <div class="headRow">
         <div>
-          <h1>Oking의 결합평가 계산기</h1>
+          <h1>CVA Affective Score Calculator</h1>
           <p>
             SCA Standard 104-2024( Affective Assessment ) 방식으로 총점을 계산합니다. 각 항목(8개)을 1~9로 선택하고,
             Non-uniform / Defective cup 개수를 입력하면 <b>0.25점 단위로 반올림</b>된 총점이 표시됩니다.
@@ -337,7 +330,7 @@
     ["Overall", "overall"]
   ];
 
-  const KEY = "cva_affective_v5";
+  const KEY = "cva_affective_v4";
 
   function defaultCup(){
     return {
@@ -509,11 +502,12 @@
     warn.style.display = (state.defective > state.nonUniform && state.defective !== 0) ? "block" : "none";
   }
 
+  // rank color: red(top) -> blue(bottom)
   function rankColor(rank, total){
-    if(total <= 1) return "rgb(220,20,20)";
-    const t = (rank - 1) / (total - 1);
-    const r0 = 220, g0 = 20,  b0 = 20;
-    const r1 = 30,  g1 = 90,  b1 = 220;
+    if(total <= 1) return "rgb(200, 0, 0)";
+    const t = (rank - 1) / (total - 1); // 0..1
+    const r0 = 220, g0 = 20,  b0 = 20;   // red-ish
+    const r1 = 30,  g1 = 90,  b1 = 220;  // blue-ish
     const r = Math.round(r0 + (r1 - r0) * t);
     const g = Math.round(g0 + (g1 - g0) * t);
     const b = Math.round(b0 + (b1 - b0) * t);
@@ -526,6 +520,7 @@
     const briefing = document.getElementById("briefing");
     briefing.innerHTML = "";
 
+    // recorded cups
     const recorded = Object.entries(data.cups)
       .filter(([_, cup]) => cup && cup.touched)
       .map(([no, cup]) => {
@@ -534,6 +529,7 @@
         return {cupNo, score};
       });
 
+    // stats
     const total = recorded.length;
     document.getElementById("briefStats").textContent = `Recorded cups: ${total}`;
 
@@ -545,6 +541,7 @@
       return;
     }
 
+    // compute ranking based on score (desc), tie => same rank
     const rankList = [...recorded].sort((a,b)=>{
       if(b.score !== a.score) return b.score - a.score;
       return a.cupNo - b.cupNo;
@@ -561,11 +558,11 @@
       cupToRank.set(e.cupNo, rank);
     });
 
+    // display order: cup number ascending (요구사항)
     const display = [...recorded].sort((a,b)=>a.cupNo - b.cupNo);
 
     display.forEach((e)=>{
       const r = cupToRank.get(e.cupNo) || 0;
-
       const item = document.createElement("div");
       item.className = "briefItem";
 
@@ -574,8 +571,8 @@
 
       const rankSpan = document.createElement("span");
       rankSpan.className = "r";
-      rankSpan.textContent = String(r);
-      rankSpan.style.color = rankColor(r, total);
+      rankSpan.textContent = String(r); // no '#'
+      rankSpan.style.color = rankColor(r, total); // 1=red -> lower=blue
 
       const cupBold = document.createElement("b");
       cupBold.textContent = `Cup #${e.cupNo}`;
@@ -619,6 +616,7 @@
     renderBriefing();
   });
 
+  // init
   loadData();
 
   const startCup = (typeof data.currentCup === "number" && data.currentCup >= 1 && data.currentCup <= 20)
