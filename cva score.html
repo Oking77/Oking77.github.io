@@ -249,7 +249,6 @@
           </p>
         </div>
 
-        <!-- Cupping Number Rollbox -->
         <div class="cuppingBox" aria-label="Cupping Number Selector">
           <div class="t">Cupping No.</div>
           <select id="cuppingNo" aria-label="Cupping Number"></select>
@@ -258,7 +257,6 @@
     </header>
 
     <div class="grid">
-      <!-- Left: inputs -->
       <main class="card">
         <div class="section-title">IMPRESSION OF QUALITY (1~9)</div>
         <p class="help">
@@ -284,7 +282,6 @@
         </div>
       </main>
 
-      <!-- Right: score + briefing -->
       <aside class="sticky">
         <div class="card">
           <div class="scoreBox">
@@ -316,10 +313,6 @@
   </div>
 
 <script>
-  // --- Model (SCA-104-2024) ---
-  // Linear mapping anchored so:
-  // Σh=40 (all 5s) -> 79,  Σh=72 (all 9s) -> 100
-  // => S = 0.65625*Σh + 52.75, then deduct 2u and 4d, then round to nearest 0.25
   const ATTRS = [
     ["Fragrance", "fragrance"],
     ["Aroma", "aroma"],
@@ -343,13 +336,11 @@
     };
   }
 
-  // data = 전체 기록(컵별)
   const data = {
     currentCup: 1,
-    cups: {} // { "1": {sections, nonUniform, defective, touched, updatedAt}, ... }
+    cups: {}
   };
 
-  // state = 현재 화면에 보이는 컵의 값(편집용)
   const state = {
     cuppingNo: 1,
     sections: Object.fromEntries(ATTRS.map(([_,k]) => [k, 5])),
@@ -378,7 +369,6 @@
     });
   }
 
-  // --- persistence ---
   function persistData(){
     try{ localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){}
   }
@@ -416,7 +406,6 @@
     state.defective = Number(cup.defective);
   }
 
-  // --- UI helpers ---
   function pillRadio(name, value, checked, onChange){
     const label = document.createElement("label");
     label.className = "pill";
@@ -445,7 +434,6 @@
     }
 
     sel.onchange = (e)=>{
-      // 현재 컵 저장 후 이동
       saveCurrentCup();
       const next = Number(e.target.value);
       loadCupToState(next);
@@ -514,13 +502,11 @@
   }
 
   function renderBriefing(){
-    // 현재 값 저장(브리핑 버튼 누르면 확정)
     saveCurrentCup();
 
     const briefing = document.getElementById("briefing");
     briefing.innerHTML = "";
 
-    // 기록된 컵만 집계(touched==true)
     const entries = Object.entries(data.cups)
       .filter(([_, cup]) => cup && cup.touched)
       .map(([no, cup]) => {
@@ -544,11 +530,8 @@
       return;
     }
 
-    // 컵별 순위 계산
-    // rank: 동일 점수는 같은 rank(공동 순위)
     let rank = 0;
     let prev = null;
-    let shown = 0;
 
     entries.forEach((e, idx)=>{
       if(prev === null || e.score !== prev){
@@ -556,8 +539,6 @@
         prev = e.score;
       }
 
-      // “간략하게 1번 컵 몇점” 요구: #1이 있으면 항상 표시
-      // + 전체 순위는 전부 표시(기본). 너무 길면 여기서 자르기 가능.
       const item = document.createElement("div");
       item.className = "briefItem";
 
@@ -571,12 +552,13 @@
       item.appendChild(left);
       item.appendChild(right);
       briefing.appendChild(item);
-      shown++;
     });
   }
 
-  // --- Buttons ---
   document.getElementById("resetBtn").addEventListener("click", ()=>{
+    const ok = confirm("전체 목록이 지우고 초기화 할까요?");
+    if(!ok) return;
+
     data.currentCup = 1;
     data.cups = {};
 
@@ -585,7 +567,6 @@
     state.nonUniform = 0;
     state.defective = 0;
 
-    // 기본 컵(1번)도 “기록” 상태로 만들어 브리핑에 항상 나오게 처리
     saveCurrentCup();
 
     renderCuppingNo();
@@ -604,15 +585,12 @@
   // init
   loadData();
 
-  // 시작 컵 결정
   const startCup = (typeof data.currentCup === "number" && data.currentCup >= 1 && data.currentCup <= 20)
     ? data.currentCup
     : 1;
 
   loadCupToState(startCup);
 
-  // “현재까지 올린 데이터 기반” + “1번 컵 몇점” 요구 대응:
-  // 첫 실행이라도 1번은 기록 상태로 저장해 둠
   if(!data.cups["1"]){
     state.cuppingNo = 1;
     saveCurrentCup();
