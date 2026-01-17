@@ -53,36 +53,56 @@
     .madeBy{
       font-weight: 900;
       color: var(--okingOrange);
-      opacity: .7;              /* 70% */
+      opacity: .7;
       letter-spacing: .2px;
       white-space: nowrap;
     }
 
+    /* ====== 여기서 커핑 넘버 영역 2배 키움 ====== */
     .cuppingBox{
       display:flex;
       align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
+      gap: 12px;
+
+      /* 세로 크기(패딩) 2배 */
+      padding: 20px 16px;
+
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 16px;
       background: #fff;
-      min-width: 220px;
+
+      /* 전체 박스 최소폭 조금 증가 */
+      min-width: 260px;
     }
     .cuppingBox .t{
-      font-size: 12px;
+      /* 글자 2배 */
+      font-size: 24px;
+
       color: var(--muted);
       white-space: nowrap;
+      font-weight: 900;
+      line-height: 1;
     }
     .cuppingBox select{
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-weight: 800;
+      border-radius: 14px;
+
+      /* 세로 높이 2배 (패딩 + 폰트) */
+      padding: 14px 14px;
+      font-size: 22px;
+      font-weight: 900;
+
       background: #fff;
       color: var(--text);
       outline: none;
+      line-height: 1.1;
     }
+    /* 옵션 글자 크기(브라우저에 따라 다름) */
+    .cuppingBox select option{
+      font-size: 20px;
+    }
+    /* ========================================= */
 
     .grid{
       display: grid;
@@ -272,7 +292,6 @@
           </p>
         </div>
 
-        <!-- 오른쪽 상단: 롤박스 + Made by OKING -->
         <div class="rightTop">
           <div class="cuppingBox" aria-label="Cupping Number Selector">
             <div class="t">Cupping No.</div>
