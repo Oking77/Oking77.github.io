@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CVA Affective Score Calculator (SCA-104-2024 방식)</title>
+  <style>
+    :root{
+      --bg:#f6f6f4;
+      --card:#ffffff;
+      --text:#111;
+      --muted:#666;
+      --line:#e6e6e2;
+      --accent:#111;
+      --pill:#f1f1ed;
+      --shadow: 0 6px 18px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+    body{
+      margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      background: var(--bg); color: var(--text);
+    }
+    .wrap{ max-width: 860px; margin: 24px auto 40px; padding: 0 14px; }
+    header{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 18px 14px;
+      margin-bottom: 14px;
+    }
+    header h1{ margin: 0 0 8px; font-size: 18px; letter-spacing: -.2px; }
+    header p{ margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .grid{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 860px){
+      .grid{ grid-template-columns: 1fr 320px; align-items: start; }
+      .sticky{ position: sticky; top: 14px; }
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .section-title{
+      font-weight: 700;
+      margin: 0 0 10px;
+      font-size: 14px;
+      letter-spacing: -.2px;
+    }
+    .help{
+      font-size: 12px; color: var(--muted); line-height: 1.35;
+      margin: 0 0 14px;
+    }
+    .row{
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+    }
+    .row:first-of-type{ border-top: 0; padding-top: 0; }
+    .label{
+      display:flex; align-items: baseline; justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .label span{ font-weight: 650; }
+    .label small{ color: var(--muted); font-weight: 500; }
+    .choices{
+      display:flex; flex-wrap: wrap; gap: 8px;
+      align-items: center;
+    }
+    .pill{
+      background: var(--pill);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      display:flex; align-items:center; gap: 8px;
+      user-select: none;
+    }
+    .pill input{ width: 16px; height: 16px; }
+    .pill b{ font-size: 13px; }
+    .twoCols{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 520px){
+      .twoCols{ grid-template-columns: 1fr 1fr; }
+    }
+    .scoreBox{
+      border-radius: 14px;
+      background: #111;
+      color: #fff;
+      padding: 16px;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .scoreBox .k{ opacity: .85; font-size: 12px; letter-spacing: .2px; }
+    .scoreBox .v{ font-size: 44px; font-weight: 800; line-height: 1; }
+    .mini{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .meta{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.2);
+      font-size: 12px;
+      color: rgba(255,255,255,.85);
+    }
+    .meta code{
+      background: rgba(255,255,255,.1);
+      padding: 2px 6px;
+      border-radius: 8px;
+      color:#fff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+    .btnbar{
+      display:flex; gap: 8px; margin-top: 12px;
+    }
+    button{
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button:active{ transform: translateY(1px); }
+    .warn{ color: #b00020; font-size: 12px; margin-top: 8px; display:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>CVA Affective Score Calculator</h1>
+      <p>
+        SCA Standard 104-2024( Affective Assessment ) 방식으로 총점을 계산합니다. 각 항목(8개)을 1~9로 선택하고,
+        Non-uniform / Defective cup 개수를 입력하면 <b>0.25점 단위로 반올림</b>된 총점이 표시됩니다.
+      </p>
+    </header>
+
+    <div class="grid">
+      <!-- Left: inputs -->
+      <main class="card">
+        <div class="section-title">IMPRESSION OF QUALITY (1~9)</div>
+        <p class="help">
+          ① Extremely low · ② Very low · ③ Moderately low · ④ Slightly low · ⑤ Neither high nor low ·
+          ⑥ Slightly high · ⑦ Moderately high · ⑧ Very high · ⑨ Extremely high
+        </p>
+
+        <div id="sections"></div>
+
+        <div class="row">
+          <div class="section-title" style="margin:0 0 10px;">CUPS</div>
+          <div class="twoCols">
+            <div>
+              <div class="label"><span>NUMBER OF NON-UNIFORM CUPS</span><small>(0~5)</small></div>
+              <div class="choices" id="nonUniform"></div>
+            </div>
+            <div>
+              <div class="label"><span>NUMBER OF DEFECTIVE CUPS</span><small>(0~5)</small></div>
+              <div class="choices" id="defective"></div>
+            </div>
+          </div>
+          <div class="warn" id="warnMany">일반적으로 defective는 non-uniform에 포함(표기)되는 경우가 많습니다. 값이 논리적으로 맞는지 확인하세요.</div>
+        </div>
+
+      </main>
+
+      <!-- Right: score -->
+      <aside class="sticky">
+        <div class="card">
+          <div class="scoreBox">
+            <div class="k">Affective Score</div>
+            <div class="v" id="score">--</div>
+            <div class="meta">
+              <div>공식(표 기반과 동치): <code>S = 0.65625*Σh + 52.75 - 2u - 4d</code></div>
+              <div>반올림: <code>nearest 0.25</code></div>
+            </div>
+          </div>
+          <div class="mini" id="detail"></div>
+
+          <div class="btnbar">
+            <button id="resetBtn" type="button">초기화</button>
+            <button id="copyBtn" type="button">결과 복사</button>
+          </div>
+          <div class="mini" style="margin-top:10px;">
+            근거: SCA-104-2024의 “Two-way table to calculate score” 및 “Deduct 2 points per non-uniform cup and 4 points per defective cup”. 
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+<script>
+  // --- Model (SCA-104-2024) ---
+  // Linear mapping anchored so:
+  // Σh=40 (all 5s) -> 79,  Σh=72 (all 9s) -> 100
+  // => S = 0.65625*Σh + 52.75, then deduct 2u and 4d, then round to nearest 0.25
+  const ATTRS = [
+    ["Fragrance", "fragrance"],
+    ["Aroma", "aroma"],
+    ["Flavor", "flavor"],
+    ["Aftertaste", "aftertaste"],
+    ["Acidity", "acidity"],
+    ["Sweetness", "sweetness"],
+    ["Mouthfeel", "mouthfeel"],
+    ["Overall", "overall"]
+  ];
+
+  const state = {
+    sections: Object.fromEntries(ATTRS.map(([_,k]) => [k, 5])),
+    nonUniform: 0,
+    defective: 0
+  };
+
+  function roundToQuarter(x){
+    return Math.round(x * 4) / 4;
+  }
+
+  function calc(){
+    const sum = Object.values(state.sections).reduce((a,b)=>a+b,0);
+    const base = 0.65625 * sum + 52.75;
+    const penalty = 2 * state.nonUniform + 4 * state.defective;
+    const raw = base - penalty;
+    const score = roundToQuarter(raw);
+    return {sum, base, penalty, raw, score};
+  }
+
+  // --- UI helpers ---
+  function pillRadio(name, value, checked, onChange){
+    const label = document.createElement("label");
+    label.className = "pill";
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = name;
+    input.value = value;
+    input.checked = checked;
+    input.addEventListener("change", () => onChange(value));
+    const b = document.createElement("b");
+    b.textContent = value;
+    label.appendChild(input);
+    label.appendChild(b);
+    return label;
+  }
+
+  function renderSections(){
+    const root = document.getElementById("sections");
+    root.innerHTML = "";
+    ATTRS.forEach(([labelText, key], idx) => {
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const label = document.createElement("div");
+      label.className = "label";
+      label.innerHTML = `<span>${labelText}</span><small>1~9</small>`;
+
+      const choices = document.createElement("div");
+      choices.className = "choices";
+      for(let v=1; v<=9; v++){
+        choices.appendChild(
+          pillRadio(`sec_${key}`, v, state.sections[key]===v, (val)=>{
+            state.sections[key] = Number(val);
+            persist();
+            update();
+          })
+        );
+      }
+      row.appendChild(label);
+      row.appendChild(choices);
+      root.appendChild(row);
+    });
+  }
+
+  function renderCupPickers(){
+    const nu = document.getElementById("nonUniform");
+    const d = document.getElementById("defective");
+    nu.innerHTML = "";
+    d.innerHTML = "";
+    for(let v=0; v<=5; v++){
+      nu.appendChild(pillRadio("nonUniform", v, state.nonUniform===v, (val)=>{
+        state.nonUniform = Number(val);
+        persist();
+        update();
+      }));
+      d.appendChild(pillRadio("defective", v, state.defective===v, (val)=>{
+        state.defective = Number(val);
+        persist();
+        update();
+      }));
+    }
+  }
+
+  function update(){
+    const {sum, base, penalty, raw, score} = calc();
+    document.getElementById("score").textContent = score.toFixed(2);
+    document.getElementById("detail").textContent =
+      `Σh=${sum}  |  base=${base.toFixed(2)}  |  penalty=${penalty.toFixed(2)}  |  raw=${raw.toFixed(2)}  →  rounded=${score.toFixed(2)}`;
+
+    // gentle sanity check (not a rule, just a reminder)
+    const warn = document.getElementById("warnMany");
+    warn.style.display = (state.defective > state.nonUniform && state.defective !== 0) ? "block" : "none";
+  }
+
+  // --- Persistence (localStorage) ---
+  const KEY="cva_affective_v1";
+  function persist(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+  }
+  function load(){
+    try{
+      const s = localStorage.getItem(KEY);
+      if(!s) return;
+      const obj = JSON.parse(s);
+      if(obj && obj.sections){
+        Object.keys(state.sections).forEach(k=>{
+          if(typeof obj.sections[k] === "number") state.sections[k] = obj.sections[k];
+        });
+        if(typeof obj.nonUniform === "number") state.nonUniform = obj.nonUniform;
+        if(typeof obj.defective === "number") state.defective = obj.defective;
+      }
+    } catch(e){}
+  }
+
+  // --- Buttons ---
+  document.getElementById("resetBtn").addEventListener("click", ()=>{
+    state.sections = Object.fromEntries(ATTRS.map(([_,k]) => [k, 5]));
+    state.nonUniform = 0;
+    state.defective = 0;
+    persist();
+    renderSections();
+    renderCupPickers();
+    update();
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", async ()=>{
+    const {sum, score} = calc();
+    const lines = [
+      "CVA Affective Score",
+      ...ATTRS.map(([lab,k]) => `${lab}: ${state.sections[k]}`),
+      `Non-uniform cups: ${state.nonUniform}`,
+      `Defective cups: ${state.defective}`,
+      `Σh: ${sum}`,
+      `Score: ${score.toFixed(2)}`
+    ].join("\n");
+    try{
+      await navigator.clipboard.writeText(lines);
+      alert("복사됨");
+    }catch(e){
+      prompt("복사(수동):", lines);
+    }
+  });
+
+  // init
+  load();
+  renderSections();
+  renderCupPickers();
+  update();
+</script>
+</body>
+</html>
