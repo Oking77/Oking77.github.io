@@ -17,8 +17,10 @@
       --radius: 16px;
     }
     body{
-      margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
-      background: var(--bg); color: var(--text);
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
     .wrap{ max-width: 860px; margin: 24px auto 40px; padding: 0 14px; }
     header{
@@ -29,8 +31,43 @@
       padding: 18px 18px 14px;
       margin-bottom: 14px;
     }
+    .headRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
     header h1{ margin: 0 0 8px; font-size: 18px; letter-spacing: -.2px; }
     header p{ margin: 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+
+    .cuppingBox{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: none;
+      min-width: 220px;
+    }
+    .cuppingBox .t{
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .cuppingBox select{
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-weight: 700;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
     .grid{
       display: grid;
       grid-template-columns: 1fr;
@@ -54,7 +91,9 @@
       letter-spacing: -.2px;
     }
     .help{
-      font-size: 12px; color: var(--muted); line-height: 1.35;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
       margin: 0 0 14px;
     }
     .row{
@@ -63,14 +102,18 @@
     }
     .row:first-of-type{ border-top: 0; padding-top: 0; }
     .label{
-      display:flex; align-items: baseline; justify-content: space-between;
+      display:flex;
+      align-items: baseline;
+      justify-content: space-between;
       gap: 10px;
       margin-bottom: 10px;
     }
     .label span{ font-weight: 650; }
     .label small{ color: var(--muted); font-weight: 500; }
     .choices{
-      display:flex; flex-wrap: wrap; gap: 8px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
       align-items: center;
     }
     .pill{
@@ -78,7 +121,9 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 6px 10px;
-      display:flex; align-items:center; gap: 8px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
       user-select: none;
     }
     .pill input{ width: 16px; height: 16px; }
@@ -126,7 +171,9 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     }
     .btnbar{
-      display:flex; gap: 8px; margin-top: 12px;
+      display:flex;
+      gap: 8px;
+      margin-top: 12px;
     }
     button{
       border: 1px solid var(--line);
@@ -143,11 +190,21 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>CVA Affective Score Calculator</h1>
-      <p>
-        SCA Standard 104-2024( Affective Assessment ) 방식으로 총점을 계산합니다. 각 항목(8개)을 1~9로 선택하고,
-        Non-uniform / Defective cup 개수를 입력하면 <b>0.25점 단위로 반올림</b>된 총점이 표시됩니다.
-      </p>
+      <div class="headRow">
+        <div>
+          <h1>CVA Affective Score Calculator</h1>
+          <p>
+            SCA Standard 104-2024( Affective Assessment ) 방식으로 총점을 계산합니다. 각 항목(8개)을 1~9로 선택하고,
+            Non-uniform / Defective cup 개수를 입력하면 <b>0.25점 단위로 반올림</b>된 총점이 표시됩니다.
+          </p>
+        </div>
+
+        <!-- Cupping Number Rollbox -->
+        <div class="cuppingBox" aria-label="Cupping Number Selector">
+          <div class="t">Cupping No.</div>
+          <select id="cuppingNo" aria-label="Cupping Number"></select>
+        </div>
+      </div>
     </header>
 
     <div class="grid">
@@ -182,7 +239,7 @@
       <aside class="sticky">
         <div class="card">
           <div class="scoreBox">
-            <div class="k">Affective Score</div>
+            <div class="k" id="scoreLabel">Affective Score</div>
             <div class="v" id="score">--</div>
             <div class="meta">
               <div>공식(표 기반과 동치): <code>S = 0.65625*Σh + 52.75 - 2u - 4d</code></div>
@@ -194,9 +251,6 @@
           <div class="btnbar">
             <button id="resetBtn" type="button">초기화</button>
             <button id="copyBtn" type="button">결과 복사</button>
-          </div>
-          <div class="mini" style="margin-top:10px;">
-            근거: SCA-104-2024의 “Two-way table to calculate score” 및 “Deduct 2 points per non-uniform cup and 4 points per defective cup”. 
           </div>
         </div>
       </aside>
@@ -220,6 +274,7 @@
   ];
 
   const state = {
+    cuppingNo: 1, // 1~20
     sections: Object.fromEntries(ATTRS.map(([_,k]) => [k, 5])),
     nonUniform: 0,
     defective: 0
@@ -255,10 +310,27 @@
     return label;
   }
 
+  function renderCuppingNo(){
+    const sel = document.getElementById("cuppingNo");
+    sel.innerHTML = "";
+    for(let i=1; i<=20; i++){
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = `#${i}`;
+      if(i === state.cuppingNo) opt.selected = true;
+      sel.appendChild(opt);
+    }
+    sel.addEventListener("change", (e)=>{
+      state.cuppingNo = Number(e.target.value);
+      persist();
+      update();
+    });
+  }
+
   function renderSections(){
     const root = document.getElementById("sections");
     root.innerHTML = "";
-    ATTRS.forEach(([labelText, key], idx) => {
+    ATTRS.forEach(([labelText, key]) => {
       const row = document.createElement("div");
       row.className = "row";
 
@@ -305,8 +377,9 @@
   function update(){
     const {sum, base, penalty, raw, score} = calc();
     document.getElementById("score").textContent = score.toFixed(2);
+    document.getElementById("scoreLabel").textContent = `Affective Score (Cupping #${state.cuppingNo})`;
     document.getElementById("detail").textContent =
-      `Σh=${sum}  |  base=${base.toFixed(2)}  |  penalty=${penalty.toFixed(2)}  |  raw=${raw.toFixed(2)}  →  rounded=${score.toFixed(2)}`;
+      `#${state.cuppingNo} | Σh=${sum} | base=${base.toFixed(2)} | penalty=${penalty.toFixed(2)} | raw=${raw.toFixed(2)} → rounded=${score.toFixed(2)}`;
 
     // gentle sanity check (not a rule, just a reminder)
     const warn = document.getElementById("warnMany");
@@ -314,7 +387,7 @@
   }
 
   // --- Persistence (localStorage) ---
-  const KEY="cva_affective_v1";
+  const KEY="cva_affective_v2";
   function persist(){
     try{ localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
   }
@@ -323,22 +396,30 @@
       const s = localStorage.getItem(KEY);
       if(!s) return;
       const obj = JSON.parse(s);
-      if(obj && obj.sections){
+      if(!obj) return;
+
+      if(typeof obj.cuppingNo === "number" && obj.cuppingNo >= 1 && obj.cuppingNo <= 20){
+        state.cuppingNo = obj.cuppingNo;
+      }
+
+      if(obj.sections){
         Object.keys(state.sections).forEach(k=>{
           if(typeof obj.sections[k] === "number") state.sections[k] = obj.sections[k];
         });
-        if(typeof obj.nonUniform === "number") state.nonUniform = obj.nonUniform;
-        if(typeof obj.defective === "number") state.defective = obj.defective;
       }
+      if(typeof obj.nonUniform === "number") state.nonUniform = obj.nonUniform;
+      if(typeof obj.defective === "number") state.defective = obj.defective;
     } catch(e){}
   }
 
   // --- Buttons ---
   document.getElementById("resetBtn").addEventListener("click", ()=>{
+    state.cuppingNo = 1;
     state.sections = Object.fromEntries(ATTRS.map(([_,k]) => [k, 5]));
     state.nonUniform = 0;
     state.defective = 0;
     persist();
+    renderCuppingNo();
     renderSections();
     renderCupPickers();
     update();
@@ -347,7 +428,7 @@
   document.getElementById("copyBtn").addEventListener("click", async ()=>{
     const {sum, score} = calc();
     const lines = [
-      "CVA Affective Score",
+      `CVA Affective Score (Cupping #${state.cuppingNo})`,
       ...ATTRS.map(([lab,k]) => `${lab}: ${state.sections[k]}`),
       `Non-uniform cups: ${state.nonUniform}`,
       `Defective cups: ${state.defective}`,
@@ -364,6 +445,7 @@
 
   // init
   load();
+  renderCuppingNo();
   renderSections();
   renderCupPickers();
   update();
