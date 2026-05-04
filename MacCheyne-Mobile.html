@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>오킹의 모바일 맥체인</title>
+<title>오킹의 맥체인 성경읽기</title>
 <style>
   :root {
-    /* 기본 글자 / 제목 글자 크기: 화면 폭에 따라 자동 조절 */
     --base-font: clamp(14px, 4vw, 18px);
     --title-font: clamp(22px, 6vw, 30px);
   }
@@ -16,32 +15,33 @@
     font-family: system-ui, -apple-system, sans-serif;
     font-size: var(--base-font);
   }
-  h1 { font-size: 24px; margin-bottom: 4px; }
+
   h2 {
-  margin: 12px 0 4px 0;
-  text-align: center;   /* 월 제목 가운데 정렬 */
-     }
+    margin: 14px 0 6px 0;
+    text-align: center;
+  }
+
   h3 {
     font-size: var(--title-font);
     color: red;
     margin: 0 0 8px 0;
   }
-  p  { margin: 4px 0 8px 0; }
 
-  /* 표 전체: 모바일 폭 100%, 내용 기준으로 열 폭 배분 */
+  p { margin: 4px 0 8px 0; }
+
   table {
     border-collapse: collapse;
     width: 100%;
-    table-layout: auto;       /* fixed 제거 → 내용에 맞게 열 폭 조정 */
+    table-layout: auto;
     margin-bottom: 10px;
   }
+
   th, td {
     border: 1px solid #ccc;
     padding: 4px 2px;
     text-align: center;
   }
 
-  /* 날짜 칸은 좁게, 본문 칸은 넓게 → 본문 열이 예전보다 약 30% 넓어짐 */
   th:first-child,
   td.date {
     width: 18%;
@@ -49,12 +49,12 @@
     font-weight: 700;
     white-space: nowrap;
   }
+
   th:not(:first-child),
   td:not(.date) {
-    width: 20.5%;   /* 네 개 본문 열이 나머지 폭을 나눠가짐 */
+    width: 20.5%;
   }
 
-  /* 오늘 날짜 강조 */
   td.date.today {
     background: #ffe9a8;
     color: #c00;
@@ -66,10 +66,14 @@
     text-decoration: none;
     color: #0044aa;
     cursor: pointer;
-    white-space: nowrap;   /* “창 1장” 한 줄 유지 */
-    font-size: 0.95em;     /* 셀 기본 글자보다 약간 작게 → 한 줄 안에 잘 들어가도록 */
+    white-space: nowrap;
+    font-size: 0.95em;
   }
-  a.bible.read { color: #888; text-decoration: line-through; }
+
+  a.bible.read {
+    color: #888;
+    text-decoration: line-through;
+  }
 
   #resetRead {
     display: block;
@@ -87,15 +91,21 @@
     padding-top: 10px;
   }
 
-  .month-block { margin-bottom: 32px; }
+  .month-block {
+    margin-bottom: 32px;
+  }
 </style>
 </head>
+
 <body>
-<h3>*^^* 오킹이 만든 맥체인 성경읽기표</h3>
-  
-<p>· 개역개정(대한성서공회) 링크 연결<br>
-· 각 본문 클릭 시 새 탭으로 성경 열림 + “읽음(회색/취소선)” 상태가 동일 브라우저에 저장됨<br>
-· 다른 브라우저 또는 다른 기기에서 열면 읽음 표시는 새로 시작</p>
+<h3>*^^* 오킹이 만든 맥체인 성경읽기표 ^^"</h3>
+
+<p>
+  · 개역개정(대한성서공회) 링크 연결<br>
+  · 각 본문 클릭 시 새 탭으로 성경 열림 + “읽음(회색/취소선)” 상태가 동일 브라우저에 저장됨<br>
+  · 다른 브라우저 또는 다른 기기에서 열면 읽음 표시는 새로 시작<br>
+  · 여러 장 범위는 여러 탭으로 열림
+</p>
 
 <div id="plans"></div>
 
@@ -107,7 +117,8 @@
 </p>
 
 <footer>
-  copyright © 2025 Oking Kwon.<br> No rights reserved.
+  copyright © 2025 Oking Kwon.<br>
+  No rights reserved.
 </footer>
 
 <script>
@@ -136,14 +147,26 @@ const BOOKS = {
   "jud": "유", "rev": "계"
 };
 
-// 오늘 날짜 (월 / 일)
+// 대한성서공회 실제 링크용 book 코드 보정
+const BSK_BOOK_CODES = {
+  joh: "jhn",
+  eze: "ezk",
+  joe: "jol",
+  nah: "nam"
+};
+
+function getBskBookCode(bookCode) {
+  return BSK_BOOK_CODES[bookCode] || bookCode;
+}
+
+// 오늘 날짜
 const TODAY = new Date();
-const TODAY_MONTH = TODAY.getMonth() + 1;  // 1~12
-const TODAY_DATE  = TODAY.getDate();       // 1~31
+const TODAY_MONTH = TODAY.getMonth() + 1;
+const TODAY_DATE = TODAY.getDate();
 
 // 맥체인 전체 계획
 const plan = {
- 1: [
+  1: [
     [["gen","1"],["mat","1"],["ezr","1"],["act","1"]],
     [["gen","2"],["mat","2"],["ezr","2"],["act","2"]],
     [["gen","3"],["mat","3"],["ezr","3"],["act","3"]],
@@ -176,7 +199,8 @@ const plan = {
     [["gen","31"],["mrk","2"],["est","7"],["rom","2"]],
     [["gen","32"],["mrk","3"],["est","8"],["rom","3"]]
   ],
- 2: [
+
+  2: [
     [["gen","33"],["mrk","4"],["est","9-10"],["rom","4"]],
     [["gen","34"],["mrk","5"],["job","1"],["rom","5"]],
     [["gen","35-36"],["mrk","6"],["job","2"],["rom","6"]],
@@ -206,7 +230,8 @@ const plan = {
     [["exo","10"],["luk","13"],["job","28"],["1co","14"]],
     [["exo","11-12:1-21"],["luk","14"],["job","29"],["1co","15"]]
   ],
- 3: [
+
+  3: [
     [["exo","12:22-51"],["luk","15"],["job","30"],["1co","16"]],
     [["exo","13"],["luk","16"],["job","31"],["2co","1"]],
     [["exo","14"],["luk","17"],["job","32"],["2co","2"]],
@@ -239,7 +264,8 @@ const plan = {
     [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
     [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
   ],
- 4: [
+
+  4: [
     [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
     [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
     [["lev","6"],["psa","5-6"],["pro","21"],["col","4"]],
@@ -271,7 +297,8 @@ const plan = {
     [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
     [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
   ],
- 5: [
+
+  5: [
     [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
     [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
     [["num","10"],["psa","46-47"],["sng","8"],["heb","8"]],
@@ -304,7 +331,8 @@ const plan = {
     [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
     [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
   ],
- 6: [
+
+  6: [
     [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
     [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
     [["deu","7"],["psa","90"],["isa","35"],["rev","5"]],
@@ -336,7 +364,8 @@ const plan = {
     [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
     [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
   ],
- 7: [
+
+  7: [
     [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
     [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
     [["jos","5"],["psa","132-134"],["isa","65"],["mat","13"]],
@@ -369,7 +398,8 @@ const plan = {
     [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
     [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
   ],
- 8: [
+
+  8: [
     [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
     [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
     [["jdg","17"],["act","21"],["jer","30-31"],["mrk","16"]],
@@ -402,7 +432,8 @@ const plan = {
     [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
     [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
   ],
- 9: [
+
+  9: [
     [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
     [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
     [["1sa","27"],["1co","8"],["eze","6"],["joh","7"]],
@@ -434,7 +465,8 @@ const plan = {
     [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
     [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
   ],
- 10: [
+
+  10: [
     [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
     [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
     [["1ki","6"],["eph","3"],["eze","36"],["psa","25"]],
@@ -467,7 +499,8 @@ const plan = {
     [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
     [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
   ],
- 11: [
+
+  11: [
     [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
     [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
     [["2ki","16"],["tit","2"],["hos","9"],["psa","69"]],
@@ -499,7 +532,8 @@ const plan = {
     [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
     [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
   ],
- 12: [
+
+  12: [
     [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
     [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
     [["2ch","2"],["1jn","2"],["nah","1"],["psa","110-111"]],
@@ -541,33 +575,84 @@ function lsGet(key) {
   } catch (e) {}
   return null;
 }
+
 function lsSet(key, val) {
   try {
     if (window.localStorage) localStorage.setItem(key, val);
   } catch (e) {}
 }
+
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
     const keys = [];
+
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("mcheyne_read_")) keys.push(k);
     }
+
     keys.forEach(k => localStorage.removeItem(k));
   } catch (e) {}
 }
 
-// chapSpec에서 장 번호 추출
-function extractChap(spec) {
-  const m = String(spec).match(/^(\d+)/);
-  return m ? m[1] : "1";
+// 장/절 표기 분석
+function parseChapSpec(spec) {
+  const s = String(spec).trim();
+
+  const rangeMatch = s.match(/^(\d+)-(\d+)/);
+  if (rangeMatch) {
+    const start = Number(rangeMatch[1]);
+    const end = Number(rangeMatch[2]);
+    const result = [];
+
+    for (let chap = start; chap <= end; chap++) {
+      result.push({ chap, sec: 1 });
+    }
+
+    return result;
+  }
+
+  const verseMatch = s.match(/^(\d+):(\d+)/);
+  if (verseMatch) {
+    return [{
+      chap: Number(verseMatch[1]),
+      sec: Number(verseMatch[2])
+    }];
+  }
+
+  const chapMatch = s.match(/^(\d+)/);
+  if (chapMatch) {
+    return [{
+      chap: Number(chapMatch[1]),
+      sec: 1
+    }];
+  }
+
+  return [{ chap: 1, sec: 1 }];
+}
+
+// 대한성서공회 링크 생성
+// 성경 페이지 열릴 때 폰트 크기 19, 볼드 옵션 추가
+function makeBibleUrl(bookCode, chap, sec) {
+  const bskBook = getBskBookCode(bookCode);
+
+  return "https://www.bskorea.or.kr/bible/korbibReadpage.php"
+    + "?version=GAE"
+    + "&book=" + encodeURIComponent(bskBook)
+    + "&chap=" + encodeURIComponent(chap)
+    + "&sec=" + encodeURIComponent(sec)
+    + "&range=all"
+    + "&keyword1="
+    + "&fontSize=19px"
+    + "&fontWeight=bold";
 }
 
 // 본문 링크 셀 생성
 function makeCell(bookCode, chapSpec, id) {
-  const a = document.createElement('a');
-  a.className = 'bible';
+  const a = document.createElement("a");
+
+  a.className = "bible";
   a.dataset.book = bookCode;
   a.dataset.chapSpec = chapSpec;
   a.dataset.id = id;
@@ -576,24 +661,34 @@ function makeCell(bookCode, chapSpec, id) {
     (BOOKS[bookCode] || bookCode) + " " +
     (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
 
-  const chap = extractChap(chapSpec);
-  const url =
-    "https://www.bskorea.or.kr/bible/korbibReadpage.php"
-    + "?version=GAE&book=" + encodeURIComponent(bookCode)
-    + "&chap=" + encodeURIComponent(chap)
-    + "&sec=1&range=all&keyword1=";
-  a.href = url;
+  const chapItems = parseChapSpec(chapSpec);
+  const urls = chapItems.map(item => makeBibleUrl(bookCode, item.chap, item.sec));
+
+  a.href = urls[0];
   a.target = "_blank";
+  a.rel = "noopener noreferrer";
+
+  if (urls.length > 1) {
+    a.title = "여러 장 범위입니다. 클릭 시 여러 장이 새 탭으로 열립니다.";
+  }
 
   const key = "mcheyne_read_" + id;
+
   if (lsGet(key) === "1") {
     a.classList.add("read");
   }
 
-  a.addEventListener('click', function () {
-    this.classList.toggle('read');
-    const v = this.classList.contains('read') ? "1" : "0";
+  a.addEventListener("click", function () {
+    this.classList.toggle("read");
+
+    const v = this.classList.contains("read") ? "1" : "0";
     lsSet(key, v);
+
+    if (urls.length > 1) {
+      for (let i = 1; i < urls.length; i++) {
+        window.open(urls[i], "_blank", "noopener,noreferrer");
+      }
+    }
   });
 
   return a;
@@ -601,45 +696,46 @@ function makeCell(bookCode, chapSpec, id) {
 
 // 렌더링
 (function render() {
-  const root = document.getElementById('plans');
+  const root = document.getElementById("plans");
 
-  Object.keys(plan).sort((a,b)=>Number(a)-Number(b)).forEach(mStr => {
+  Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
     const days = plan[month];
 
-    const wrap = document.createElement('div');
-    wrap.className = 'month-block';
+    const wrap = document.createElement("div");
+    wrap.className = "month-block";
 
-    const h2 = document.createElement('h2');
+    const h2 = document.createElement("h2");
     h2.textContent = month + "월";
     wrap.appendChild(h2);
 
-    const table = document.createElement('table');
-    const thead = document.createElement('thead');
-    thead.innerHTML =
-      "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
+    const table = document.createElement("table");
+
+    const thead = document.createElement("thead");
+    thead.innerHTML = "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
     table.appendChild(thead);
 
-    const tbody = document.createElement('tbody');
+    const tbody = document.createElement("tbody");
 
     days.forEach((dayArr, dayIdx) => {
-      const tr = document.createElement('tr');
+      const tr = document.createElement("tr");
 
-      const tdDate = document.createElement('td');
+      const tdDate = document.createElement("td");
       tdDate.className = "date";
-      tdDate.textContent = (dayIdx + 1);
+      tdDate.textContent = dayIdx + 1;
 
-      // 오늘 날짜면 강조
       if (month === TODAY_MONTH && (dayIdx + 1) === TODAY_DATE) {
-        tdDate.classList.add('today');
+        tdDate.classList.add("today");
       }
 
       tr.appendChild(tdDate);
 
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
-        const td = document.createElement('td');
+
+        const td = document.createElement("td");
         const id = month + "-" + (dayIdx + 1) + "-" + (i + 1);
+
         td.appendChild(makeCell(bookCode, chapSpec, id));
         tr.appendChild(td);
       }
@@ -654,18 +750,18 @@ function makeCell(bookCode, chapSpec, id) {
 })();
 
 // 읽음 표시 전체 초기화
-document.getElementById('resetRead').addEventListener('click', function () {
-  if (!confirm('모든 읽음 표시를 초기화할까요?')) return;
+document.getElementById("resetRead").addEventListener("click", function () {
+  if (!confirm("모든 읽음 표시를 초기화할까요?")) return;
 
-  document.querySelectorAll('a.bible.read').forEach(a => {
-    a.classList.remove('read');
+  document.querySelectorAll("a.bible.read").forEach(a => {
+    a.classList.remove("read");
   });
 
   lsClearMcheyne();
 });
 
-// 우클릭(컨텍스트 메뉴) 방지
-document.addEventListener('contextmenu', function (e) {
+// 우클릭 방지
+document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
 });
 </script>
