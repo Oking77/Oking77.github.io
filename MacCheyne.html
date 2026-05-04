@@ -1,99 +1,124 @@
+아래 전체 코드로 교체하면 됨.
+수정 핵심: 유튜브는 새 탭 / 성서공회는 현재 탭.
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>오킹의 맥체인 성경읽기</title>
 <style>
-  body { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; }
-  h1 { font-size: 30px; margin-bottom: 4px; }
-  h2 { margin-top: 0; margin-bottom: 4px; }
-  h3 { font-size: 35px; color: red; margin-bottom: 6px; }
-  p  { margin: 4px 0 10px 0; }
-
+  :root {
+    --base-font: clamp(14px, 4vw, 18px);
+    --title-font: clamp(22px, 6vw, 30px);
+  }
+  body {
+    margin: 8px;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: var(--base-font);
+  }
+  h2 {
+    margin: 14px 0 6px 0;
+    text-align: center;
+  }
+  h3 {
+    font-size: var(--title-font);
+    color: red;
+    margin: 0 0 8px 0;
+  }
+  p { margin: 4px 0 8px 0; }
   table {
     border-collapse: collapse;
-    margin: 0 auto 8px 0; /* 왼쪽 정렬 */
-    width: 80%;              /* 기존 100% -> 80% (약 20% 축소) */
-    max-width: 900px;
-    table-layout: fixed;
+    width: 100%;
+    table-layout: auto;
+    margin-bottom: 10px;
   }
   th, td {
     border: 1px solid #ccc;
-    padding: 3px 5px;
+    padding: 4px 2px;
     text-align: center;
   }
   th:first-child,
   td.date {
-    width: 40px;
+    width: 18%;
     text-align: center;
-    font-weight: 600;
-    white-space: nowrap;   /* 날짜 한 줄 */
-  }
-
-  /* 오늘 날짜 강조 */
-  td.date.today {
-    background: #ffe9a8;   /* 연한 노랑 배경 */
-    color: #c00;           /* 빨간색 글자 */
     font-weight: 700;
-    border-width: 2px;     /* 테두리 조금 두껍게 */
+    white-space: nowrap;
   }
-
-  a.bible { text-decoration: none; color: #0044aa; cursor: pointer; }
-  a.bible.read { color: #888; text-decoration: line-through; }
-
+  th:not(:first-child),
+  td:not(.date) {
+    width: 20.5%;
+  }
+  td.date.today {
+    background: #ffe9a8;
+    color: #c00;
+    font-weight: 700;
+    border-width: 2px;
+  }
+  a.bible {
+    text-decoration: none;
+    color: #0044aa;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 0.95em;
+  }
+  a.bible.read {
+    color: #888;
+    text-decoration: line-through;
+  }
+  .youtube-option {
+    text-align: center;
+    margin: 14px 0 12px 0;
+    font-size: 0.9rem;
+  }
+  .youtube-option input {
+    transform: scale(1.15);
+    margin-right: 4px;
+  }
   #resetRead {
     display: block;
-    margin: 24px auto 30px;
+    margin: 16px auto 24px;
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: 0.9rem;
   }
-
   footer {
     text-align: center;
-    font-size: 12px;
+    font-size: 0.75rem;
     color: #666;
     margin: 20px 0 30px 0;
     border-top: 1px solid #ccc;
     padding-top: 10px;
   }
-
-  .month-block { margin-bottom: 40px; page-break-inside: avoid; }
-
-  /* 모바일 화면용: 표 글자 2배(200%) */
-  @media (max-width: 600px) {
-    body { font-size: 18px; }
-    h3 { font-size: 28px; }
-    table { font-size: 200%; width: 100%; }  /* 모바일에선 다시 100% 폭으로 */
-    th, td { padding: 8px 4px; }
-
-    /* 모바일에서 오늘 날짜는 더 크게 */
-    td.date.today {
-      font-size: 1.4em;
-    }
+  .month-block {
+    margin-bottom: 32px;
   }
 </style>
 </head>
 <body>
 <h3>*^^* 오킹이 만든 맥체인 성경읽기표 ^^"</h3>
-  
-<p>· 개역개정(대한성서공회) 링크 연결<br>
-· 각 본문 클릭 시 새 탭으로 성경 열림 + “읽음(회색/취소선)” 상태가 동일 브라우저에 저장됨<br>
-· 다른 브라우저 또는 다른 기기에서 열면 읽음 표시는 새로 시작</p>
-
+<p>
+  · 개역개정(대한성서공회) 링크 연결<br>
+  · 각 본문 클릭 시 성서공회 성경 열림 + “읽음(회색/취소선)” 상태가 동일 브라우저에 저장됨<br>
+  · 다른 브라우저 또는 다른 기기에서 열면 읽음 표시는 새로 시작<br>
+  · 유튜브 읽기 ON일 때만 공동체성경읽기 유튜브가 같이 열림<br>
+  · 여러 장 범위는 첫 장만 열림
+</p>
+<div class="youtube-option">
+  <label>
+    <input type="checkbox" id="youtubeToggle" checked>
+    유튜브 읽기 같이 열기
+  </label>
+</div>
 <div id="plans"></div>
-
 <button id="resetRead">읽음 표시 전체 초기화</button>
-
 <p style="margin:0 0 6px 0; font-size:12px; color:#666; text-align:center;">
   성경 본문 저작권 © 대한성서공회. 이 페이지는 성경 본문을 저장·복제하지 않고,<br>
   대한성서공회 공식 사이트로의 링크만 제공합니다.
 </p>
-
-  
 <footer>
-  copyright © 2025 Oking Kwon.<br> No rights reserved.
+  copyright © 2025 Oking Kwon.<br>
+  No rights reserved.
 </footer>
-
 <script>
 // 대한성서공회 코드 -> 한글 약어
 const BOOKS = {
@@ -119,15 +144,157 @@ const BOOKS = {
   "1jn": "요일1", "2jn": "요일2", "3jn": "요일3",
   "jud": "유", "rev": "계"
 };
-
-// 오늘 날짜 (월 / 일)
+// 대한성서공회 실제 링크용 book 코드 보정
+const BSK_BOOK_CODES = {
+  joh: "jhn",
+  eze: "ezk",
+  joe: "jol",
+  nah: "nam"
+};
+function getBskBookCode(bookCode) {
+  return BSK_BOOK_CODES[bookCode] || bookCode;
+}
+// 유튜브 링크 데이터: 창세기 ~ 에스라
+const YT_IDS = {
+  gen: `
+NbGHNcPhlUY JlNThwGgoaU wWcCSauvELk Q3Mb0fPQw90 XN5GAc9l3co
+hFAj7gmuBeU bKRNGtp7AoA bA8kL2aiHDA YqTtGg-OVEc 4TzkQSrVNFM
+ge7BdVm0v0U d0Xv7TxKb74 67F96To78k8 tANchqDn7bw 6jq_AxnaXb0
+FqbCnzaNW2g NQd-C12KGpk uroh7hUHh_I 5hQHW7c-KE4 ZWlo6w7QjpY
+z4_GEvbTPQs hKlxklbG61E frFSD3sbOhQ EQtD6xdK22I QWGjSoh8Y6Y
+ooWAaS3szYI _bXCq5MtyTQ FWOQ_Pd01gs 5vqxh0SHUtg ieEUbQUi5QU
+bmwJorSOhDY jBEMphf6flc y2Ah0LiwDEk D-pJxRj7KgE FDIgQSWoKss
+1woV5UG5w-c 2XisnIyDC0k X9fjOKAmmBQ JRoZYyIbuj0 D6U-EjXB6QE
+C_7b-KY-Xmw txsikH9fa9g LFtlF1IUWqw ZuipSBYlg3c v7XocqpGA6M
+GN6ibcpmLk8 RG2QaiupsxM PxL65Wq3tJI 2yZUowOLXto hDGu7oXeT_0
+`,
+  exo: `
+Ji1UqqkcF5k 1lw1seQoT-k BgfXs6grcl0 aBYo4aQ_tX0 uk-fGmSXU5s
+2KS515ksaSA 0xEBlqkC5CQ b3g9DG5O15Q 3v04k45xSyE ANf76mjIoME
+5Yv2d__Lrx4 LiAQmV793qY -bTRvxyQK6E BGIbwXqT9C8 WcrrN5nPT_A
+kDJJWpRKc6U 7Xuv4qVt_FY iuchqCzbKRs G7WRQQp2CYw YYxZIHF9Ios
+tFrLJttkiXQ KpC-HCGpYQg 31ok6rLA1eU EytEIKaDTX0 stwga3kNVmc
+kgztC4NyfDQ gnwKP_zszrg oCsMZhNkkn8 W9x_mjUDRGM aPnpcYwWM8E
+v9PiXa-05so NmuOfGCOxI8 PnvbfUEsmKs j7bKpxz2ewk C7eEQJ_AasI
+4_vOKp6YMOE vinMrTFhjD4 9cYefG7rMwI HGw6Oq9Ygsw y7gL9f8MagE
+`,
+  lev: `
+03-zwx1Dvv0 IV8w7H4EkmU 1zKvs8RwLZA 2sUiyUtRB70 ncN6gLlO5Yw
+Rk0Ex7QpeHM oWVQWY5M-XA _DCeaGP1Qao YnePhW95A0I iLZVDUDjpPk
+3gNbTtV63qA 3EqnQa6FLbc lwFsM3rgd9I nX2DHjvEzR0 m7abYZAw-y4
+1aCYXJSEkbU 02dmUjqYMbc bS3rS_z9tFM 7R7_XzKY4SA 4Pny3OChvU4
+a5NMaV0RsWI YWPYTwAI5lY QwV4R1xAwpQ qu9YN7ToVtQ z5zwZx_NVcQ
+JLlKWHLGAlE XQaRJ5H60CQ
+`,
+  num: `
+yPMLXwH0Ns8 vQYldvHewsw uoND_nMFYD0 5nNs6ip5Mk4 z2xYdVQaSqs
+_OdO4d1N7pE S1gCMwlwBP8 JEISP5uJz0k eTqcfSb7p9o 3Cs7jUxXNxg
+SrrqwP7VMJM 5G20JnFEG3w Kb1bUDm9us8 8rk-QrGAj7s Rr5mKFJx1aE
+N4XIDQ8028k 3yovA5bKX8c 9YTZBZXgzhg qruN1OBW9H4 UUxBz3yDrm8
+hAcjVpjkhmI EwXCng1Yqt0 2Q5DXKxevRY Vx8ZG8SSogQ 0MjIF-OjW6k
+xxinrahFBXg 6ZUONd8Idto XoeubquoBYw hv6yjA5epSw ucntaI56HME
+bj5oppW5wVY Sqxn68z_jfw xxNs1VFkIF0 DFip3UPYgcM 1rmxkEN0dq0
+cBJPVJ_7Ri0
+`,
+  deu: `
+1l2WaKwyZcQ -vbnWbqlb2E 5vYAACpfS2I U6QFC9AnjZw uPttPPD-ZTo
+2pjkk4slEFg J1M8OHI7920 kuKi9ysEwP4 KcmI1YlLSqo 7jOHABewffg
+QKwxGXM9GyA R_nB-0jKctI 0-cJzN8MLu0 9TeGFVmhCA8 XDcTxXwqgng
+XBEDbooQM8M fpSLv5Dl08U xyQqsOeTck8 T55pjGHMgrY LqfmcNWQelI
+Y9I-JDK3leQ t4ZMpZL6Lgw 9PeJExnxyB0 XnHiX76VaX0 lNGdYCOg1wQ
+YT_oOsVQCvc vScjEwhyRD4 sTiIqsL0pHk LRRfQbz4Fgs CldpAoiRw8c
+UNmD0UUnwvI wqHF7mH2Owc o__LH6jT6Xg v0AexUrTEmg
+`,
+  jos: `
+8aRa1qWXHx0 vBmJ7MXCR1U PGkHnCl8Dsc c22uX9e3x4U i4w-SlAhHvM
+_UdlbrYGPz0 g_FUGj6wMPw GwBhXA85uAA V2DdFSCDquY kI5By-aWsQI
+tIGcBefonYs pjnuusl8a0M csN-zxKkryc uonNwNv8ys0 J1I0EjnvDZ8
+i5MjtqpeSsg XGdfbj1W9Ls djyDDo2Wr4k -5Q8QRFKdTw NPKZuT3hcFE
+VskD96iDNqs TDeqP9xUwW8 I-uil1Hi-rk wi9U3cZrYrI
+`,
+  jdg: `
+wMDoAIN1bxw hPlinmeKBU4 11WhoHMPemI 3D1TymCfy-4 3nWE2Ds_xQI
+BSnrjPA46b8 r56pZxC8Ehg pSOPSDs69z0 qautBD--tWs qPKEiUBDgP0
+PC1qKqh0Kvk VIuu1JSHrS0 W99OLd97dlA T-R8Se9C3EU A4qsltb0OpA
+JpcjuOGI_RI W31Z2naBmHo HVjhCzvJqVk 7bysS_bcRHw PPDgWpwYniA
+Bve5all1sjg
+`,
+  rut: `
+NjbjTAkgEG4 MU0k78HzAqU A7c3XV4xIrk lxGlJyLGpgQ
+`,
+  "1sa": `
+xdK4dqCYIGI PC1GaCn9c4k QE2W7ZNN3Vs zAAUCINKsXY F51PeN02lMQ
+Jf0FtWPHdBY xiSZxll-ff0 AOQNzfqGUXs Gn9xasmVS58 sgnOIxreUNk
+fU4MDbQhfbs HgZT0wDReXU 1Fr0njqaAng imDBGB1CbfI d0v0i7FaIyQ
+HRn0OXVxgJU 0GVtOnwWXrw 0Tko6jzG8Dk VRuEZS6Iu1E ci9b-oBpJbw
+CeKmfp0SKnE m7cn8d9yzPg nM-GKV7cxUI ua3wLXEDZOk wkGOCrv-Sxc
+Er73SSQs-wY Pld7XRGoqGs Sz3YqBzieCw CXpynE2a70s qFcQ8FznWv4
+Or5cd-95Ufc
+`,
+  "2sa": `
+ak_FCK1YbbA sE2_ouuyWDc jfJRdXoVclE fTqoiT6JUq8 hTitDcrkZpQ
+ZUnUIpqrTHQ gUKPpaAjlrc 7n_2q3CVeKg VQx0ruGSk5U -h-IqjAS6-g
+bhPoCBzc62U am5PufRXrxw _hTS_bkxN2M dBpnIyg1DYo SUzj3MqLQ98
+79BvNYU1rKI qD4laobb9Xg bUy75C2rN6A 0QCxo4iU1VQ ezSW6LZUxBA
+00ssq0d5EK8 K6KrK1paa18 q_KesQU6Q4w gVZLGfNpm7Y
+`,
+  "1ki": `
+Lven74B7GnQ MvhxMnMrOLc Bf5fivf7oUw 9iUnm1mpW8c XNEfhHEJsZk
+18wgsENwm-M vOwc2Xua7EI M2EOir_y5qE zqnfdtVC3jM qldVIU_FbRw
+zDzCezbWu48 6KV_rdXU2Sc vX85ZEuDkKQ QavApho4CmE KFUYqYy4zF8
+_-QsyT3bfGg Xhq6ptvsT94 7GZ2W_C1S8Y CdL4N9nDFC8 1_HtW42FwWY
+EYoicJO0S8w 9VCkbZcB8WM
+`,
+  "2ki": `
+cQUTps8Owuk Nrk9wnJcK2g WwfwgPmBBfc pxY8x0_Iw5o oImdKwuWJ9U
+jL-JL1b1yjI YxDPoECBXJY NJ6_ODclQw0 jfMXdhNqSRg OKRhsRkRz3I
+RZXJV_kYkAE LYM6WFOQRLA pZCknnTG7Rs 3BC5HkY1AjM OVkTshF6VBw
+DxA8ICojMhI COZB9Ah7yJs Ga7LEa8MrSc p2i2pzphTlU YdQBGBjU5zs
+jaYki9NcWQM 0_rt3QNJEmU t2nvEBdDGhI tswMo3uNqT0 -Uot2j3FHCY
+`,
+  "1ch": `
+xwkcZq4h9Fk jw45dGmloBc vKSt7TJSDT8 fYwqnjsApa8 fYimTgIGBLU
+a7Sgiog1uoU oS_iiiASDLA XV7hYelAPBY pX3_5rbDcTk V4SKkHZz_uo
+o6aQAcTeb8w w5YIbITC4ic RRSaNr01r7k 3hlvHYtVcFo Rt862ZKddHo
+xQVbi9cxTkA bpq7xH2iIxc g7ro9YQgdco -mNe8qhY3vs Li3bWlbxrmM
+5w8zGBNnz3U qZcmLKv454o 7L5c2lfzK30 yPGzjeDBM-E HTKjiiNd5-8
+8Jfl4UFUNog OVzfV57HD64 lWePeWdBb1Y V9SejNMdNdw
+`,
+  "2ch": `
+L7gDPo16Ohw tkRBWILE1RI JVFaL96N2Lo gE1oP1zGzBs Ze4N8c-hyYw
+n2Yxq8hwGtk Nx4smfgiJZI kIbvieQwB14 DsVa8XlUO58 R6safMYtglo
+PeP5NZK-rFc Nnmto5tFQG8 XZc74lazi8A Hp8L2j9S55c m9PEFNInQCk
+gdVXXWzItSE 28SXduImvDw c6VeneqVuw0 pUpkemkIHr4 vLJyPmBvx10
+qL9ooWVMXb8 QJkYG-YMRvY 1p-hVUP-4zI ldKO4SnzTR0 5tnM4W0RC5Y
+EWi8hUkJF8E x5UKvPpzkN4 9tpd_HNNFlE 5Hu7XcWZ858 HdGEdCYRf70
+nWdd8c00aLE _9_kJ7UVLGY SrlDBbyd0Sk jIsKPFiF0A4 9dhFuvNnMnw
+SfJh7RLV2LU
+`,
+  ezr: `
+6OSxSCePzEY zQEBMZ1Q7Rc pN3UbMNxZ8Y bAx37m6o7UI zC764B3DGpw
+NIV7krmliso cHQ4jjiTq5A PJCT4j5ezA0 H76dS6ud8Eg 1x7SJ6D3hGs
+`
+};
+function buildYoutubeLinks(idsByBook) {
+  const result = {};
+  Object.keys(idsByBook).forEach(bookCode => {
+    const ids = idsByBook[bookCode].trim().split(/\s+/);
+    ids.forEach((id, index) => {
+      const chap = index + 1;
+      result[bookCode + "-" + chap] =
+        "https://www.youtube.com/watch?v=" + encodeURIComponent(id);
+    });
+  });
+  return result;
+}
+const YOUTUBE_LINKS = buildYoutubeLinks(YT_IDS);
+// 오늘 날짜
 const TODAY = new Date();
-const TODAY_MONTH = TODAY.getMonth() + 1;  // 1~12
-const TODAY_DATE  = TODAY.getDate();       // 1~31
-
+const TODAY_MONTH = TODAY.getMonth() + 1;
+const TODAY_DATE = TODAY.getDate();
 // 맥체인 전체 계획
 const plan = {
- 1: [
+  1: [
     [["gen","1"],["mat","1"],["ezr","1"],["act","1"]],
     [["gen","2"],["mat","2"],["ezr","2"],["act","2"]],
     [["gen","3"],["mat","3"],["ezr","3"],["act","3"]],
@@ -160,7 +327,7 @@ const plan = {
     [["gen","31"],["mrk","2"],["est","7"],["rom","2"]],
     [["gen","32"],["mrk","3"],["est","8"],["rom","3"]]
   ],
- 2: [
+  2: [
     [["gen","33"],["mrk","4"],["est","9-10"],["rom","4"]],
     [["gen","34"],["mrk","5"],["job","1"],["rom","5"]],
     [["gen","35-36"],["mrk","6"],["job","2"],["rom","6"]],
@@ -190,7 +357,7 @@ const plan = {
     [["exo","10"],["luk","13"],["job","28"],["1co","14"]],
     [["exo","11-12:1-21"],["luk","14"],["job","29"],["1co","15"]]
   ],
- 3: [
+  3: [
     [["exo","12:22-51"],["luk","15"],["job","30"],["1co","16"]],
     [["exo","13"],["luk","16"],["job","31"],["2co","1"]],
     [["exo","14"],["luk","17"],["job","32"],["2co","2"]],
@@ -223,7 +390,7 @@ const plan = {
     [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
     [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
   ],
- 4: [
+  4: [
     [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
     [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
     [["lev","6"],["psa","5-6"],["pro","21"],["col","4"]],
@@ -255,7 +422,7 @@ const plan = {
     [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
     [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
   ],
- 5: [
+  5: [
     [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
     [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
     [["num","10"],["psa","46-47"],["sng","8"],["heb","8"]],
@@ -288,7 +455,7 @@ const plan = {
     [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
     [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
   ],
- 6: [
+  6: [
     [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
     [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
     [["deu","7"],["psa","90"],["isa","35"],["rev","5"]],
@@ -320,7 +487,7 @@ const plan = {
     [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
     [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
   ],
- 7: [
+  7: [
     [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
     [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
     [["jos","5"],["psa","132-134"],["isa","65"],["mat","13"]],
@@ -353,7 +520,7 @@ const plan = {
     [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
     [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
   ],
- 8: [
+  8: [
     [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
     [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
     [["jdg","17"],["act","21"],["jer","30-31"],["mrk","16"]],
@@ -386,7 +553,7 @@ const plan = {
     [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
     [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
   ],
- 9: [
+  9: [
     [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
     [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
     [["1sa","27"],["1co","8"],["eze","6"],["joh","7"]],
@@ -418,7 +585,7 @@ const plan = {
     [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
     [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
   ],
- 10: [
+  10: [
     [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
     [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
     [["1ki","6"],["eph","3"],["eze","36"],["psa","25"]],
@@ -451,7 +618,7 @@ const plan = {
     [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
     [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
   ],
- 11: [
+  11: [
     [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
     [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
     [["2ki","16"],["tit","2"],["hos","9"],["psa","69"]],
@@ -483,7 +650,7 @@ const plan = {
     [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
     [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
   ],
- 12: [
+  12: [
     [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
     [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
     [["2ch","2"],["1jn","2"],["nah","1"],["psa","110-111"]],
@@ -517,7 +684,6 @@ const plan = {
     [["2ch","36"],["rev","22"],["mal","4"],["psa","150"]]
   ]
 };
-
 // localStorage 안전 래퍼
 function lsGet(key) {
   try {
@@ -541,114 +707,143 @@ function lsClearMcheyne() {
     keys.forEach(k => localStorage.removeItem(k));
   } catch (e) {}
 }
-
-// chapSpec에서 장 번호 추출
-function extractChap(spec) {
-  const m = String(spec).match(/^(\d+)/);
-  return m ? m[1] : "1";
+// 유튜브 체크 상태 저장
+function initYoutubeToggle() {
+  const toggle = document.getElementById("youtubeToggle");
+  if (!toggle) return;
+  if (lsGet("mcheyne_youtube_enabled") === "0") {
+    toggle.checked = false;
+  }
+  toggle.addEventListener("change", function () {
+    lsSet("mcheyne_youtube_enabled", this.checked ? "1" : "0");
+  });
 }
-
+// 장/절 표기 분석
+function parseChapSpec(spec) {
+  const s = String(spec).trim();
+  const rangeMatch = s.match(/^(\d+)-(\d+)/);
+  if (rangeMatch) {
+    const start = Number(rangeMatch[1]);
+    return [{ chap: start, sec: 1 }];
+  }
+  const verseMatch = s.match(/^(\d+):(\d+)/);
+  if (verseMatch) {
+    return [{
+      chap: Number(verseMatch[1]),
+      sec: Number(verseMatch[2])
+    }];
+  }
+  const chapMatch = s.match(/^(\d+)/);
+  if (chapMatch) {
+    return [{
+      chap: Number(chapMatch[1]),
+      sec: 1
+    }];
+  }
+  return [{ chap: 1, sec: 1 }];
+}
+// 대한성서공회 링크 생성
+function makeBibleUrl(bookCode, chap, sec) {
+  const bskBook = getBskBookCode(bookCode);
+  return "https://www.bskorea.or.kr/bible/korbibReadpage.php"
+    + "?version=GAE"
+    + "&book=" + encodeURIComponent(bskBook)
+    + "&chap=" + encodeURIComponent(chap)
+    + "&sec=" + encodeURIComponent(sec)
+    + "&range=all"
+    + "&keyword1="
+    + "&fontSize=19px"
+    + "&fontWeight=bold";
+}
 // 본문 링크 셀 생성
 function makeCell(bookCode, chapSpec, id) {
-  const a = document.createElement('a');
-  a.className = 'bible';
+  const a = document.createElement("a");
+  a.className = "bible";
   a.dataset.book = bookCode;
   a.dataset.chapSpec = chapSpec;
   a.dataset.id = id;
-
   a.textContent =
     (BOOKS[bookCode] || bookCode) + " " +
     (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
-
-  const chap = extractChap(chapSpec);
-  const url =
-    "https://www.bskorea.or.kr/bible/korbibReadpage.php"
-    + "?version=GAE&book=" + encodeURIComponent(bookCode)
-    + "&chap=" + encodeURIComponent(chap)
-    + "&sec=1&range=all&keyword1=";
-  a.href = url;
-  a.target = "_blank";
-
+  const chapItems = parseChapSpec(chapSpec);
+  const firstItem = chapItems[0];
+  const bibleUrl = makeBibleUrl(bookCode, firstItem.chap, firstItem.sec);
+  a.href = bibleUrl;
+  a.rel = "noopener noreferrer";
   const key = "mcheyne_read_" + id;
   if (lsGet(key) === "1") {
     a.classList.add("read");
   }
-
-  a.addEventListener('click', function () {
-    this.classList.toggle('read');
-    const v = this.classList.contains('read') ? "1" : "0";
+  a.addEventListener("click", function (e) {
+    e.preventDefault();
+    this.classList.toggle("read");
+    const v = this.classList.contains("read") ? "1" : "0";
     lsSet(key, v);
+    const youtubeEnabled =
+      document.getElementById("youtubeToggle")?.checked === true;
+    if (youtubeEnabled) {
+      const youtubeKey = bookCode + "-" + firstItem.chap;
+      const youtubeUrl = YOUTUBE_LINKS[youtubeKey];
+      if (youtubeUrl) {
+        window.open(youtubeUrl, "_blank", "noopener,noreferrer");
+      }
+    }
+    window.location.href = bibleUrl;
   });
-
   return a;
 }
-
 // 렌더링
 (function render() {
-  const root = document.getElementById('plans');
-
-  Object.keys(plan).sort((a,b)=>Number(a)-Number(b)).forEach(mStr => {
+  const root = document.getElementById("plans");
+  Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
     const days = plan[month];
-
-    const wrap = document.createElement('div');
-    wrap.className = 'month-block';
-
-    const h2 = document.createElement('h2');
+    const wrap = document.createElement("div");
+    wrap.className = "month-block";
+    const h2 = document.createElement("h2");
     h2.textContent = month + "월";
     wrap.appendChild(h2);
-
-    const table = document.createElement('table');
-    const thead = document.createElement('thead');
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
     thead.innerHTML =
       "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
     table.appendChild(thead);
-
-    const tbody = document.createElement('tbody');
-
+    const tbody = document.createElement("tbody");
     days.forEach((dayArr, dayIdx) => {
-      const tr = document.createElement('tr');
-
-      const tdDate = document.createElement('td');
+      const tr = document.createElement("tr");
+      const tdDate = document.createElement("td");
       tdDate.className = "date";
-      tdDate.textContent = (dayIdx + 1);
-
-      // 오늘 날짜면 강조
+      tdDate.textContent = dayIdx + 1;
       if (month === TODAY_MONTH && (dayIdx + 1) === TODAY_DATE) {
-        tdDate.classList.add('today');
+        tdDate.classList.add("today");
       }
-
       tr.appendChild(tdDate);
-
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
-        const td = document.createElement('td');
+        const td = document.createElement("td");
         const id = month + "-" + (dayIdx + 1) + "-" + (i + 1);
         td.appendChild(makeCell(bookCode, chapSpec, id));
         tr.appendChild(td);
       }
-
       tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
     wrap.appendChild(table);
     root.appendChild(wrap);
   });
 })();
-
+// 유튜브 체크박스 초기화
+initYoutubeToggle();
 // 읽음 표시 전체 초기화
-document.getElementById('resetRead').addEventListener('click', function () {
-  if (!confirm('모든 읽음 표시를 초기화할까요?')) return;
-
-  document.querySelectorAll('a.bible.read').forEach(a => {
-    a.classList.remove('read');
+document.getElementById("resetRead").addEventListener("click", function () {
+  if (!confirm("모든 읽음 표시를 초기화할까요?")) return;
+  document.querySelectorAll("a.bible.read").forEach(a => {
+    a.classList.remove("read");
   });
-
   lsClearMcheyne();
 });
-// 우클릭(컨텍스트 메뉴) 방지
-document.addEventListener('contextmenu', function (e) {
+// 우클릭 방지
+document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
 });
 </script>
