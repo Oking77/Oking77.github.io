@@ -4,45 +4,37 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>오킹의 맥체인 성경읽기</title>
-
 <style>
   :root {
     --base-font: clamp(14px, 4vw, 18px);
     --title-font: clamp(22px, 6vw, 30px);
   }
-
   body {
     margin: 8px;
     font-family: system-ui, -apple-system, sans-serif;
     font-size: var(--base-font);
   }
-
   h2 {
     margin: 14px 0 6px 0;
     text-align: center;
   }
-
   h3 {
     font-size: var(--title-font);
     color: red;
     margin: 0 0 8px 0;
   }
-
   p { margin: 4px 0 8px 0; }
-
   table {
     border-collapse: collapse;
     width: 100%;
     table-layout: auto;
     margin-bottom: 10px;
   }
-
   th, td {
     border: 1px solid #ccc;
     padding: 4px 2px;
     text-align: center;
   }
-
   th:first-child,
   td.date {
     width: 18%;
@@ -50,19 +42,16 @@
     font-weight: 700;
     white-space: nowrap;
   }
-
   th:not(:first-child),
   td:not(.date) {
     width: 20.5%;
   }
-
   td.date.today {
     background: #ffe9a8;
     color: #c00;
     font-weight: 700;
     border-width: 2px;
   }
-
   a.bible {
     text-decoration: none;
     color: #0044aa;
@@ -70,35 +59,30 @@
     white-space: nowrap;
     font-size: 0.95em;
   }
-
   a.bible.read {
     color: #888;
     text-decoration: line-through;
   }
-
   .cell-inner {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 7px;
     white-space: nowrap;
   }
-
   .yt-link {
     text-decoration: none;
     color: #d00000;
-    font-size: 0.95em;
+    font-size: 1.1em;
     line-height: 1;
     font-weight: 700;
   }
-
   #resetRead {
     display: block;
     margin: 16px auto 24px;
     padding: 6px 14px;
     font-size: 0.9rem;
   }
-
   footer {
     text-align: center;
     font-size: 0.75rem;
@@ -107,16 +91,13 @@
     border-top: 1px solid #ccc;
     padding-top: 10px;
   }
-
   .month-block {
     margin-bottom: 32px;
   }
 </style>
 </head>
-
 <body>
 <h3>*^^* 오킹이 만든 맥체인 성경읽기표 ^^"</h3>
-
 <p>
   · 개역개정(대한성서공회) 링크 연결<br>
   · 성경 본문 클릭 시 성서공회 성경이 새 탭으로 열림<br>
@@ -124,21 +105,16 @@
   · “읽음(회색/취소선)” 상태는 동일 브라우저에 저장됨<br>
   · 여러 장 범위는 첫 장 기준으로 연결됨
 </p>
-
 <div id="plans"></div>
-
 <button id="resetRead">읽음 표시 전체 초기화</button>
-
 <p style="margin:0 0 6px 0; font-size:12px; color:#666; text-align:center;">
   성경 본문 저작권 © 대한성서공회. 이 페이지는 성경 본문을 저장·복제하지 않고,<br>
   대한성서공회 공식 사이트로의 링크만 제공합니다.
 </p>
-
 <footer>
   copyright © 2025 Oking Kwon.<br>
   No rights reserved.
 </footer>
-
 <script>
 // 대한성서공회 코드 -> 한글 약어
 const BOOKS = {
@@ -164,7 +140,6 @@ const BOOKS = {
   "1jn": "요일1", "2jn": "요일2", "3jn": "요일3",
   "jud": "유", "rev": "계"
 };
-
 // 대한성서공회 실제 링크용 book 코드 보정
 const BSK_BOOK_CODES = {
   joh: "jhn",
@@ -172,11 +147,9 @@ const BSK_BOOK_CODES = {
   joe: "jol",
   nah: "nam"
 };
-
 function getBskBookCode(bookCode) {
   return BSK_BOOK_CODES[bookCode] || bookCode;
 }
-
 // 창세기 ~ 에스라 유튜브 ID 목록
 const YT_IDS = {
   gen: `NbGHNcPhlUY JlNThwGgoaU wWcCSauvELk Q3Mb0fPQw90 XN5GAc9l3co hFAj7gmuBeU bKRNGtp7AoA bA8kL2aiHDA YqTtGg-OVEc 4TzkQSrVNFM ge7BdVm0v0U d0Xv7TxKb74 67F96To78k8 tANchqDn7bw 6jq_AxnaXb0 FqbCnzaNW2g NQd-C12KGpk uroh7hUHh_I 5hQHW7c-KE4 ZWlo6w7QjpY z4_GEvbTPQs hKlxklbG61E frFSD3sbOhQ EQtD6xdK22I QWGjSoh8Y6Y ooWAaS3szYI _bXCq5MtyTQ FWOQ_Pd01gs 5vqxh0SHUtg ieEUbQUi5QU bmwJorSOhDY jBEMphf6flc y2Ah0LiwDEk D-pJxRj7KgE FDIgQSWoKss 1woV5UG5w-c 2XisnIyDC0k X9fjOKAmmBQ JRoZYyIbuj0 D6U-EjXB6QE C_7b-KY-Xmw txsikH9fa9g LFtlF1IUWqw ZuipSBYlg3c v7XocqpGA6M GN6ibcpmLk8 RG2QaiupsxM PxL65Wq3tJI 2yZUowOLXto hDGu7oXeT_0`,
@@ -195,27 +168,21 @@ const YT_IDS = {
   "2ch": `L7gDPo16Ohw tkRBWILE1RI JVFaL96N2Lo gE1oP1zGzBs Ze4N8c-hyYw n2Yxq8hwGtk Nx4smfgiJZI kIbvieQwB14 DsVa8XlUO58 R6safMYtglo PeP5NZK-rFc Nnmto5tFQG8 XZc74lazi8A Hp8L2j9S55c m9PEFNInQCk gdVXXWzItSE 28SXduImvDw c6VeneqVuw0 pUpkemkIHr4 vLJyPmBvx10 qL9ooWVMXb8 QJkYG-YMRvY 1p-hVUP-4zI ldKO4SnzTR0 5tnM4W0RC5Y EWi8hUkJF8E x5UKvPpzkN4 9tpd_HNNFlE 5Hu7XcWZ858 HdGEdCYRf70 nWdd8c00aLE _9_kJ7UVLGY SrlDBbyd0Sk jIsKPFiF0A4 9dhFuvNnMnw SfJh7RLV2LU`,
   ezr: `6OSxSCePzEY zQEBMZ1Q7Rc pN3UbMNxZ8Y bAx37m6o7UI zC764B3DGpw NIV7krmliso cHQ4jjiTq5A PJCT4j5ezA0 H76dS6ud8Eg 1x7SJ6D3hGs`
 };
-
 function buildYoutubeLinks(idsByBook) {
   const result = {};
-
   Object.keys(idsByBook).forEach(bookCode => {
     idsByBook[bookCode].trim().split(/\s+/).forEach((id, index) => {
       result[bookCode + "-" + (index + 1)] =
         "https://www.youtube.com/watch?v=" + encodeURIComponent(id);
     });
   });
-
   return result;
 }
-
 const YOUTUBE_LINKS = buildYoutubeLinks(YT_IDS);
-
 // 오늘 날짜
 const TODAY = new Date();
 const TODAY_MONTH = TODAY.getMonth() + 1;
 const TODAY_DATE = TODAY.getDate();
-
 // 맥체인 전체 계획
 const plan = {
   1: [
@@ -251,7 +218,6 @@ const plan = {
     [["gen","31"],["mrk","2"],["est","7"],["rom","2"]],
     [["gen","32"],["mrk","3"],["est","8"],["rom","3"]]
   ],
-
   2: [
     [["gen","33"],["mrk","4"],["est","9-10"],["rom","4"]],
     [["gen","34"],["mrk","5"],["job","1"],["rom","5"]],
@@ -282,7 +248,6 @@ const plan = {
     [["exo","10"],["luk","13"],["job","28"],["1co","14"]],
     [["exo","11-12:1-21"],["luk","14"],["job","29"],["1co","15"]]
   ],
-
   3: [
     [["exo","12:22-51"],["luk","15"],["job","30"],["1co","16"]],
     [["exo","13"],["luk","16"],["job","31"],["2co","1"]],
@@ -316,7 +281,6 @@ const plan = {
     [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
     [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
   ],
-
   4: [
     [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
     [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
@@ -349,7 +313,6 @@ const plan = {
     [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
     [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
   ],
-
   5: [
     [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
     [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
@@ -383,7 +346,6 @@ const plan = {
     [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
     [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
   ],
-
   6: [
     [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
     [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
@@ -416,7 +378,6 @@ const plan = {
     [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
     [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
   ],
-
   7: [
     [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
     [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
@@ -450,7 +411,6 @@ const plan = {
     [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
     [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
   ],
-
   8: [
     [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
     [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
@@ -484,7 +444,6 @@ const plan = {
     [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
     [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
   ],
-
   9: [
     [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
     [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
@@ -517,7 +476,6 @@ const plan = {
     [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
     [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
   ],
-
   10: [
     [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
     [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
@@ -551,7 +509,6 @@ const plan = {
     [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
     [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
   ],
-
   11: [
     [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
     [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
@@ -584,7 +541,6 @@ const plan = {
     [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
     [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
   ],
-
   12: [
     [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
     [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
@@ -619,7 +575,6 @@ const plan = {
     [["2ch","36"],["rev","22"],["mal","4"],["psa","150"]]
   ]
 };
-
 // localStorage 안전 래퍼
 function lsGet(key) {
   try {
@@ -627,31 +582,25 @@ function lsGet(key) {
   } catch (e) {}
   return null;
 }
-
 function lsSet(key, val) {
   try {
     if (window.localStorage) localStorage.setItem(key, val);
   } catch (e) {}
 }
-
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
     const keys = [];
-
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("mcheyne_read_")) keys.push(k);
     }
-
     keys.forEach(k => localStorage.removeItem(k));
   } catch (e) {}
 }
-
 // 장/절 표기 분석
 function parseChapSpec(spec) {
   const s = String(spec).trim();
-
   const rangeMatch = s.match(/^(\d+)-(\d+)/);
   if (rangeMatch) {
     return [{
@@ -659,7 +608,6 @@ function parseChapSpec(spec) {
       sec: 1
     }];
   }
-
   const verseMatch = s.match(/^(\d+):(\d+)/);
   if (verseMatch) {
     return [{
@@ -667,7 +615,6 @@ function parseChapSpec(spec) {
       sec: Number(verseMatch[2])
     }];
   }
-
   const chapMatch = s.match(/^(\d+)/);
   if (chapMatch) {
     return [{
@@ -675,14 +622,11 @@ function parseChapSpec(spec) {
       sec: 1
     }];
   }
-
   return [{ chap: 1, sec: 1 }];
 }
-
 // 대한성서공회 링크 생성
 function makeBibleUrl(bookCode, chap, sec) {
   const bskBook = getBskBookCode(bookCode);
-
   return "https://www.bskorea.or.kr/bible/korbibReadpage.php"
     + "?version=GAE"
     + "&book=" + encodeURIComponent(bskBook)
@@ -693,47 +637,36 @@ function makeBibleUrl(bookCode, chap, sec) {
     + "&fontSize=19px"
     + "&fontWeight=bold";
 }
-
 // 본문 링크 셀 생성
 function makeCell(bookCode, chapSpec, id) {
   const wrap = document.createElement("span");
   wrap.className = "cell-inner";
-
   const a = document.createElement("a");
   a.className = "bible";
   a.dataset.book = bookCode;
   a.dataset.chapSpec = chapSpec;
   a.dataset.id = id;
-
   a.textContent =
     (BOOKS[bookCode] || bookCode) + " " +
     (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
-
   const firstItem = parseChapSpec(chapSpec)[0];
   const bibleUrl = makeBibleUrl(bookCode, firstItem.chap, firstItem.sec);
-
   // 성서공회는 새 탭에서 열림
   a.href = bibleUrl;
   a.target = "_blank";
   a.rel = "noopener noreferrer";
-
   const key = "mcheyne_read_" + id;
-
   if (lsGet(key) === "1") {
     a.classList.add("read");
   }
-
   a.addEventListener("click", function () {
     this.classList.toggle("read");
     lsSet(key, this.classList.contains("read") ? "1" : "0");
   });
-
   wrap.appendChild(a);
-
   // 유튜브는 별도 아이콘으로 새 탭에서 열림
   const youtubeKey = bookCode + "-" + firstItem.chap;
   const youtubeUrl = YOUTUBE_LINKS[youtubeKey];
-
   if (youtubeUrl) {
     const yt = document.createElement("a");
     yt.className = "yt-link";
@@ -742,79 +675,57 @@ function makeCell(bookCode, chapSpec, id) {
     yt.rel = "noopener noreferrer";
     yt.title = "유튜브 읽기 열기";
     yt.textContent = "▶";
-
     wrap.appendChild(yt);
   }
-
   return wrap;
 }
-
 // 렌더링
 (function render() {
   const root = document.getElementById("plans");
-
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
     const days = plan[month];
-
     const wrap = document.createElement("div");
     wrap.className = "month-block";
-
     const h2 = document.createElement("h2");
     h2.textContent = month + "월";
     wrap.appendChild(h2);
-
     const table = document.createElement("table");
-
     const thead = document.createElement("thead");
     thead.innerHTML = "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
     table.appendChild(thead);
-
     const tbody = document.createElement("tbody");
-
     days.forEach((dayArr, dayIdx) => {
       const tr = document.createElement("tr");
-
       const tdDate = document.createElement("td");
       tdDate.className = "date";
       tdDate.textContent = dayIdx + 1;
-
       if (month === TODAY_MONTH && (dayIdx + 1) === TODAY_DATE) {
         tdDate.classList.add("today");
       }
-
       tr.appendChild(tdDate);
-
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
-
         const td = document.createElement("td");
         const id = month + "-" + (dayIdx + 1) + "-" + (i + 1);
-
         td.appendChild(makeCell(bookCode, chapSpec, id));
         tr.appendChild(td);
       }
-
       tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
     wrap.appendChild(table);
     root.appendChild(wrap);
   });
 })();
-
 // 읽음 표시 전체 초기화
 document.getElementById("resetRead").addEventListener("click", function () {
   if (!confirm("모든 읽음 표시를 초기화할까요?")) return;
-
   document.querySelectorAll("a.bible.read").forEach(a => {
     a.classList.remove("read");
   });
-
   lsClearMcheyne();
 });
-
 // 우클릭 방지
 document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
