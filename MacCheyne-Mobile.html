@@ -9,39 +9,34 @@
     --base-font: clamp(14px, 4vw, 18px);
     --title-font: clamp(22px, 6vw, 30px);
   }
-
   body {
     margin: 8px;
     font-family: system-ui, -apple-system, sans-serif;
     font-size: var(--base-font);
   }
-
   h2 {
     margin: 14px 0 6px 0;
     text-align: center;
   }
-
   h3 {
     font-size: var(--title-font);
     color: red;
     margin: 0 0 8px 0;
   }
-
-  p { margin: 4px 0 8px 0; }
-
+  p {
+    margin: 4px 0 8px 0;
+  }
   table {
     border-collapse: collapse;
     width: 100%;
     table-layout: auto;
     margin-bottom: 10px;
   }
-
   th, td {
     border: 1px solid #ccc;
     padding: 4px 2px;
     text-align: center;
   }
-
   th:first-child,
   td.date {
     width: 18%;
@@ -49,19 +44,23 @@
     font-weight: 700;
     white-space: nowrap;
   }
-
   th:not(:first-child),
   td:not(.date) {
     width: 20.5%;
   }
-
   td.date.today {
     background: #ffe9a8;
     color: #c00;
     font-weight: 700;
     border-width: 2px;
   }
-
+  .reading-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
   a.bible {
     text-decoration: none;
     color: #0044aa;
@@ -69,19 +68,25 @@
     white-space: nowrap;
     font-size: 0.95em;
   }
-
   a.bible.read {
     color: #888;
     text-decoration: line-through;
   }
-
+  a.youtube-link {
+    text-decoration: none;
+    color: #ff0000;
+    font-size: 1.28em;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-block;
+    transform: translateY(-1px);
+  }
   #resetRead {
     display: block;
     margin: 16px auto 24px;
     padding: 6px 14px;
     font-size: 0.9rem;
   }
-
   footer {
     text-align: center;
     font-size: 0.75rem;
@@ -90,39 +95,31 @@
     border-top: 1px solid #ccc;
     padding-top: 10px;
   }
-
   .month-block {
     margin-bottom: 32px;
   }
 </style>
 </head>
-
 <body>
 <h3>*^^* 오킹이 만든 맥체인 성경읽기표 ^^"</h3>
-
 <p>
-  · 개역개정(대한성서공회) 링크 연결<br>
-  · 각 본문 클릭 시 새 탭으로 성경 열림 + “읽음(회색/취소선)” 상태가 동일 브라우저에 저장됨<br>
-  · 다른 브라우저 또는 다른 기기에서 열면 읽음 표시는 새로 시작<br>
-  · 여러 장 범위는 여러 탭으로 열림
+  · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
+  · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 새 탭으로 열림<br>
+  · 여러 장 범위는 첫 장 기준으로 연결됨<br>
+  · 읽음 표시는 동일 브라우저에 저장됨<br>
+  · 다른 브라우저 또는 다른 기기에서는 읽음 표시가 새로 시작됨
 </p>
-
 <div id="plans"></div>
-
 <button id="resetRead">읽음 표시 전체 초기화</button>
-
 <p style="margin:0 0 6px 0; font-size:12px; color:#666; text-align:center;">
   성경 본문 저작권 © 대한성서공회. 이 페이지는 성경 본문을 저장·복제하지 않고,<br>
-  대한성서공회 공식 사이트로의 링크만 제공합니다.
+  대한성서공회 공식 사이트와 공동체성경읽기 유튜브 링크만 제공합니다.
 </p>
-
 <footer>
   copyright © 2025 Oking Kwon.<br>
   No rights reserved.
 </footer>
-
 <script>
-// 대한성서공회 코드 -> 한글 약어
 const BOOKS = {
   "gen": "창", "exo": "출", "lev": "레", "num": "민", "deu": "신",
   "jos": "수", "jdg": "삿", "rut": "룻",
@@ -146,25 +143,301 @@ const BOOKS = {
   "1jn": "요일1", "2jn": "요일2", "3jn": "요일3",
   "jud": "유", "rev": "계"
 };
-
-// 대한성서공회 실제 링크용 book 코드 보정
 const BSK_BOOK_CODES = {
   joh: "jhn",
   eze: "ezk",
   joe: "jol",
   nah: "nam"
 };
-
 function getBskBookCode(bookCode) {
   return BSK_BOOK_CODES[bookCode] || bookCode;
 }
-
-// 오늘 날짜
+/* 유튜브 검색 링크 사용 안 함. youtu.be 직접 링크 방식 */
+const YT_BASE = "https://youtu.be/";
+const YOUTUBE_LINKS = {
+  gen: [
+    "NbGHNcPhlUY", "JlNThwGgoaU", "wWcCSauvELk", "Q3Mb0fPQw90", "XN5GAc9l3co",
+    "hFAj7gmuBeU", "bKRNGtp7AoA", "bA8kL2aiHDA", "YqTtGg-OVEc", "4TzkQSrVNFM",
+    "ge7BdVm0v0U", "d0Xv7TxKb74", "67F96To78k8", "tANchqDn7bw", "6jq_AxnaXb0",
+    "FqbCnzaNW2g", "NQd-C12KGpk", "uroh7hUHh_I", "5hQHW7c-KE4", "ZWlo6w7QjpY",
+    "z4_GEvbTPQs", "hKlxklbG61E", "frFSD3sbOhQ", "EQtD6xdK22I", "QWGjSoh8Y6Y",
+    "ooWAaS3szYI", "_bXCq5MtyTQ", "FWOQ_Pd01gs", "5vqxh0SHUtg", "ieEUbQUi5QU",
+    "bmwJorSOhDY", "jBEMphf6flc", "y2Ah0LiwDEk", "D-pJxRj7KgE", "FDIgQSWoKss",
+    "1woV5UG5w-c", "2XisnIyDC0k", "X9fjOKAmmBQ", "JRoZYyIbuj0", "D6U-EjXB6QE",
+    "C_7b-KY-Xmw", "txsikH9fa9g", "LFtlF1IUWqw", "ZuipSBYlg3c", "v7XocqpGA6M",
+    "GN6ibcpmLk8", "RG2QaiupsxM", "PxL65Wq3tJI", "2yZUowOLXto", "hDGu7oXeT_0"
+  ],
+  exo: [
+    "Ji1UqqkcF5k", "1lw1seQoT-k", "BgfXs6grcl0", "aBYo4aQ_tX0", "uk-fGmSXU5s",
+    "2KS515ksaSA", "0xEBlqkC5CQ", "b3g9DG5O15Q", "3v04k45xSyE", "ANf76mjIoME",
+    "5Yv2d__Lrx4", "LiAQmV793qY", "-bTRvxyQK6E", "BGIbwXqT9C8", "WcrrN5nPT_A",
+    "kDJJWpRKc6U", "7Xuv4qVt_FY", "iuchqCzbKRs", "G7WRQQp2CYw", "YYxZIHF9Ios",
+    "tFrLJttkiXQ", "KpC-HCGpYQg", "31ok6rLA1eU", "EytEIKaDTX0", "stwga3kNVmc",
+    "kgztC4NyfDQ", "gnwKP_zszrg", "oCsMZhNkkn8", "W9x_mjUDRGM", "aPnpcYwWM8E",
+    "v9PiXa-05so", "NmuOfGCOxI8", "PnvbfUEsmKs", "j7bKpxz2ewk", "C7eEQJ_AasI",
+    "4_vOKp6YMOE", "vinMrTFhjD4", "9cYefG7rMwI", "HGw6Oq9Ygsw", "y7gL9f8MagE"
+  ],
+  lev: [
+    "03-zwx1Dvv0", "IV8w7H4EkmU", "1zKvs8RwLZA", "2sUiyUtRB70", "ncN6gLlO5Yw",
+    "Rk0Ex7QpeHM", "oWVQWY5M-XA", "_DCeaGP1Qao", "YnePhW95A0I", "iLZVDUDjpPk",
+    "3gNbTtV63qA", "3EqnQa6FLbc", "lwFsM3rgd9I", "nX2DHjvEzR0", "m7abYZAw-y4",
+    "1aCYXJSEkbU", "02dmUjqYMbc", "bS3rS_z9tFM", "7R7_XzKY4SA", "4Pny3OChvU4",
+    "a5NMaV0RsWI", "YWPYTwAI5lY", "QwV4R1xAwpQ", "qu9YN7ToVtQ", "z5zwZx_NVcQ",
+    "JLlKWHLGAlE", "XQaRJ5H60CQ"
+  ],
+  num: [
+    "yPMLXwH0Ns8", "vQYldvHewsw", "uoND_nMFYD0", "5nNs6ip5Mk4", "z2xYdVQaSqs",
+    "_OdO4d1N7pE", "S1gCMwlwBP8", "JEISP5uJz0k", "eTqcfSb7p9o", "3Cs7jUxXNxg",
+    "SrrqwP7VMJM", "5G20JnFEG3w", "Kb1bUDm9us8", "8rk-QrGAj7s", "Rr5mKFJx1aE",
+    "N4XIDQ8028k", "3yovA5bKX8c", "9YTZBZXgzhg", "qruN1OBW9H4", "UUxBz3yDrm8",
+    "hAcjVpjkhmI", "EwXCng1Yqt0", "2Q5DXKxevRY", "Vx8ZG8SSogQ", "0MjIF-OjW6k",
+    "xxinrahFBXg", "6ZUONd8Idto", "XoeubquoBYw", "hv6yjA5epSw", "ucntaI56HME",
+    "bj5oppW5wVY", "Sqxn68z_jfw", "xxNs1VFkIF0", "DFip3UPYgcM", "1rmxkEN0dq0",
+    "cBJPVJ_7Ri0"
+  ],
+  deu: [
+    "1l2WaKwyZcQ", "-vbnWbqlb2E", "5vYAACpfS2I", "U6QFC9AnjZw", "uPttPPD-ZTo",
+    "2pjkk4slEFg", "J1M8OHI7920", "kuKi9ysEwP4", "KcmI1YlLSqo", "7jOHABewffg",
+    "QKwxGXM9GyA", "R_nB-0jKctI", "0-cJzN8MLu0", "9TeGFVmhCA8", "XDcTxXwqgng",
+    "XBEDbooQM8M", "fpSLv5Dl08U", "xyQqsOeTck8", "T55pjGHMgrY", "LqfmcNWQelI",
+    "Y9I-JDK3leQ", "t4ZMpZL6Lgw", "9PeJExnxyB0", "XnHiX76VaX0", "lNGdYCOg1wQ",
+    "YT_oOsVQCvc", "vScjEwhyRD4", "sTiIqsL0pHk", "LRRfQbz4Fgs", "CldpAoiRw8c",
+    "UNmD0UUnwvI", "wqHF7mH2Owc", "o__LH6jT6Xg", "v0AexUrTEmg"
+  ],
+  jos: [
+    "8aRa1qWXHx0", "vBmJ7MXCR1U", "PGkHnCl8Dsc", "c22uX9e3x4U", "i4w-SlAhHvM",
+    "_UdlbrYGPz0", "g_FUGj6wMPw", "GwBhXA85uAA", "V2DdFSCDquY", "kI5By-aWsQI",
+    "tIGcBefonYs", "pjnuusl8a0M", "csN-zxKkryc", "uonNwNv8ys0", "J1I0EjnvDZ8",
+    "i5MjtqpeSsg", "XGdfbj1W9Ls", "djyDDo2Wr4k", "-5Q8QRFKdTw", "NPKZuT3hcFE",
+    "VskD96iDNqs", "TDeqP9xUwW8", "I-uil1Hi-rk", "wi9U3cZrYrI"
+  ],
+  jdg: [
+    "wMDoAIN1bxw", "hPlinmeKBU4", "11WhoHMPemI", "3D1TymCfy-4", "3nWE2Ds_xQI",
+    "BSnrjPA46b8", "r56pZxC8Ehg", "pSOPSDs69z0", "qautBD--tWs", "qPKEiUBDgP0",
+    "PC1qKqh0Kvk", "VIuu1JSHrS0", "W99OLd97dlA", "T-R8Se9C3EU", "A4qsltb0OpA",
+    "JpcjuOGI_RI", "W31Z2naBmHo", "HVjhCzvJqVk", "7bysS_bcRHw", "PPDgWpwYniA",
+    "Bve5all1sjg"
+  ],
+  rut: [
+    "NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"
+  ],
+  "1sa": [
+    "xdK4dqCYIGI", "PC1GaCn9c4k", "QE2W7ZNN3Vs", "zAAUCINKsXY", "F51PeN02lMQ",
+    "Jf0FtWPHdBY", "xiSZxll-ff0", "AOQNzfqGUXs", "Gn9xasmVS58", "sgnOIxreUNk",
+    "fU4MDbQhfbs", "HgZT0wDReXU", "1Fr0njqaAng", "imDBGB1CbfI", "d0v0i7FaIyQ",
+    "HRn0OXVxgJU", "0GVtOnwWXrw", "0Tko6jzG8Dk", "VRuEZS6Iu1E", "ci9b-oBpJbw",
+    "CeKmfp0SKnE", "m7cn8d9yzPg", "nM-GKV7cxUI", "ua3wLXEDZOk", "wkGOCrv-Sxc",
+    "Er73SSQs-wY", "Pld7XRGoqGs", "Sz3YqBzieCw", "CXpynE2a70s", "qFcQ8FznWv4",
+    "Or5cd-95Ufc"
+  ],
+  "2sa": [
+    "ak_FCK1YbbA", "sE2_ouuyWDc", "jfJRdXoVclE", "fTqoiT6JUq8", "hTitDcrkZpQ",
+    "ZUnUIpqrTHQ", "gUKPpaAjlrc", "7n_2q3CVeKg", "VQx0ruGSk5U", "-h-IqjAS6-g",
+    "bhPoCBzc62U", "am5PufRXrxw", "_hTS_bkxN2M", "dBpnIyg1DYo", "SUzj3MqLQ98",
+    "79BvNYU1rKI", "qD4laobb9Xg", "bUy75C2rN6A", "0QCxo4iU1VQ", "ezSW6LZUxBA",
+    "00ssq0d5EK8", "K6KrK1paa18", "q_KesQU6Q4w", "gVZLGfNpm7Y"
+  ],
+  "1ki": [
+    "Lven74B7GnQ", "MvhxMnMrOLc", "Bf5fivf7oUw", "9iUnm1mpW8c", "XNEfhHEJsZk",
+    "18wgsENwm-M", "vOwc2Xua7EI", "M2EOir_y5qE", "zqnfdtVC3jM", "qldVIU_FbRw",
+    "zDzCezbWu48", "6KV_rdXU2Sc", "vX85ZEuDkKQ", "QavApho4CmE", "KFUYqYy4zF8",
+    "_-QsyT3bfGg", "Xhq6ptvsT94", "7GZ2W_C1S8Y", "CdL4N9nDFC8", "1_HtW42FwWY",
+    "EYoicJO0S8w", "9VCkbZcB8WM"
+  ],
+  "2ki": [
+    "cQUTps8Owuk", "Nrk9wnJcK2g", "WwfwgPmBBfc", "pxY8x0_Iw5o", "oImdKwuWJ9U",
+    "jL-JL1b1yjI", "YxDPoECBXJY", "NJ6_ODclQw0", "jfMXdhNqSRg", "OKRhsRkRz3I",
+    "RZXJV_kYkAE", "LYM6WFOQRLA", "pZCknnTG7Rs", "3BC5HkY1AjM", "OVkTshF6VBw",
+    "DxA8ICojMhI", "COZB9Ah7yJs", "Ga7LEa8MrSc", "p2i2pzphTlU", "YdQBGBjU5zs",
+    "jaYki9NcWQM", "0_rt3QNJEmU", "t2nvEBdDGhI", "tswMo3uNqT0", "-Uot2j3FHCY"
+  ],
+  "1ch": [
+    "xwkcZq4h9Fk", "jw45dGmloBc", "vKSt7TJSDT8", "fYwqnjsApa8", "fYimTgIGBLU",
+    "a7Sgiog1uoU", "oS_iiiASDLA", "XV7hYelAPBY", "pX3_5rbDcTk", "V4SKkHZz_uo",
+    "o6aQAcTeb8w", "w5YIbITC4ic", "RRSaNr01r7k", "3hlvHYtVcFo", "Rt862ZKddHo",
+    "xQVbi9cxTkA", "bpq7xH2iIxc", "g7ro9YQgdco", "-mNe8qhY3vs", "Li3bWlbxrmM",
+    "5w8zGBNnz3U", "qZcmLKv454o", "7L5c2lfzK30", "yPGzjeDBM-E", "HTKjiiNd5-8",
+    "8Jfl4UFUNog", "OVzfV57HD64", "lWePeWdBb1Y", "V9SejNMdNdw"
+  ],
+  "2ch": [
+    "L7gDPo16Ohw", "tkRBWILE1RI", "JVFaL96N2Lo", "gE1oP1zGzBs", "Ze4N8c-hyYw",
+    "n2Yxq8hwGtk", "Nx4smfgiJZI", "kIbvieQwB14", "DsVa8XlUO58", "R6safMYtglo",
+    "PeP5NZK-rFc", "Nnmto5tFQG8", "XZc74lazi8A", "Hp8L2j9S55c", "m9PEFNInQCk",
+    "gdVXXWzItSE", "28SXduImvDw", "c6VeneqVuw0", "pUpkemkIHr4", "vLJyPmBvx10",
+    "qL9ooWVMXb8", "QJkYG-YMRvY", "1p-hVUP-4zI", "ldKO4SnzTR0", "5tnM4W0RC5Y",
+    "EWi8hUkJF8E", "x5UKvPpzkN4", "9tpd_HNNFlE", "5Hu7XcWZ858", "HdGEdCYRf70",
+    "nWdd8c00aLE", "_9_kJ7UVLGY", "SrlDBbyd0Sk", "jIsKPFiF0A4", "9dhFuvNnMnw",
+    "SfJh7RLV2LU"
+  ],
+  ezr: [
+    "6OSxSCePzEY", "zQEBMZ1Q7Rc", "pN3UbMNxZ8Y", "bAx37m6o7UI", "zC764B3DGpw",
+    "NIV7krmliso", "cHQ4jjiTq5A", "PJCT4j5ezA0", "H76dS6ud8Eg", "1x7SJ6D3hGs"
+  ],
+  neh: [
+    "CVWwBsZeVPc", "kpBVk42Y_Ko", "-SdeaFf2y80", "ECl43T52Rxs", "9reo7QpRkGQ",
+    "01dv8PeVXWk", "Bi1GwxBTUzg", "9BdCUIkqZL4", "TgHCBY8O7Hw", "GCR0WF-VtVE",
+    "t53qZqYdiZI", "stbEFtIpHKM", "I2NrgmS5DXo"
+  ],
+  est: [
+    "rBrW4ayABtc", "wzd-HSpMAWQ", "PKROFE_TXqo", "EES2rljCK_s", "8vqmKekPvlg",
+    "cr2O8W43248", "oQKpQssZa9k", "3bk0OihV3-M", "zCkyfuljT20", "eBqpSSog4dE"
+  ],
+  job: [
+    "_qSXEsm1aD4", "VNH4KH7QEi4", "zMSy14Usitk", "1nTXXdA63c0", "IGAdP1FfrVY",
+    "YzznhkSe5Q4", "1tdO_UwtDcA", "jPMT03I9dy0", "Wb07Qa9u-G8", "-CBVB1U4Otg",
+    "dbJrkJs4BGk", "NF_USKaDd8I", "eJxhcwXRqRI", "FG0ijpg7qSE", "SLDZP_CKuoE",
+    "T1Id8FgWm0A", "WKxKN6otFuo", "ZN0gKczb69g", "BZ3RSUjzORE", "oWzN18fi-S0",
+    "yVqn7-lvWa4", "YiBG45Ewomk", "7dVyFjdfjMY", "0bljgU_y-LU", "c2q47bt3R-M",
+    "fpUTfAs9ffA", "rHG4ehKIQ9E", "3HCX0evF37M", "gFN4OSKkag8", "_r_qEPDUA14",
+    "-mPVGhdID2I", "bzaDW4Op_-E", "dyS82ACzhYo", "XRRELBM-V4Q", "UvCRgGVAwcM",
+    "OQWLQ1ZGzNw", "s7JMSbDAIc4", "FyhibjkcP5g", "pMBUFljso7M", "HGHhuZvKBmE",
+    "01VsQW1vM3M", "GtbQXEMjg-U"
+  ],
+  psa: [
+    "su56E09_3Gw", "92BalbIC7Pk", "C-l4VDOzXrY", "EcWUIIC8_qs", "ctkV4e_PJUY",
+    "0khyWw5wVng", "JdRC13O0LV4", "FeAZpjl8Js0", "Mnp6R1Xnsds", "FbXN2DptSV0",
+    "3iAcHGNQues", "ccPXnXQxpN4", "AFG2oN44Z2Y", "FZPoavMIHmY", "KNGs6TgBpI0",
+    "BlCPr2jQVIQ", "wD4NhNrlJHw", "VcOIO2zYi0U", "5ZITNJK425c", "qx3ogK8BdHw",
+    "gI5sg8Hp2KY", "FpWLfu3bsZA", "kPdF2CDFMBk", "NYtx6ic_3fI", "EUXjPxaXNck",
+    "5yokjNIU_0U", "39ZPZBVdO-Q", "fB_arYHeZ1Y", "E9kse5LpU78", "268jaMQaUxg",
+    "vNuZFj6xcSU", "TLeyuEx6ODE", "x2wwS-drEU4", "oYBYhKEI73M", "2oXaAg0MyG8",
+    "y66655rD7RA", "9HXO5x6svbo", "339IHBcmqc0", "pxtun0wEsFo", "6mbrVKFcoAc",
+    "aorLWf8I3yA", "Lj4LeClbx4o", "BBzMzSdGo6U", "Vqzcqv1blXY", "5uyZGd-Ew7U",
+    "q1SxIGSb1Gs", "kf5HQ3khoyA", "7YmHJyc6F80", "iyiFJmvakzs", "hPLW5SnufO0",
+    "C6FOtVv14u4", "Un-oN2HWk8Q", "ga8ldcJH4YY", "S0ASe8845wQ", "BOJHi6JpBvw",
+    "idIVY9rJuxY", "UpJODE_I1Pw", "JVpkx3Ci9f8", "LUDYCBxIoAY", "8Mo48tXU4Ow",
+    "TYpA6nEov4E", "JSMHc5c9zFY", "w756OigwP6I", "DiV6WsFFHuo", "uOpmrkdoaBE",
+    "mx7n4HoTdwU", "mEgUwekCHD8", "xS0QcVaGAw8", "iypvxgaH65w", "Kcz8UEynBaQ",
+    "ENFygVIMxxQ", "Zh5tVPyoVoE", "jonMwijnoyI", "dRH0_RTjpBM", "_ns3tRr_jW4",
+    "bbPfMJqTu_Q", "tnvwDxlRINw", "sozUFTCDfAs", "aONXO4Ng_OY", "RQ3ZoybDAVM",
+    "0RdYsYMS2TY", "qSPCr8rPT9U", "bVbWeLwgKhk", "eMSniKjlOqw", "AduTk4plJec",
+    "NGhMnA_XZOo", "EfWYw21PoKc", "njn6HQcWGLw", "219ixphnYrs", "vJmqCi4a2vg",
+    "_H22gKpIoO8", "a31UP9VIaXk", "vv61vUU9d-8", "FmbmwbXVlag", "hMzIXH9L3rU",
+    "pgAAs8gwD-w", "yR8CDF-Z49c", "1BpAJ1Orj_w", "lESpOLKb5cQ", "jQYwikdIfj8",
+    "HgrzrwiT7hs", "7NpmvyOyqY0", "rXDPKGeS4pU", "j6momx45jFQ", "ro-IAZJkh9I",
+    "PNGp0Y5i_us", "KxQhNJ_IqN8", "YALnZYnJVYQ", "Krda5srmZrE", "FjD7wgiHyww",
+    "XR-mH3UJfik", "3s_tQhwjDkU", "qvvkcGsvUDM", "4CxMj8mo9BA", "eWc6bOG5Y6Y",
+    "kztb4sV2Lc8", "BZyQH8W8IDQ", "RDbCtvHs078", "pznJPwP3VBI", "OdQyxyucP7M",
+    "CpxAUQk-yhU", "7UeyStLsaNE", "Tu7yFhXHb60", "C-afi1jNVmg", "o3MNhMJiJkM",
+    "mi8Ev8v7UFY", "iqBneGgE5rI", "6v4UFFMNX8w", "MQYeW6nvLQQ", "FNhu8b8H4-Q",
+    "1h0fln6wYPc", "Ph162KOlC4U", "RHn0B4lLkms", "RAERqa7vNv0", "DVwIFT1n2RI",
+    "t8Fo5Wtwk00", "mfNf3_V_vN4", "pFdNkQy-HG0", "JTKLw2BB4Ls", "w2ozFvGrKck",
+    "DVZkXdF82mI", "j-OdUBlagqM", "sUYNTV5s4UQ", "KjuKEUv1D2E", "HQlzqviJsq8",
+    "M0ZN2a_RLzo", "VlQfEXGKtDk", "1KPXpIbAz8E", "yb_KGuIajMk", "KXl-Ou0WuQw"
+  ],
+  pro: [
+    "KBKrwBDYkwo", "GBzS88DZylA", "kgp0--ncuCk", "CLPdz0RMBG4", "gzjhTvI24Z4",
+    "A9eIIRkU-4E", "N2MYyTibhgs", "byd-NzFScz8", "agyibAkCa_U", "PbvmAVLnSYY",
+    "6cENeH9zEWE", "eXh-p16LvAk", "vE00zVxdgiw", "aJenocYRW8E", "IPFovkFGvlY",
+    "esNdEy9He_I", "OEyqdoVWhaw", "E-rbKo16kiU", "5rA21s6Ogag", "JV6AZgN4a8E",
+    "RvnHb36yNPU", "Hcx3iPt7SWo", "pnyMgDTydsc", "rWoiOLEs808", "JEQRIIJ4JtU",
+    "dP9FqJlFBXo", "L4exYhD89DA", "JWnkzDHyLos", "K5iTdkkII58", "XsrcofG6tiU",
+    "Rg8vuwFyEj4"
+  ],
+  ecc: [
+    "qogNnspMegw", "u-mQRy_wi6Y", "db2UjyR1Cz4", "2i5oQyEZECk", "AIensdChkcU",
+    "TDHqBJeCpcM", "tosjd7kniXY", "11-enAC_jfg", "TgqV26Q7pxY", "4FKYNCufmqo",
+    "J9W_zTNCiSI", "DaojoBrJ8Zg"
+  ],
+  sng: [
+    "IhWTbAngLFw", "t5304ZaSfhA", "7CU4qRfGwzs", "e0_IGeh537E",
+    "AgHHHFx6JF8", "heLnEe4j7ww", "mViZMCW-kYM", "kmYS5jC-GnQ"
+  ],
+  isa: [
+    "jKWCOIKnj4k", "vUC_5hDzihE", "RQQVY8nNNd8", "mOm4Xoi558M", "Yh5itxpY7GI",
+    "tEmkrXtwZfI", "UbXdgX64wmU", "Ly0sYJXsp3k", "A5Em2R-wFNc", "3KHQYtuS4d4",
+    "fMnnW6OOmEo", "-9M9Sf3C6oU", "ZkgiDsF_Xhc", "E9WAbwGX6So", "BPZa2fOgbTM",
+    "kNsn30C67u4", "jHL5Nfh2xNk", "5hsuZzdrn9Q", "zdroee1N-_Q", "E9DojZ8_ihg",
+    "-fhc8I4Nv64", "-5S-150Xnko", "lWtABLIieC8", "YeM_sv2C_tc", "twgzC2MNja4",
+    "AkRWUc2CAQk", "1HkI4oP5B6Q", "yNshIrPS0tk", "JqvuZ2Ii9hs", "B1DG-P9uMPs",
+    "Y_Jrqh56U84", "2j9CkNfPkcc", "kq3AlKQefBM", "DIn7nS4LbVM", "Wz9T_lxNyWg",
+    "tt9DNXllkOc", "sSt3wthHDlU", "TTNvOthhf6o", "lTFR0QgNDHk", "dxLsKC4Cc58",
+    "ZbV1x-qFCl4", "BmkFPoRgbto", "mgcMubaiVQo", "Biakob-RzC0", "Yb6L-9eyeUA",
+    "IiYkOjb61_0", "DhKWsAb_enE", "y3CEjkK-WV4", "0Uq8arbOMIA", "XTE8LY38hxM",
+    "OAtrdsoq_Zc", "ZvzaOCz_Omw", "vCOmUJn4VZs", "Jhwy6UEs2xA", "d02t3Hse_BM",
+    "pNmEbqN5Xyk", "6H44xDl0m_g", "YgeRLoSsCN4", "qeOrWyJH3JA", "yTHKSk_WpYM",
+    "TwtGk5r0kHY", "nXZfPiFJikE", "n4bPzIFNifY", "NfwxYjb6M7Y", "1oXAVvX4h_M",
+    "pXVIvg2cVJc"
+  ],
+  jer: [
+    "1O6yrFWhgGQ", "My_zRWHFOIw", "WJp162oq7s8", "xOC9eZ231WI", "sMaEf6Ht2LU",
+    "3D_wkaCZ3wM", "d2mlKEemma4", "H2B-QJwftXU", "6xOSGbW-ZqM", "JA2OPFL5SN8",
+    "0HKinHgE1jo", "45HGui0TmnE", "csgPW7mhkS0", "PWoZDanuqus", "3w84wZECr8I",
+    "3gK0793df_M", "PZ-Pkg62ImE", "URj6TZMkQz4", "mvmu_7IPdm4", "w0IxzrJnKmc",
+    "F4dtnXi9Tzs", "j6YedDJ5Pr4", "XG0KNRR98q0", "EL8RxEsq6YM", "n5nn4ACrj4Q",
+    "PcuVCIW0zF8", "M1KSqUz25GU", "TTkK1381w4k", "y5uSTtv8Mpc", "oEB3ntFG9zs",
+    "Ha21qJgKL3Y", "QnwCBZBpWOo", "xxie0G01ySw", "gL-GLpvOG_U", "qK-6W00m3AU",
+    "YMTxJg8vH9I", "Rvhcy5CPmCQ", "roz_PsJ_bPE", "Zv_Y5VAjIgI", "WEMoVclhbqU",
+    "6O30u9NPVNM", "ux--R2fYi48", "esOspW-nO0Y", "qIi90pqKIAs", "3_e7uB-QBz4",
+    "kTBhso2FkjI", "AqNiGX6S35E", "n46EPg9lVJ8", "LBuIlLH6HGA", "fTsWgENEqT8",
+    "9-2LKbP3WcQ", "wDejfvfK9wg"
+  ],
+  lam: [
+    "Yi395KsKj2M", "B1cdAySDA5U", "fazMJm4WeGw", "xOC9eZ231WI", "zFjZCD_9iW8"
+  ],
+  eze: [
+    "UHUMIZ6hZ5M", "WU9U2g5aJVc", "O02tP7MQEbA", "DD1bPp-4WII", "LlSzVsI81uA",
+    "rXU4dasn9Hg", "CQxXXc1vNhQ", "_6pNv1io9Kk", "PassT5KYufk", "2YWVPJg3yvQ",
+    "C6HzR5NkM3Q", "2M6obbsoOTE", "dFKbm1KBr8o", "XCq1eNE7HY4", "tWX9EhWzwlM",
+    "-_DmaEIt9Ts", "vPx-d4OhJY4", "TznEDBWYtPQ", "08ciuxm7Rq4", "WjfBFiYaRkU",
+    "iw3nWm1oUJc", "xB1O7RsKlXM", "5vnlSxVrZwg", "2OxmQqT5xsE", "qZeLrLRO-6w",
+    "UPcFMUWmFIQ", "xM3VszysL9Q", "X-X3crlSlOM", "n7Fp5S0gSnc", "A6CoFeQunlU",
+    "bpKZq7A6KZc", "Kgpry5IIJag", "wqO0_HpmugY", "P9kNYq0su1U", "EaYZAExoDAY",
+    "-Vh6o4UKKiw", "DcPKBb074TU", "Gz9S_U1YmR0", "Xdd63rXuWQY", "3C_2sfzBpcM",
+    "fXK6HzVSK74", "k99K-1A_ths", "yst3jBgVvfk", "Wtcnb1C2MjI", "njAh78ipzcE",
+    "WVoD8qdoqMw", "8NgTSYLOz1c", "rJiIyF46pNE"
+  ],
+  dan: [
+    "OY1zClBtTU4", "mC8r7LXFidU", "19_GBx_sleg", "0hIMIJhcCQQ", "wM6O5wDKBjA",
+    "HHfwypUOvFk", "HydaUq2YTSE", "CqN5bPcRXO8", "h6KU4bWx7A0", "2PFsx38vVOo",
+    "8v6np1pKlDA", "nRBNHZGLv9M"
+  ],
+  hos: [
+    "z_HEz12noYs", "VV4JxE9zmVg", "M58HxxrKk1E", "C4kQfvtjfgk", "CbSuphGlDWE",
+    "WuZnLWi4t-s", "X5pmAmkzQkc", "zAIBbtX_z7g", "txVSbifEhhs", "EsyH7Mt5PEQ",
+    "g_ouljvyDsM", "frDk_j9m7lE", "lWAaBQw5I1A", "WrPbjs5PZyQ"
+  ],
+  joe: [
+    "DQErwtUd5Jk", "bSwk9-JnNgI", "3QT114StZi0"
+  ],
+  amo: [
+    "2d-wW5HLFSg", "JEO9GEXtn38", "G-W4UXh6P84", "K7drJUJABes", "61qYTqX9fWk",
+    "Xz5VSRGUKoc", "oqlnYrfxMq0", "OhN-oXNDvYU", "k-FY8M_5ii8"
+  ],
+  oba: [
+    "QRljlWVgTWk"
+  ],
+  jon: [
+    "XQ3QEOmze5g", "lSURC-wLKN4", "VQ06NfhE-_4", "sXgkP3aWASc"
+  ],
+  mic: [
+    "Hzp9YadOi4Y", "la-GiPY9nmY", "oGX0o82_On4", "T9d95vMAyyI",
+    "nQkn7dD1JxM", "PXB5x7K2rpE", "tNFjwqB2pqw"
+  ],
+  nah: [
+    "lJN-cYwODWo", "N4K4IRoHljg", "KsDqoevwaQY"
+  ],
+  hab: [
+    "DNW6LvkGclA", "xPn9Bn85zmY", "U10ChFy6exI"
+  ],
+  zep: [
+    "MBM9xO3YG0A", "WpYHttwmhRk", "4m0bxFA0fyI"
+  ],
+  hag: [
+    "RqIQupTeQgw", "tB3GwC-lmq0"
+  ],
+  zec: [
+    "3fOGFMPIFZc", "RVrPXGTA6Y4", "odQ4odimchg", "cHqV7DyyKSo", "VrgsvPVm3qE",
+    "7YC_KhUXBJY", "Gaizq8zHqdc", "Jhb-DA8fH4c", "k9J1xbpn8Y0", "X0RUd955dYA",
+    "h2fZCsvpNMQ", "bljtiMdI6TE", "4waWlKjvNN0", "eemUQvyJ82g"
+  ],
+  mal: [
+    "dXEee9Z3BN8", "7-n95yaui5w", "bRXYXKzzxRQ", "oMOQEkYVLeo"
+  ]
+};
 const TODAY = new Date();
 const TODAY_MONTH = TODAY.getMonth() + 1;
 const TODAY_DATE = TODAY.getDate();
-
-// 맥체인 전체 계획
 const plan = {
   1: [
     [["gen","1"],["mat","1"],["ezr","1"],["act","1"]],
@@ -199,7 +472,6 @@ const plan = {
     [["gen","31"],["mrk","2"],["est","7"],["rom","2"]],
     [["gen","32"],["mrk","3"],["est","8"],["rom","3"]]
   ],
-
   2: [
     [["gen","33"],["mrk","4"],["est","9-10"],["rom","4"]],
     [["gen","34"],["mrk","5"],["job","1"],["rom","5"]],
@@ -230,7 +502,6 @@ const plan = {
     [["exo","10"],["luk","13"],["job","28"],["1co","14"]],
     [["exo","11-12:1-21"],["luk","14"],["job","29"],["1co","15"]]
   ],
-
   3: [
     [["exo","12:22-51"],["luk","15"],["job","30"],["1co","16"]],
     [["exo","13"],["luk","16"],["job","31"],["2co","1"]],
@@ -264,7 +535,6 @@ const plan = {
     [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
     [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
   ],
-
   4: [
     [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
     [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
@@ -297,7 +567,6 @@ const plan = {
     [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
     [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
   ],
-
   5: [
     [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
     [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
@@ -331,7 +600,6 @@ const plan = {
     [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
     [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
   ],
-
   6: [
     [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
     [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
@@ -364,7 +632,6 @@ const plan = {
     [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
     [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
   ],
-
   7: [
     [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
     [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
@@ -398,7 +665,6 @@ const plan = {
     [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
     [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
   ],
-
   8: [
     [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
     [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
@@ -432,7 +698,6 @@ const plan = {
     [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
     [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
   ],
-
   9: [
     [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
     [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
@@ -465,7 +730,6 @@ const plan = {
     [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
     [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
   ],
-
   10: [
     [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
     [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
@@ -499,7 +763,6 @@ const plan = {
     [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
     [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
   ],
-
   11: [
     [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
     [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
@@ -532,7 +795,6 @@ const plan = {
     [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
     [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
   ],
-
   12: [
     [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
     [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
@@ -567,76 +829,55 @@ const plan = {
     [["2ch","36"],["rev","22"],["mal","4"],["psa","150"]]
   ]
 };
-
-// localStorage 안전 래퍼
 function lsGet(key) {
   try {
     if (window.localStorage) return localStorage.getItem(key);
   } catch (e) {}
   return null;
 }
-
 function lsSet(key, val) {
   try {
     if (window.localStorage) localStorage.setItem(key, val);
   } catch (e) {}
 }
-
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
     const keys = [];
-
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("mcheyne_read_")) keys.push(k);
     }
-
     keys.forEach(k => localStorage.removeItem(k));
   } catch (e) {}
 }
-
-// 장/절 표기 분석
-function parseChapSpec(spec) {
+function parseFirstChapSpec(spec) {
   const s = String(spec).trim();
-
-  const rangeMatch = s.match(/^(\d+)-(\d+)/);
-  if (rangeMatch) {
-    const start = Number(rangeMatch[1]);
-    const end = Number(rangeMatch[2]);
-    const result = [];
-
-    for (let chap = start; chap <= end; chap++) {
-      result.push({ chap, sec: 1 });
-    }
-
-    return result;
-  }
-
   const verseMatch = s.match(/^(\d+):(\d+)/);
   if (verseMatch) {
-    return [{
+    return {
       chap: Number(verseMatch[1]),
       sec: Number(verseMatch[2])
-    }];
+    };
   }
-
+  const rangeMatch = s.match(/^(\d+)-(\d+)/);
+  if (rangeMatch) {
+    return {
+      chap: Number(rangeMatch[1]),
+      sec: 1
+    };
+  }
   const chapMatch = s.match(/^(\d+)/);
   if (chapMatch) {
-    return [{
+    return {
       chap: Number(chapMatch[1]),
       sec: 1
-    }];
+    };
   }
-
-  return [{ chap: 1, sec: 1 }];
+  return { chap: 1, sec: 1 };
 }
-
-// 대한성서공회 링크 생성
-// 성경 페이지 열릴 때 폰트 크기 19, 볼드 옵션 추가
 function makeBibleUrl(bookCode, chap, sec) {
   const bskBook = getBskBookCode(bookCode);
-
   return "https://www.bskorea.or.kr/bible/korbibReadpage.php"
     + "?version=GAE"
     + "&book=" + encodeURIComponent(bskBook)
@@ -647,120 +888,103 @@ function makeBibleUrl(bookCode, chap, sec) {
     + "&fontSize=19px"
     + "&fontWeight=bold";
 }
-
-// 본문 링크 셀 생성
+function makeYoutubeUrl(bookCode, chap) {
+  const arr = YOUTUBE_LINKS[bookCode];
+  if (!arr) return null;
+  const videoId = arr[chap - 1];
+  if (!videoId) return null;
+  return YT_BASE + String(videoId).trim();
+}
 function makeCell(bookCode, chapSpec, id) {
-  const a = document.createElement("a");
-
-  a.className = "bible";
-  a.dataset.book = bookCode;
-  a.dataset.chapSpec = chapSpec;
-  a.dataset.id = id;
-
-  a.textContent =
+  const wrap = document.createElement("span");
+  wrap.className = "reading-cell";
+  const firstItem = parseFirstChapSpec(chapSpec);
+  const bibleLink = document.createElement("a");
+  bibleLink.className = "bible";
+  bibleLink.dataset.book = bookCode;
+  bibleLink.dataset.chapSpec = chapSpec;
+  bibleLink.dataset.id = id;
+  bibleLink.textContent =
     (BOOKS[bookCode] || bookCode) + " " +
     (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
-
-  const chapItems = parseChapSpec(chapSpec);
-  const urls = chapItems.map(item => makeBibleUrl(bookCode, item.chap, item.sec));
-
-  a.href = urls[0];
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-
-  if (urls.length > 1) {
-    a.title = "여러 장 범위입니다. 클릭 시 여러 장이 새 탭으로 열립니다.";
-  }
-
+  bibleLink.href = makeBibleUrl(bookCode, firstItem.chap, firstItem.sec);
+  bibleLink.target = "_blank";
+  bibleLink.rel = "noopener noreferrer";
   const key = "mcheyne_read_" + id;
-
   if (lsGet(key) === "1") {
-    a.classList.add("read");
+    bibleLink.classList.add("read");
   }
-
-  a.addEventListener("click", function () {
+  bibleLink.addEventListener("click", function () {
     this.classList.toggle("read");
-
     const v = this.classList.contains("read") ? "1" : "0";
     lsSet(key, v);
-
-    if (urls.length > 1) {
-      for (let i = 1; i < urls.length; i++) {
-        window.open(urls[i], "_blank", "noopener,noreferrer");
-      }
-    }
   });
-
-  return a;
+  wrap.appendChild(bibleLink);
+  const youtubeUrl = makeYoutubeUrl(bookCode, firstItem.chap);
+  if (youtubeUrl) {
+    const ytLink = document.createElement("a");
+    ytLink.className = "youtube-link";
+    ytLink.href = youtubeUrl;
+    ytLink.target = "_blank";
+    ytLink.rel = "noopener noreferrer";
+    ytLink.textContent = "▶";
+    ytLink.title = "공동체성경읽기 유튜브로 듣기";
+    ytLink.addEventListener("click", function () {
+      setTimeout(function () {
+        try {
+          window.focus();
+        } catch (e) {}
+      }, 300);
+    });
+    wrap.appendChild(ytLink);
+  }
+  return wrap;
 }
-
-// 렌더링
 (function render() {
   const root = document.getElementById("plans");
-
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
     const days = plan[month];
-
     const wrap = document.createElement("div");
     wrap.className = "month-block";
-
     const h2 = document.createElement("h2");
     h2.textContent = month + "월";
     wrap.appendChild(h2);
-
     const table = document.createElement("table");
-
     const thead = document.createElement("thead");
     thead.innerHTML = "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
     table.appendChild(thead);
-
     const tbody = document.createElement("tbody");
-
     days.forEach((dayArr, dayIdx) => {
       const tr = document.createElement("tr");
-
       const tdDate = document.createElement("td");
       tdDate.className = "date";
       tdDate.textContent = dayIdx + 1;
-
       if (month === TODAY_MONTH && (dayIdx + 1) === TODAY_DATE) {
         tdDate.classList.add("today");
       }
-
       tr.appendChild(tdDate);
-
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
-
         const td = document.createElement("td");
         const id = month + "-" + (dayIdx + 1) + "-" + (i + 1);
-
         td.appendChild(makeCell(bookCode, chapSpec, id));
         tr.appendChild(td);
       }
-
       tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
     wrap.appendChild(table);
     root.appendChild(wrap);
   });
 })();
-
-// 읽음 표시 전체 초기화
 document.getElementById("resetRead").addEventListener("click", function () {
   if (!confirm("모든 읽음 표시를 초기화할까요?")) return;
-
   document.querySelectorAll("a.bible.read").forEach(a => {
     a.classList.remove("read");
   });
-
   lsClearMcheyne();
 });
-
-// 우클릭 방지
 document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
 });
