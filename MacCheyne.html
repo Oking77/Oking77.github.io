@@ -1,50 +1,46 @@
+[1/4]
+아래부터 그대로 복사해서 시작.
+다음 메시지에서 [2/4] YOUTUBE_LINKS 나머지 이어서 줄게.
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>오킹의 맥체인 성경읽기</title>
-
 <style>
   :root {
     --base-font: clamp(14px, 4vw, 18px);
     --title-font: clamp(22px, 6vw, 30px);
   }
-
   body {
     margin: 8px;
     font-family: system-ui, -apple-system, sans-serif;
     font-size: var(--base-font);
   }
-
   h2 {
     margin: 14px 0 6px 0;
     text-align: center;
   }
-
   h3 {
     font-size: var(--title-font);
     color: red;
     margin: 0 0 8px 0;
   }
-
   p {
     margin: 4px 0 8px 0;
   }
-
   table {
     border-collapse: collapse;
     width: 100%;
     table-layout: auto;
     margin-bottom: 10px;
   }
-
   th, td {
     border: 1px solid #ccc;
     padding: 4px 2px;
     text-align: center;
   }
-
   th:first-child,
   td.date {
     width: 18%;
@@ -52,19 +48,16 @@
     font-weight: 700;
     white-space: nowrap;
   }
-
   th:not(:first-child),
   td:not(.date) {
     width: 20.5%;
   }
-
   td.date.today {
     background: #ffe9a8;
     color: #c00;
     font-weight: 700;
     border-width: 2px;
   }
-
   a.date-link {
     color: inherit;
     text-decoration: none;
@@ -72,7 +65,13 @@
     display: inline-block;
     width: 100%;
   }
-
+  .reading-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
   a.bible {
     text-decoration: none;
     color: #0044aa;
@@ -80,19 +79,25 @@
     white-space: nowrap;
     font-size: 0.95em;
   }
-
   a.bible.read {
     color: #888;
     text-decoration: line-through;
   }
-
+  a.youtube-link {
+    text-decoration: none;
+    color: #ff0000;
+    font-size: 1.28em;
+    font-weight: 800;
+    line-height: 1;
+    display: inline-block;
+    transform: translateY(-1px);
+  }
   #resetRead {
     display: block;
     margin: 16px auto 24px;
     padding: 6px 14px;
     font-size: 0.9rem;
   }
-
   footer {
     text-align: center;
     font-size: 0.75rem;
@@ -101,41 +106,32 @@
     border-top: 1px solid #ccc;
     padding-top: 10px;
   }
-
   .month-block {
     margin-bottom: 32px;
   }
 </style>
 </head>
-
 <body>
 <h3>*^^* Oking's 맥체인 성경읽기표 ^^"</h3>
-
 <p>
-  · 날짜 숫자 클릭 시 극동방송 맥체인 날짜별 성경읽기 영상이 새 탭으로 열림<br>
+  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭으로 열림<br>
   · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
   · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 새 탭으로 열림<br>
   · 여러 장 범위는 첫 장 기준으로 연결됨<br>
-  · 각 본문 클릭 시 새 탭으로 성경 열림 + “읽음(회색/취소선)” 상태가 동일 브라우저에 저장됨<br>
-  · 다른 브라우저 또는 다른 기기에서 열면 읽음 표시는 새로 시작
+  · 읽음 표시는 동일 브라우저에 저장됨<br>
+  · 다른 브라우저 또는 다른 기기에서는 읽음 표시가 새로 시작됨
 </p>
-
 <div id="plans"></div>
-
 <button id="resetRead">읽음 표시 전체 초기화</button>
-
 <p style="margin:0 0 6px 0; font-size:12px; color:#666; text-align:center;">
   성경 본문 저작권 © 대한성서공회. 이 페이지는 성경 본문을 저장·복제하지 않고,<br>
-  대한성서공회 공식 사이트와 유튜브 영상으로의 링크만 제공합니다.
+  대한성서공회 공식 사이트, 공동체성경읽기 유튜브, 극동방송 맥체인 유튜브 링크만 제공합니다.
 </p>
-
 <footer>
   copyright © 2025 Oking Kwon.<br>
   No rights reserved.
 </footer>
-
 <script>
-// 대한성서공회 코드 -> 한글 약어
 const BOOKS = {
   "gen": "창", "exo": "출", "lev": "레", "num": "민", "deu": "신",
   "jos": "수", "jdg": "삿", "rut": "룻",
@@ -159,863 +155,833 @@ const BOOKS = {
   "1jn": "요일", "2jn": "요이", "3jn": "요삼",
   "jud": "유", "rev": "계"
 };
-
-// 대한성서공회 실제 링크용 book 코드 보정
 const BSK_BOOK_CODES = {
   joh: "jhn",
   eze: "ezk",
   joe: "jol",
   nah: "nam"
 };
-
 function getBskBookCode(bookCode) {
   return BSK_BOOK_CODES[bookCode] || bookCode;
 }
-
-// 오늘 날짜
+const YT_BASE = "https://youtu.be/";
+const FEBC_MONTH_IDS = {
+  1: "OPvoVVWBEF4 NImmoygAVpA 6yxMBJyXcj4 sfyI-EbsEpw OQARqRyBK5M NxRYOlWI-y0 ty0ZtLTqbLw iv5XEyfrBuo HjqtW_3tmRg H4QwYo_6JE8 zwBQGllN-DQ yK1pPwosWoM G8S1tV3td2c vMNdDxfpqIo BQRP2dVLO8U -FznhTAToKc Y2J8bAnRRsQ NGdnPBsrUbs 6WdKAWK48WU nf748kTqVxc tX9g2YmVJS0 c8Tn-BGWSrQ BYhLFDOBDdk vPX0sgk0jBs ajpaT7BidKY LkKl1kFFpvY n61yDMRSv0U GEJt3-xPhJA na7NdhafJeQ X10ah02GXM8 LYVc6BDCRkw",
+  2: "luwZEJjkKvQ l_EAgcDxy3U MG_kRkaeSgs icDvUAa7jyk FYREiRS6YnM ZiLE8xA_9g0 rNtvOtdIpWo sKm2VTlCg50 A8twMyB5Mrc N_ge71qBEY0 GVTZ8N-PdP4 Tn825uqKQwo kuGCgnnlgeQ 3gOsLgoYEZQ PmiiCvN3uyM fzjqFhC9uvo gT4rQROWzgw 4lJ-XEQu0Ws v5gAFS_6OlY RHQvdcKM-yQ 5UtgcK_9TYE hA0b_T2yeYY JEDMG1cZJFs rreQhBht8EU 7myvG4sYqP4 Sm_d1-5v7qY 4skyTkPBzhs orCkLxuEPRI",
+  3: "KPbNwOSfa8g OCndPDYcYd8 WrHIuFcuO_U 6I1LN63RIlA Ke-S4j5Mse8 HRfGAK7am5U MRdoyffQzsk 9FKSo7viu6Y _v9sNsl3IXs 9R4V0FVWvJ4 ppp4t8trk8s 26grVopRVsY vCld3-MfRVQ L0qgae-CW48 qrm-OV4NqAA oL8lSQHJWmo DT8CmhH72fQ aRLaaANRw2w 965EJk1lJVQ RRu6Ctw-ZZ4 WO4JRdg_2XA Hgnhnoh_-Pg MrJI6PkS1GI b3S7AxebJ54 lt6qEpnoz1o zXaP6Vizqeg bnH39G2JL3M Z3fuY9EJt6A mvXarujOjYo Fe04zvkSgZk qBXuxIimXhU",
+  4: "rQSJia0ux50 upC3M-EuyMA Mvpj6E8ZDtw pLtBRcaoRIo TzE2uICjayE EvjmiUfX1W4 wJ2LkGEzW94 6jjX7TY1tEI 3oXIY9qmvfk PFOyGcQXcXs uz7su4OTl1s czkZ0Pifl9Y Sqbq6Tnx4IY 46Uv4DpX5F4 1o5Rlr0H7gc eRkmT72YD1I fHs2ajQm1Hc _R6xwIwUwuU anvxpQAWYSk Vruuo4z3LYU OQ-zTKco2mM pNIigGG6IqM 3N2O5hUGAE4 AMsH-2mqbMk 3FJitLtEq0g XlF1e_r0SqY IAW_PeFu8Rc QWIhgkJpzqQ tLmdoqibYAQ pVrs1HLDva0",
+  5: "P6d4ZZF8lnE Zex5dyvLdEI msc73yEJqA4 vMlVljYXCw0 9IT3RnO6mrA cfSu3SjcswA RDl6Ilvr3fw kxm5SusrY00 WU9TUGH7sNw QNl5FJKgQRU yPccrIfnGK8 glxhyFVyM5w YjUwJVtjWnM qlwSm_D2aIw fLUzmOiAvHY -LEyJlgBC8I oVXM5tQh9XM Y8XF9tcmxxE uhNr07kGwJ4 CxBoHtpKapM diuROGyjli4 r9ufQVsKpHs DCzX1i9m3lg hLyathoS0Ys f5-7tl5Fm2w 4kwXTV7TpRU 0ocIWQ_zHxo z4nH3Hpwh6s AzOV5PNrQZ0 0BZt-RZznwo umMThmeBNIc",
+  6: "5HQRrRcJ9dU BSsdH4SRfoY H1tU1jGppv0 ByjBYvDWKKs Sjf2eI5bRsI z6nBK-WnUN8 Za9wV3sGqo0 wsFSqjhGNDw Z86UR_ulzs0 laygkeD4jvM ztgoUn9CZN0 NZhvWKtScuo PoL1xEgkCsg iiozCVBPKxA BZQjaupXoQY k-rYyz6v--E Ai7Cxx9WNSc rGxHcRCW97Y _su6MWxPlZY BXC0-o_w7No y6StZry5HLU aifq6DW5eZQ 7wGAQgXP_CY lAryHT8bLy8 giuyqCYSBqg 0YsUvVK1zRg LY1TCeioc9k _sODbr4aq4Y t9eYfXwky6M hK2JDX0i1ws",
+  7: "1QeStymkGqQ OCChkL7fyvA T82f5Tg5zCY 3h7HMtdBnNw fmGOjlJoW2w Qxj_xoSk07c j6Wpb00q0s0 hJne-3owI_4 pVbZQi-78mI oZVTPk1aNRI QvRwXqc58Fg ziNkBel0Iz4 ekWyS_Otzyg w_CGP9TxHG4 MlUlzE5FcN4 QmFAYCoLjvY EyJyra0pT4Q dQWuVhSslXY WDutZlTBVJs FV0VBy3AvBE N8NX7-hPpdc BKALSTaMUZk r7fri8H1YdQ OSXwwYqJqvc g5aoboYugME F4XweYjAUUk tFgsEKw8o5g fauZN5kJ2V8 -lnfUQ8koCk 2g5vKV7l6m8 f80KQunxMy8",
+  8: "r1PIeLdDCIw nu_XpO7cWus QwfuKzdRL8s Z7wqEf-zUak zEMObyy1hN8 XKaBOc9hfG0 fkH48ZshX5w 3-1gSSn0a94 TfzXiLKTXdY 61883dvwilQ UBUbSLSfspg sYSCOtb6gcE YmHFw5EOht0 Wd7Ni-sLagM enhpRWPL2-Y T01iwoA1KIg ZnkuT_GZfi0 pfAMRFRLzN0 68MBF2K0OsA XK6-B81tjnc 3k739D8rbfo p34mdFUqU8Q jIEMfkRgNK8 RX_2nyEA1uc 00ZUgJ6v1EQ P1VfqlnPKhM FIq7MqHY9x0 7TSIfYAM9dE tVxMr-6tr5Q rVEUTCACwJY CsGtgkqy81w",
+  9: "ERjEhftGJz8 04f-No_jrpc gWgnQGmqhd0 VqE16UlIddM 5qg3_nxnoHU u0Ta8e7Ukj0 7mnWzvSP8gs 2r-DEBe8r9k x5YJAeAevNk dFR20mOHKqA oL1ZdIKyIrc rp8oj1SH2W4 5AQW-NDRhC8 _BHiZeIqvTM Sx_xy3dOsDs BNysOqt-JzQ ghO173LK1SM 5d00cQrdWAI 5rDiNc2K_JY 6qbUSHTS71c QQp8EEIdUPo qGbZ624bgAo ejQ5aDM0Mns iH6hAtR7eaE wmrEIbFADlg dVSSwjJ7wCU 8izF8x8KVIA Ch22AaENLMc nam7Crm6eDg pH4YNUeTB-c",
+  10: "3pJH-StNfqY 9GETLGbLck0 32EEzI_dy3Q nMA33Gf39bs kNgFDA-lAZ8 Hl8LiB4cdds 8AdbYG-gBv4 f_17R_4P2j8 LVXRv_H_fzs PrvYVeLvtmM KSnJ5hxZVI8 B4UT4ju3OFk 6TIzGxwga3g ENu_gmkK_E8 U5kMsX1bL8E fhSeqeN9bCg ctYncgH7Tc4 gdQfIq_-Ui0 H1Czzi0TMIs wxyErTrPv_4 2k9AJuYhqHs tpaVmNdz2jQ s3wUK5XLNM0 Mxk4XsyIb60 Y0y76hmL4y4 UDxbbgyu-2A Xivb7penCFk tVNtvweZonU FnYQoaBSoeE Fl9_SrgOe8s 3BOd1rPU33g",
+  11: "_IcxR4dHbTo R4gXtwS5dDc O-Ugs1ct3Tc Zde1l67bhpo 6Zm3djQdY2c fwF0qXM6LVc jYDAseJ0Rr0 7GGzU7IKS_k Ff70vm-Tkq4 yV92L_OpsiY yx5mh5-ktp0 kcGSqqjuUMs lKZUvwNi9Sk icWWnbl6ni4 vTXVQrryylw ZJrDFAHSmas h7pZPJsqpiE R7qYgjDo70k my3MPKVPSvU 1WPN3GhlgOc n1jEjuIlBTA t7j_nCI8Blo 1V01zHDCjUo 4jwej3s-ca8 aCDITrh2cGY L9nSZpQMEsY GQ_iZtfJrGw NwFexk70-dY EmpQ17l87sw Tc0U7Do1LJQ",
+  12: "SySpWymYNtw yOruvPZ06vc AhIYioy4fJ8 NOBE5KdksWc IotH7rFATkY JKsgwoXUrnU ACsgSHV_e98 JCh17A94xVM YTKfUGAz6tc xcN7m4E0v0o FKy3RznVkDE ZbXwyaVYUHQ mqRaLeAJXMw 4J8nYzQWO3I HeJ3RJY4pns 8e9TYXSV54U 97oWtUgysC0 IKSBxM27CNA nskwD9B7bWU uIl1heazfaA AVEhJXMKlC4 7-5x_we_OtY amSVGpIE45s EmD5N0Vjww8 rv4lZ2ye8TQ UYd2iAjWDiU v5IpW9LwhEU -V-vKp0E-zw Uy80CApOQKo bXEX2ZIA-Ug N2QxBNG0gDo"
+};
+function getFebcId(month, date) {
+  const monthText = FEBC_MONTH_IDS[month];
+  if (!monthText) return null;
+  const ids = monthText.trim().split(/\s+/);
+  return ids[date - 1] || null;
+}
+const YOUTUBE_LINKS = {
+  gen: [
+    "NbGHNcPhlUY", "JlNThwGgoaU", "wWcCSauvELk", "Q3Mb0fPQw90", "XN5GAc9l3co",
+    "hFAj7gmuBeU", "bKRNGtp7AoA", "bA8kL2aiHDA", "YqTtGg-OVEc", "4TzkQSrVNFM",
+    "ge7BdVm0v0U", "d0Xv7TxKb74", "67F96To78k8", "tANchqDn7bw", "6jq_AxnaXb0",
+    "FqbCnzaNW2g", "NQd-C12KGpk", "uroh7hUHh_I", "5hQHW7c-KE4", "ZWlo6w7QjpY",
+    "z4_GEvbTPQs", "hKlxklbG61E", "frFSD3sbOhQ", "EQtD6xdK22I", "QWGjSoh8Y6Y",
+    "ooWAaS3szYI", "_bXCq5MtyTQ", "FWOQ_Pd01gs", "5vqxh0SHUtg", "ieEUbQUi5QU",
+    "bmwJorSOhDY", "jBEMphf6flc", "y2Ah0LiwDEk", "D-pJxRj7KgE", "FDIgQSWoKss",
+    "1woV5UG5w-c", "2XisnIyDC0k", "X9fjOKAmmBQ", "JRoZYyIbuj0", "D6U-EjXB6QE",
+    "C_7b-KY-Xmw", "txsikH9fa9g", "LFtlF1IUWqw", "ZuipSBYlg3c", "v7XocqpGA6M",
+    "GN6ibcpmLk8", "RG2QaiupsxM", "PxL65Wq3tJI", "2yZUowOLXto", "hDGu7oXeT_0"
+  ],
+  exo: [
+    "Ji1UqqkcF5k", "1lw1seQoT-k", "BgfXs6grcl0", "aBYo4aQ_tX0", "uk-fGmSXU5s",
+    "2KS515ksaSA", "0xEBlqkC5CQ", "b3g9DG5O15Q", "3v04k45xSyE", "ANf76mjIoME",
+    "5Yv2d__Lrx4", "LiAQmV793qY", "-bTRvxyQK6E", "BGIbwXqT9C8", "WcrrN5nPT_A",
+    "kDJJWpRKc6U", "7Xuv4qVt_FY", "iuchqCzbKRs", "G7WRQQp2CYw", "YYxZIHF9Ios",
+    "tFrLJttkiXQ", "KpC-HCGpYQg", "31ok6rLA1eU", "EytEIKaDTX0", "stwga3kNVmc",
+    "kgztC4NyfDQ", "gnwKP_zszrg", "oCsMZhNkkn8", "W9x_mjUDRGM", "aPnpcYwWM8E",
+    "v9PiXa-05so", "NmuOfGCOxI8", "PnvbfUEsmKs", "j7bKpxz2ewk", "C7eEQJ_AasI",
+    "4_vOKp6YMOE", "vinMrTFhjD4", "9cYefG7rMwI", "HGw6Oq9Ygsw", "y7gL9f8MagE"
+  ],
+  lev: [
+    "03-zwx1Dvv0", "IV8w7H4EkmU", "1zKvs8RwLZA", "2sUiyUtRB70", "ncN6gLlO5Yw",
+    "Rk0Ex7QpeHM", "oWVQWY5M-XA", "_DCeaGP1Qao", "YnePhW95A0I", "iLZVDUDjpPk",
+    "3gNbTtV63qA", "3EqnQa6FLbc", "lwFsM3rgd9I", "nX2DHjvEzR0", "m7abYZAw-y4",
+    "1aCYXJSEkbU", "02dmUjqYMbc", "bS3rS_z9tFM", "7R7_XzKY4SA", "4Pny3OChvU4",
+    "a5NMaV0RsWI", "YWPYTwAI5lY", "QwV4R1xAwpQ", "qu9YN7ToVtQ", "z5zwZx_NVcQ",
+    "JLlKWHLGAlE", "XQaRJ5H60CQ"
+  ],
+  num: [
+    "yPMLXwH0Ns8", "vQYldvHewsw", "uoND_nMFYD0", "5nNs6ip5Mk4", "z2xYdVQaSqs",
+    "_OdO4d1N7pE", "S1gCMwlwBP8", "JEISP5uJz0k", "eTqcfSb7p9o", "3Cs7jUxXNxg",
+    "SrrqwP7VMJM", "5G20JnFEG3w", "Kb1bUDm9us8", "8rk-QrGAj7s", "Rr5mKFJx1aE",
+    "N4XIDQ8028k", "3yovA5bKX8c", "9YTZBZXgzhg", "qruN1OBW9H4", "UUxBz3yDrm8",
+    "hAcjVpjkhmI", "EwXCng1Yqt0", "2Q5DXKxevRY", "Vx8ZG8SSogQ", "0MjIF-OjW6k",
+    "xxinrahFBXg", "6ZUONd8Idto", "XoeubquoBYw", "hv6yjA5epSw", "ucntaI56HME",
+    "bj5oppW5wVY", "Sqxn68z_jfw", "xxNs1VFkIF0", "DFip3UPYgcM", "1rmxkEN0dq0",
+    "cBJPVJ_7Ri0"
+  ],
+  deu: [
+    "1l2WaKwyZcQ", "-vbnWbqlb2E", "5vYAACpfS2I", "U6QFC9AnjZw", "uPttPPD-ZTo",
+    "2pjkk4slEFg", "J1M8OHI7920", "kuKi9ysEwP4", "KcmI1YlLSqo", "7jOHABewffg",
+    "QKwxGXM9GyA", "R_nB-0jKctI", "0-cJzN8MLu0", "9TeGFVmhCA8", "XDcTxXwqgng",
+    "XBEDbooQM8M", "fpSLv5Dl08U", "xyQqsOeTck8", "T55pjGHMgrY", "LqfmcNWQelI",
+    "Y9I-JDK3leQ", "t4ZMpZL6Lgw", "9PeJExnxyB0", "XnHiX76VaX0", "lNGdYCOg1wQ",
+    "YT_oOsVQCvc", "vScjEwhyRD4", "sTiIqsL0pHk", "LRRfQbz4Fgs", "CldpAoiRw8c",
+    "UNmD0UUnwvI", "wqHF7mH2Owc", "o__LH6jT6Xg", "v0AexUrTEmg"
+  ],
+  jos: [
+    "8aRa1qWXHx0", "vBmJ7MXCR1U", "PGkHnCl8Dsc", "c22uX9e3x4U", "i4w-SlAhHvM",
+    "_UdlbrYGPz0", "g_FUGj6wMPw", "GwBhXA85uAA", "V2DdFSCDquY", "kI5By-aWsQI",
+    "tIGcBefonYs", "pjnuusl8a0M", "csN-zxKkryc", "uonNwNv8ys0", "J1I0EjnvDZ8",
+    "i5MjtqpeSsg", "XGdfbj1W9Ls", "djyDDo2Wr4k", "-5Q8QRFKdTw", "NPKZuT3hcFE",
+    "VskD96iDNqs", "TDeqP9xUwW8", "I-uil1Hi-rk", "wi9U3cZrYrI"
+  ],
+  jdg: [
+    "wMDoAIN1bxw", "hPlinmeKBU4", "11WhoHMPemI", "3D1TymCfy-4", "3nWE2Ds_xQI",
+    "BSnrjPA46b8", "r56pZxC8Ehg", "pSOPSDs69z0", "qautBD--tWs", "qPKEiUBDgP0",
+    "PC1qKqh0Kvk", "VIuu1JSHrS0", "W99OLd97dlA", "T-R8Se9C3EU", "A4qsltb0OpA",
+    "JpcjuOGI_RI", "W31Z2naBmHo", "HVjhCzvJqVk", "7bysS_bcRHw", "PPDgWpwYniA",
+    "Bve5all1sjg"
+  ],
+  rut: [
+    "NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"
+  ],
+  "1sa": [
+    "xdK4dqCYIGI", "PC1GaCn9c4k", "QE2W7ZNN3Vs", "zAAUCINKsXY", "F51PeN02lMQ",
+    "Jf0FtWPHdBY", "xiSZxll-ff0", "AOQNzfqGUXs", "Gn9xasmVS58", "sgnOIxreUNk",
+    "fU4MDbQhfbs", "HgZT0wDReXU", "1Fr0njqaAng", "imDBGB1CbfI", "d0v0i7FaIyQ",
+    "HRn0OXVxgJU", "0GVtOnwWXrw", "0Tko6jzG8Dk", "VRuEZS6Iu1E", "ci9b-oBpJbw",
+    "CeKmfp0SKnE", "m7cn8d9yzPg", "nM-GKV7cxUI", "ua3wLXEDZOk", "wkGOCrv-Sxc",
+    "Er73SSQs-wY", "Pld7XRGoqGs", "Sz3YqBzieCw", "CXpynE2a70s", "qFcQ8FznWv4",
+    "Or5cd-95Ufc"
+  ],
+  "2sa": [
+    "ak_FCK1YbbA", "sE2_ouuyWDc", "jfJRdXoVclE", "fTqoiT6JUq8", "hTitDcrkZpQ",
+    "ZUnUIpqrTHQ", "gUKPpaAjlrc", "7n_2q3CVeKg", "VQx0ruGSk5U", "-h-IqjAS6-g",
+    "bhPoCBzc62U", "am5PufRXrxw", "_hTS_bkxN2M", "dBpnIyg1DYo", "SUzj3MqLQ98",
+    "79BvNYU1rKI", "qD4laobb9Xg", "bUy75C2rN6A", "0QCxo4iU1VQ", "ezSW6LZUxBA",
+    "00ssq0d5EK8", "K6KrK1paa18", "q_KesQU6Q4w", "gVZLGfNpm7Y"
+  ],
+  "1ki": [
+    "Lven74B7GnQ", "MvhxMnMrOLc", "Bf5fivf7oUw", "9iUnm1mpW8c", "XNEfhHEJsZk",
+    "18wgsENwm-M", "vOwc2Xua7EI", "M2EOir_y5qE", "zqnfdtVC3jM", "qldVIU_FbRw",
+    "zDzCezbWu48", "6KV_rdXU2Sc", "vX85ZEuDkKQ", "QavApho4CmE", "KFUYqYy4zF8",
+    "_-QsyT3bfGg", "Xhq6ptvsT94", "7GZ2W_C1S8Y", "CdL4N9nDFC8", "1_HtW42FwWY",
+    "EYoicJO0S8w", "9VCkbZcB8WM"
+  ],
+  "2ki": [
+    "cQUTps8Owuk", "Nrk9wnJcK2g", "WwfwgPmBBfc", "pxY8x0_Iw5o", "oImdKwuWJ9U",
+    "jL-JL1b1yjI", "YxDPoECBXJY", "NJ6_ODclQw0", "jfMXdhNqSRg", "OKRhsRkRz3I",
+    "RZXJV_kYkAE", "LYM6WFOQRLA", "pZCknnTG7Rs", "3BC5HkY1AjM", "OVkTshF6VBw",
+    "DxA8ICojMhI", "COZB9Ah7yJs", "Ga7LEa8MrSc", "p2i2pzphTlU", "YdQBGBjU5zs",
+    "jaYki9NcWQM", "0_rt3QNJEmU", "t2nvEBdDGhI", "tswMo3uNqT0", "-Uot2j3FHCY"
+  ],
+  "1ch": [
+    "xwkcZq4h9Fk", "jw45dGmloBc", "vKSt7TJSDT8", "fYwqnjsApa8", "fYimTgIGBLU",
+    "a7Sgiog1uoU", "oS_iiiASDLA", "XV7hYelAPBY", "pX3_5rbDcTk", "V4SKkHZz_uo",
+    "o6aQAcTeb8w", "w5YIbITC4ic", "RRSaNr01r7k", "3hlvHYtVcFo", "Rt862ZKddHo",
+    "xQVbi9cxTkA", "bpq7xH2iIxc", "g7ro9YQgdco", "-mNe8qhY3vs", "Li3bWlbxrmM",
+    "5w8zGBNnz3U", "qZcmLKv454o", "7L5c2lfzK30", "yPGzjeDBM-E", "HTKjiiNd5-8",
+    "8Jfl4UFUNog", "OVzfV57HD64", "lWePeWdBb1Y", "V9SejNMdNdw"
+  ],
+  "2ch": [
+    "L7gDPo16Ohw", "tkRBWILE1RI", "JVFaL96N2Lo", "gE1oP1zGzBs", "Ze4N8c-hyYw",
+    "n2Yxq8hwGtk", "Nx4smfgiJZI", "kIbvieQwB14", "DsVa8XlUO58", "R6safMYtglo",
+    "PeP5NZK-rFc", "Nnmto5tFQG8", "XZc74lazi8A", "Hp8L2j9S55c", "m9PEFNInQCk",
+    "gdVXXWzItSE", "28SXduImvDw", "c6VeneqVuw0", "pUpkemkIHr4", "vLJyPmBvx10",
+    "qL9ooWVMXb8", "QJkYG-YMRvY", "1p-hVUP-4zI", "ldKO4SnzTR0", "5tnM4W0RC5Y",
+    "EWi8hUkJF8E", "x5UKvPpzkN4", "9tpd_HNNFlE", "5Hu7XcWZ858", "HdGEdCYRf70",
+    "nWdd8c00aLE", "_9_kJ7UVLGY", "SrlDBbyd0Sk", "jIsKPFiF0A4", "9dhFuvNnMnw",
+    "SfJh7RLV2LU"
+  ],
+  ezr: [
+    "6OSxSCePzEY", "zQEBMZ1Q7Rc", "pN3UbMNxZ8Y", "bAx37m6o7UI", "zC764B3DGpw",
+    "NIV7krmliso", "cHQ4jjiTq5A", "PJCT4j5ezA0", "H76dS6ud8Eg", "1x7SJ6D3hGs"
+  ],
+  neh: [
+    "CVWwBsZeVPc", "kpBVk42Y_Ko", "-SdeaFf2y80", "ECl43T52Rxs", "9reo7QpRkGQ",
+    "01dv8PeVXWk", "Bi1GwxBTUzg", "9BdCUIkqZL4", "TgHCBY8O7Hw", "GCR0WF-VtVE",
+    "t53qZqYdiZI", "stbEFtIpHKM", "I2NrgmS5DXo"
+  ],
+  est: [
+    "rBrW4ayABtc", "wzd-HSpMAWQ", "PKROFE_TXqo", "EES2rljCK_s", "8vqmKekPvlg",
+    "cr2O8W43248", "oQKpQssZa9k", "3bk0OihV3-M", "zCkyfuljT20", "eBqpSSog4dE"
+  ],
+  job: [
+    "_qSXEsm1aD4", "VNH4KH7QEi4", "zMSy14Usitk", "1nTXXdA63c0", "IGAdP1FfrVY",
+    "YzznhkSe5Q4", "1tdO_UwtDcA", "jPMT03I9dy0", "Wb07Qa9u-G8", "-CBVB1U4Otg",
+    "dbJrkJs4BGk", "NF_USKaDd8I", "eJxhcwXRqRI", "FG0ijpg7qSE", "SLDZP_CKuoE",
+    "T1Id8FgWm0A", "WKxKN6otFuo", "ZN0gKczb69g", "BZ3RSUjzORE", "oWzN18fi-S0",
+    "yVqn7-lvWa4", "YiBG45Ewomk", "7dVyFjdfjMY", "0bljgU_y-LU", "c2q47bt3R-M",
+    "fpUTfAs9ffA", "rHG4ehKIQ9E", "3HCX0evF37M", "gFN4OSKkag8", "_r_qEPDUA14",
+    "-mPVGhdID2I", "bzaDW4Op_-E", "dyS82ACzhYo", "XRRELBM-V4Q", "UvCRgGVAwcM",
+    "OQWLQ1ZGzNw", "s7JMSbDAIc4", "FyhibjkcP5g", "pMBUFljso7M", "HGHhuZvKBmE",
+    "01VsQW1vM3M", "GtbQXEMjg-U"
+  ],
+  psa: [
+    "su56E09_3Gw", "92BalbIC7Pk", "C-l4VDOzXrY", "EcWUIIC8_qs", "ctkV4e_PJUY",
+    "0khyWw5wVng", "JdRC13O0LV4", "FeAZpjl8Js0", "Mnp6R1Xnsds", "FbXN2DptSV0",
+    "3iAcHGNQues", "ccPXnXQxpN4", "AFG2oN44Z2Y", "FZPoavMIHmY", "KNGs6TgBpI0",
+    "BlCPr2jQVIQ", "wD4NhNrlJHw", "VcOIO2zYi0U", "5ZITNJK425c", "qx3ogK8BdHw",
+    "gI5sg8Hp2KY", "FpWLfu3bsZA", "kPdF2CDFMBk", "NYtx6ic_3fI", "EUXjPxaXNck",
+    "5yokjNIU_0U", "39ZPZBVdO-Q", "fB_arYHeZ1Y", "E9kse5LpU78", "268jaMQaUxg",
+    "vNuZFj6xcSU", "TLeyuEx6ODE", "x2wwS-drEU4", "oYBYhKEI73M", "2oXaAg0MyG8",
+    "y66655rD7RA", "9HXO5x6svbo", "339IHBcmqc0", "pxtun0wEsFo", "6mbrVKFcoAc",
+    "aorLWf8I3yA", "Lj4LeClbx4o", "BBzMzSdGo6U", "Vqzcqv1blXY", "5uyZGd-Ew7U",
+    "q1SxIGSb1Gs", "kf5HQ3khoyA", "7YmHJyc6F80", "iyiFJmvakzs", "hPLW5SnufO0",
+    "C6FOtVv14u4", "Un-oN2HWk8Q", "ga8ldcJH4YY", "S0ASe8845wQ", "BOJHi6JpBvw",
+    "idIVY9rJuxY", "UpJODE_I1Pw", "JVpkx3Ci9f8", "LUDYCBxIoAY", "8Mo48tXU4Ow",
+    "TYpA6nEov4E", "JSMHc5c9zFY", "w756OigwP6I", "DiV6WsFFHuo", "uOpmrkdoaBE",
+    "mx7n4HoTdwU", "mEgUwekCHD8", "xS0QcVaGAw8", "iypvxgaH65w", "Kcz8UEynBaQ",
+    "ENFygVIMxxQ", "Zh5tVPyoVoE", "jonMwijnoyI", "dRH0_RTjpBM", "_ns3tRr_jW4",
+    "bbPfMJqTu_Q", "tnvwDxlRINw", "sozUFTCDfAs", "aONXO4Ng_OY", "RQ3ZoybDAVM",
+    "0RdYsYMS2TY", "qSPCr8rPT9U", "bVbWeLwgKhk", "eMSniKjlOqw", "AduTk4plJec",
+    "NGhMnA_XZOo", "EfWYw21PoKc", "njn6HQcWGLw", "219ixphnYrs", "vJmqCi4a2vg",
+    "_H22gKpIoO8", "a31UP9VIaXk", "vv61vUU9d-8", "FmbmwbXVlag", "hMzIXH9L3rU",
+    "pgAAs8gwD-w", "yR8CDF-Z49c", "1BpAJ1Orj_w", "lESpOLKb5cQ", "jQYwikdIfj8",
+    "HgrzrwiT7hs", "7NpmvyOyqY0", "rXDPKGeS4pU", "j6momx45jFQ", "ro-IAZJkh9I",
+    "PNGp0Y5i_us", "KxQhNJ_IqN8", "YALnZYnJVYQ", "Krda5srmZrE", "FjD7wgiHyww",
+    "XR-mH3UJfik", "3s_tQhwjDkU", "qvvkcGsvUDM", "4CxMj8mo9BA", "eWc6bOG5Y6Y",
+    "kztb4sV2Lc8", "BZyQH8W8IDQ", "RDbCtvHs078", "pznJPwP3VBI", "OdQyxyucP7M",
+    "CpxAUQk-yhU", "7UeyStLsaNE", "Tu7yFhXHb60", "C-afi1jNVmg", "o3MNhMJiJkM",
+    "mi8Ev8v7UFY", "iqBneGgE5rI", "6v4UFFMNX8w", "MQYeW6nvLQQ", "FNhu8b8H4-Q",
+    "1h0fln6wYPc", "Ph162KOlC4U", "RHn0B4lLkms", "RAERqa7vNv0", "DVwIFT1n2RI",
+    "t8Fo5Wtwk00", "mfNf3_V_vN4", "pFdNkQy-HG0", "JTKLw2BB4Ls", "w2ozFvGrKck",
+    "DVZkXdF82mI", "j-OdUBlagqM", "sUYNTV5s4UQ", "KjuKEUv1D2E", "HQlzqviJsq8",
+    "M0ZN2a_RLzo", "VlQfEXGKtDk", "1KPXpIbAz8E", "yb_KGuIajMk", "KXl-Ou0WuQw"
+  ],
+  pro: [
+    "KBKrwBDYkwo", "GBzS88DZylA", "kgp0--ncuCk", "CLPdz0RMBG4", "gzjhTvI24Z4",
+    "A9eIIRkU-4E", "N2MYyTibhgs", "byd-NzFScz8", "agyibAkCa_U", "PbvmAVLnSYY",
+    "6cENeH9zEWE", "eXh-p16LvAk", "vE00zVxdgiw", "aJenocYRW8E", "IPFovkFGvlY",
+    "esNdEy9He_I", "OEyqdoVWhaw", "E-rbKo16kiU", "5rA21s6Ogag", "JV6AZgN4a8E",
+    "RvnHb36yNPU", "Hcx3iPt7SWo", "pnyMgDTydsc", "rWoiOLEs808", "JEQRIIJ4JtU",
+    "dP9FqJlFBXo", "L4exYhD89DA", "JWnkzDHyLos", "K5iTdkkII58", "XsrcofG6tiU",
+    "Rg8vuwFyEj4"
+  ],
+  ecc: [
+    "qogNnspMegw", "u-mQRy_wi6Y", "db2UjyR1Cz4", "2i5oQyEZECk", "AIensdChkcU",
+    "TDHqBJeCpcM", "tosjd7kniXY", "11-enAC_jfg", "TgqV26Q7pxY", "4FKYNCufmqo",
+    "J9W_zTNCiSI", "DaojoBrJ8Zg"
+  ],
+  sng: [
+    "IhWTbAngLFw", "t5304ZaSfhA", "7CU4qRfGwzs", "e0_IGeh537E",
+    "AgHHHFx6JF8", "heLnEe4j7ww", "mViZMCW-kYM", "kmYS5jC-GnQ"
+  ],
+  isa: [
+    "jKWCOIKnj4k", "vUC_5hDzihE", "RQQVY8nNNd8", "mOm4Xoi558M", "Yh5itxpY7GI",
+    "tEmkrXtwZfI", "UbXdgX64wmU", "Ly0sYJXsp3k", "A5Em2R-wFNc", "3KHQYtuS4d4",
+    "fMnnW6OOmEo", "-9M9Sf3C6oU", "ZkgiDsF_Xhc", "E9WAbwGX6So", "BPZa2fOgbTM",
+    "kNsn30C67u4", "jHL5Nfh2xNk", "5hsuZzdrn9Q", "zdroee1N-_Q", "E9DojZ8_ihg",
+    "-fhc8I4Nv64", "-5S-150Xnko", "lWtABLIieC8", "YeM_sv2C_tc", "twgzC2MNja4",
+    "AkRWUc2CAQk", "1HkI4oP5B6Q", "yNshIrPS0tk", "JqvuZ2Ii9hs", "B1DG-P9uMPs",
+    "Y_Jrqh56U84", "2j9CkNfPkcc", "kq3AlKQefBM", "DIn7nS4LbVM", "Wz9T_lxNyWg",
+    "tt9DNXllkOc", "sSt3wthHDlU", "TTNvOthhf6o", "lTFR0QgNDHk", "dxLsKC4Cc58",
+    "ZbV1x-qFCl4", "BmkFPoRgbto", "mgcMubaiVQo", "Biakob-RzC0", "Yb6L-9eyeUA",
+    "IiYkOjb61_0", "DhKWsAb_enE", "y3CEjkK-WV4", "0Uq8arbOMIA", "XTE8LY38hxM",
+    "OAtrdsoq_Zc", "ZvzaOCz_Omw", "vCOmUJn4VZs", "Jhwy6UEs2xA", "d02t3Hse_BM",
+    "pNmEbqN5Xyk", "6H44xDl0m_g", "YgeRLoSsCN4", "qeOrWyJH3JA", "yTHKSk_WpYM",
+    "TwtGk5r0kHY", "nXZfPiFJikE", "n4bPzIFNifY", "NfwxYjb6M7Y", "1oXAVvX4h_M",
+    "pXVIvg2cVJc"
+  ],
+  jer: [
+    "1O6yrFWhgGQ", "My_zRWHFOIw", "WJp162oq7s8", "xOC9eZ231WI", "sMaEf6Ht2LU",
+    "3D_wkaCZ3wM", "d2mlKEemma4", "H2B-QJwftXU", "6xOSGbW-ZqM", "JA2OPFL5SN8",
+    "0HKinHgE1jo", "45HGui0TmnE", "csgPW7mhkS0", "PWoZDanuqus", "3w84wZECr8I",
+    "3gK0793df_M", "PZ-Pkg62ImE", "URj6TZMkQz4", "mvmu_7IPdm4", "w0IxzrJnKmc",
+    "F4dtnXi9Tzs", "j6YedDJ5Pr4", "XG0KNRR98q0", "EL8RxEsq6YM", "n5nn4ACrj4Q",
+    "PcuVCIW0zF8", "M1KSqUz25GU", "TTkK1381w4k", "y5uSTtv8Mpc", "oEB3ntFG9zs",
+    "Ha21qJgKL3Y", "QnwCBZBpWOo", "xxie0G01ySw", "gL-GLpvOG_U", "qK-6W00m3AU",
+    "YMTxJg8vH9I", "Rvhcy5CPmCQ", "roz_PsJ_bPE", "Zv_Y5VAjIgI", "WEMoVclhbqU",
+    "6O30u9NPVNM", "ux--R2fYi48", "esOspW-nO0Y", "qIi90pqKIAs", "3_e7uB-QBz4",
+    "kTBhso2FkjI", "AqNiGX6S35E", "n46EPg9lVJ8", "LBuIlLH6HGA", "fTsWgENEqT8",
+    "9-2LKbP3WcQ", "wDejfvfK9wg"
+  ],
+  lam: [
+    "Yi395KsKj2M", "B1cdAySDA5U", "fazMJm4WeGw", "xOC9eZ231WI", "zFjZCD_9iW8"
+  ],
+  eze: [
+    "UHUMIZ6hZ5M", "WU9U2g5aJVc", "O02tP7MQEbA", "DD1bPp-4WII", "LlSzVsI81uA",
+    "rXU4dasn9Hg", "CQxXXc1vNhQ", "_6pNv1io9Kk", "PassT5KYufk", "2YWVPJg3yvQ",
+    "C6HzR5NkM3Q", "2M6obbsoOTE", "dFKbm1KBr8o", "XCq1eNE7HY4", "tWX9EhWzwlM",
+    "-_DmaEIt9Ts", "vPx-d4OhJY4", "TznEDBWYtPQ", "08ciuxm7Rq4", "WjfBFiYaRkU",
+    "iw3nWm1oUJc", "xB1O7RsKlXM", "5vnlSxVrZwg", "2OxmQqT5xsE", "qZeLrLRO-6w",
+    "UPcFMUWmFIQ", "xM3VszysL9Q", "X-X3crlSlOM", "n7Fp5S0gSnc", "A6CoFeQunlU",
+    "bpKZq7A6KZc", "Kgpry5IIJag", "wqO0_HpmugY", "P9kNYq0su1U", "EaYZAExoDAY",
+    "-Vh6o4UKKiw", "DcPKBb074TU", "Gz9S_U1YmR0", "Xdd63rXuWQY", "3C_2sfzBpcM",
+    "fXK6HzVSK74", "k99K-1A_ths", "yst3jBgVvfk", "Wtcnb1C2MjI", "njAh78ipzcE",
+    "WVoD8qdoqMw", "8NgTSYLOz1c", "rJiIyF46pNE"
+  ],
+  dan: [
+    "OY1zClBtTU4", "mC8r7LXFidU", "19_GBx_sleg", "0hIMIJhcCQQ", "wM6O5wDKBjA",
+    "HHfwypUOvFk", "HydaUq2YTSE", "CqN5bPcRXO8", "h6KU4bWx7A0", "2PFsx38vVOo",
+    "8v6np1pKlDA", "nRBNHZGLv9M"
+  ],
+  hos: [
+    "z_HEz12noYs", "VV4JxE9zmVg", "M58HxxrKk1E", "C4kQfvtjfgk", "CbSuphGlDWE",
+    "WuZnLWi4t-s", "X5pmAmkzQkc", "zAIBbtX_z7g", "txVSbifEhhs", "EsyH7Mt5PEQ",
+    "g_ouljvyDsM", "frDk_j9m7lE", "lWAaBQw5I1A", "WrPbjs5PZyQ"
+  ],
+  joe: ["DQErwtUd5Jk", "bSwk9-JnNgI", "3QT114StZi0"],
+  amo: [
+    "2d-wW5HLFSg", "JEO9GEXtn38", "G-W4UXh6P84", "K7drJUJABes", "61qYTqX9fWk",
+    "Xz5VSRGUKoc", "oqlnYrfxMq0", "OhN-oXNDvYU", "k-FY8M_5ii8"
+  ],
+  oba: ["QRljlWVgTWk"],
+  jon: ["XQ3QEOmze5g", "lSURC-wLKN4", "VQ06NfhE-_4", "sXgkP3aWASc"],
+  mic: [
+    "Hzp9YadOi4Y", "la-GiPY9nmY", "oGX0o82_On4", "T9d95vMAyyI",
+    "nQkn7dD1JxM", "PXB5x7K2rpE", "tNFjwqB2pqw"
+  ],
+  nah: ["lJN-cYwODWo", "N4K4IRoHljg", "KsDqoevwaQY"],
+  hab: ["DNW6LvkGclA", "xPn9Bn85zmY", "U10ChFy6exI"],
+  zep: ["MBM9xO3YG0A", "WpYHttwmhRk", "4m0bxFA0fyI"],
+  hag: ["RqIQupTeQgw", "tB3GwC-lmq0"],
+  zec: [
+    "3fOGFMPIFZc", "RVrPXGTA6Y4", "odQ4odimchg", "cHqV7DyyKSo", "VrgsvPVm3qE",
+    "7YC_KhUXBJY", "Gaizq8zHqdc", "Jhb-DA8fH4c", "k9J1xbpn8Y0", "X0RUd955dYA",
+    "h2fZCsvpNMQ", "bljtiMdI6TE", "4waWlKjvNN0", "eemUQvyJ82g"
+  ],
+  mal: ["dXEee9Z3BN8", "7-n95yaui5w", "bRXYXKzzxRQ", "oMOQEkYVLeo"],
+  mat: [
+    "FVFbo1J476I", "-FNtyXrsauM", "ULfrnwHvTZg", "u_EcmPUz1E8",
+    "29zJ7aqlQi4", "oSFkTHjrMVg", "BIbzj1WFNbk", "RqYfvfcN0as",
+    "KNXSDf0VZow", "XMYSdyERib4", "lGAyTlnm32k", "c7xSyy9PJos",
+    "OOcQHlEvWTM", "zupWlaberqI", "WAF-DL8HFQQ", "75ehwVm1PP0",
+    "hPwd6xWdgxI", "XbCk8a1dWsc", "-gn8Y1yyzyM", "SzImorHhyJI",
+    "X578Q08jpTg", "JgCh_8uZOJE", "0jftTFbNNJg", "CBlh7urgFUE",
+    "g022Gvpkhtc", "YaiOxb3Ys0Y", "aIDr5nJ0CZ4", "oNPFbbcmXEU"
+  ],
+  mrk: [
+    "2JMVIgTNR14", "QUyVDQpU_3Y", "bmOUTfzdAy0", "xlNVj89_-bA",
+    "JugjNH_X9ao", "zdaw7bWSTSk", "CwRX_QIGuKA", "woGhIvslcnQ",
+    "MB_rTRE7eaY", "1db4nNBPSP8", "RZN58E7KUwk", "ccOERZYZUdQ",
+    "3Q_52yoKFTY", "nqn5ypmODi0", "GPDl3pYiFLc", "xfJ5xXhWqek"
+  ],
+  luk: [
+    "nQPQe0zoHLM", "uVaOmNHfVqM", "t47RA_w7ltM", "8oO2qEw5uVg",
+    "R0xG6v40xXg", "tY4xyb59Niw", "eA2f_c4_47Y", "1OqbrDzKlpo",
+    "kupguTCC6Ok", "NMnsCCIqpJ0", "xpfTGTXOgvs", "jK0t0UzICGE",
+    "ndvvmN9NXUQ", "_OH_wuU8ruE", "nnGWma3OiSk", "m6xfmahTdis",
+    "XK3tiw3Oi6k", "WtE8nebAat0", "Q0CL6j63YbY", "BvTwgkR5tqA",
+    "w6POsxd-TJ8", "q_u_Cf2VYeA", "1UumxKuQJzs", "AoZJc-0yTmM"
+  ],
+  joh: [
+    "9e05_NLtNa8", "Un_r327ddfU", "K3fIRZWzrCo", "dL5yY_u7BBo",
+    "cEdefldCb_I", "Nkit8Sl4Qwk", "PTF-GVZdcn0", "m25a3LHySeg",
+    "FvPtFWJIqc8", "GJQJXQ7AFVY", "mFq5yi8GH8k", "bu4Di_RZTBo",
+    "8tVOK3G0M28", "8XSQCEKnH74", "hJXKfdcxPYA", "SWbUZhPr19U",
+    "QNbHo2Fhd_E", "pnEPyRYEUEA", "lwiKsXRCbho", "xdJ4ZPHjyZ4",
+    "usZ71caEcGE"
+  ],
+  act: [
+    "YAu1h0JFwjI", "MJdOWgmgl1Y", "maV62T5HQ7Q", "4a3qZIIeH_A",
+    "VNoIqCDNPyU", "RGDjHtSb8Fw", "7RvmAUmRBW8", "p_gdmD-_Qnk",
+    "j97D0vF_i4c", "ZYZSlY2_Zvk", "bimqC37Jwe4", "ZNw8URfZaA8",
+    "EM9FPB5mBJw", "GCu3WikTEEM", "g5ZfSHt8fng", "EvEwcJ0NnZQ",
+    "sBO30J7PSqA", "WKmVJUPc_vE", "WeRMbJE4d1Y", "YeV00PmWyZY",
+    "vlhMBuDbam8", "_awnm8zE3WE", "89_JSLUPt10", "rovpYez523w",
+    "dNrzhsUZd14", "jSprkukru6U", "VSIzbDMcQMQ", "bOTBcp8sJYE"
+  ],
+  rom: [
+    "zDVkOQYmI0o", "A82VfIeeYkc", "TzORuIS0MM8", "329xEfNAb6g",
+    "0578hxkVKNQ", "fm-ib6hMfac", "SRoP3GedkL0", "wWpUMLoAjV4",
+    "174zSO186M8", "N5OSNQFbXUE", "10ZXohnqVA8", "WAIavTv9xJ4",
+    "_GqcM3sTSmc", "oe2Vn7V_IbY", "EN1CzTxYlS0", "ao523cxK3bs"
+  ],
+  "1co": [
+    "EKoXIgVMv6Y", "lREebLjHdEo", "4TZye0AncTQ", "-SzEmNFFzic",
+    "an71xG5yIq8", "H8PnC_em0VE", "U9qrBl0BEpw", "BnB8RjDW1tk",
+    "U8krDQdOxw8", "YudjjOVeKfo", "6IXzVoyIaeE", "MWgqYeVeEw8",
+    "4PWHObBH_Ck", "z2O9g6AvSuc", "gCOXHOO9Gy8", "xdIl4vz46XI"
+  ],
+  "2co": [
+    "pecL1Uk1fLE", "ara0tRnDYSg", "m62fpbKKGiU", "yKi0ERtMxmc",
+    "vvPTt2DZlDE", "7z16JF7J1b0", "mh2kqUriXxQ", "h3qSyx_pjgk",
+    "4qPtvTcnLjo", "yeNR1Mzj5XE", "zhgqV6YVdvs", "95lgy2dXbww",
+    "tXIfJrAHrDY"
+  ],
+  gal: ["fj0rAyMYeow", "obmGBNjmhpQ", "e6mXwFyShrk", "5YBmbeA487k", "BsxpXm4COHs", "DwGQZRSRp3Y"],
+  eph: ["LbquANbw0T0", "XtUbPQ50p6I", "ytKQaSYB2b0", "9ZHR_9laqLM", "Bn8TQ3kn1Zo", "BMDFcZSK2E0"],
+  php: ["4teyRYSKFGk", "3Qg6hrY_Vlk", "Xbmko7_dMqU", "ET-Qor5tVhU"],
+  col: ["-ug5pvxvnUA", "9Dab_87_9_E", "b_TzG4rWSLc", "_OeMYLx8rVc"],
+  "1th": ["kW1KDmsR4Hg", "yzS6971nweY", "kxzH7qQ3ebY", "lec1Y-8jmQs", "8T2X0ZUo0sg"],
+  "2th": ["lafvlswau-Q", "7DpIAt7hf9o", "vAlkeJZ-kh0"],
+  "1ti": ["bZBDM2lTPYg", "tcqpYA0EeOg", "m6m-3c6DHVY", "xKWZgYGqy9o", "aaZ31CN6DqA", "w9dfhR4yFuI"],
+  "2ti": ["Wmp4mjDioCs", "LVPdXKVFT9s", "f8hQ2Z9NUIA", "4zeRVtR6FSY"],
+  tit: ["XDhX2VJl0D4", "3LhjtPOspuQ", "zwH0EyVGt-I"],
+  phm: ["JW8aOeWaiWU"],
+  heb: [
+    "gfcLtl1RoUA", "ZEPgzqfeSq4", "ziRNttBXADM", "B8-VnvjdBc8",
+    "v08LLz3K3Bc", "pALZ7oNECWE", "QkcDcf1bi2g", "JgNFHZG4PlA",
+    "Uaruz5UzDEc", "iOZmIKbQhOE", "MJJcw9M_iU4", "_U4ql-tsaGA",
+    "Y5IcDDw-v8U"
+  ],
+  jas: ["Uc7cUlr0hzw", "3r8BHYv_tXc", "SdlnL_TMzhk", "iQYJ1oRVTzQ", "oQsatSBzbKQ"],
+  "1pe": ["9yzcbTCN7Wc", "sWXpD5zwpi8", "Bit4CxdE2Lk", "QjTc-Bfa1rw", "AIzAYIJeiaM"],
+  "2pe": ["NyPxmw7ECd8", "-5llnoB2GgY", "Tdw7ijfUBII"],
+  "1jn": ["bEAP8CI-8hI", "4Y6OuSMxPGA", "2p37YdVT8CI", "6Ule3KNTp-4", "45dbiTVOQi4"],
+  "2jn": ["-Mqisl6tFu8"],
+  "3jn": ["w6EeE0D7hQ4"],
+  jud: ["QTrzN5zdZMA"],
+  rev: [
+    "toK8qZBYBxc", "qMw64_ZA0jc", "l_xcKoY7UgQ", "0OOoFPNHK0I",
+    "8KyWYML2pso", "fwnguj_PffY", "3kXaHykpnv0", "z9i5ZKLZ9ck",
+    "R3iZGMDafNY", "B6FbiFjJmpY", "sB5e-7uUAME", "z9a7MZ5wpPg",
+    "qeT-eF4XpFs", "9Nok3YULAtI", "1tV3IywdSso", "tCAP5ctofzs",
+    "9mzdoz8xMGg", "WL9mJ8P49oc", "qp1vfFu10L8", "pB7WKZ0vy9U",
+    "tf5uj1gNATQ", "rm1JcHXBKVk"
+  ]
+};
 const TODAY = new Date();
 const TODAY_MONTH = TODAY.getMonth() + 1;
 const TODAY_DATE = TODAY.getDate();
-
-// 극동방송 맥체인 날짜별 영상 ID: 1월 1일 ~ 12월 31일 순서
-const FEBC_IDS = `
-OPvoVVWBEF4
-NImmoygAVpA
-6yxMBJyXcj4
-sfyI-EbsEpw
-OQARqRyBK5M
-NxRYOlWI-y0
-ty0ZtLTqbLw
-iv5XEyfrBuo
-HjqtW_3tmRg
-H4QwYo_6JE8
-zwBQGllN-DQ
-yK1pPwosWoM
-G8S1tV3td2c
-vMNdDxfpqIo
-BQRP2dVLO8U
--FznhTAToKc
-Y2J8bAnRRsQ
-NGdnPBsrUbs
-6WdKAWK48WU
-nf748kTqVxc
-tX9g2YmVJS0
-c8Tn-BGWSrQ
-BYhLFDOBDdk
-vPX0sgk0jBs
-ajpaT7BidKY
-LkKl1kFFpvY
-n61yDMRSv0U
-GEJt3-xPhJA
-na7NdhafJeQ
-X10ah02GXM8
-LYVc6BDCRkw
-luwZEJjkKvQ
-l_EAgcDxy3U
-MG_kRkaeSgs
-icDvUAa7jyk
-FYREiRS6YnM
-ZiLE8xA_9g0
-rNtvOtdIpWo
-sKm2VTlCg50
-A8twMyB5Mrc
-N_ge71qBEY0
-GVTZ8N-PdP4
-Tn825uqKQwo
-kuGCgnnlgeQ
-3gOsLgoYEZQ
-PmiiCvN3uyM
-fzjqFhC9uvo
-gT4rQROWzgw
-4lJ-XEQu0Ws
-v5gAFS_6OlY
-RHQvdcKM-yQ
-5UtgcK_9TYE
-hA0b_T2yeYY
-JEDMG1cZJFs
-rreQhBht8EU
-7myvG4sYqP4
-Sm_d1-5v7qY
-4skyTkPBzhs
-orCkLxuEPRI
-KPbNwOSfa8g
-OCndPDYcYd8
-WrHIuFcuO_U
-6I1LN63RIlA
-Ke-S4j5Mse8
-HRfGAK7am5U
-MRdoyffQzsk
-9FKSo7viu6Y
-_v9sNsl3IXs
-9R4V0FVWvJ4
-ppp4t8trk8s
-26grVopRVsY
-vCld3-MfRVQ
-L0qgae-CW48
-qrm-OV4NqAA
-oL8lSQHJWmo
-DT8CmhH72fQ
-aRLaaANRw2w
-965EJk1lJVQ
-RRu6Ctw-ZZ4
-WO4JRdg_2XA
-Hgnhnoh_-Pg
-MrJI6PkS1GI
-b3S7AxebJ54
-lt6qEpnoz1o
-zXaP6Vizqeg
-bnH39G2JL3M
-Z3fuY9EJt6A
-mvXarujOjYo
-Fe04zvkSgZk
-qBXuxIimXhU
-rQSJia0ux50
-upC3M-EuyMA
-Mvpj6E8ZDtw
-pLtBRcaoRIo
-TzE2uICjayE
-EvjmiUfX1W4
-wJ2LkGEzW94
-6jjX7TY1tEI
-3oXIY9qmvfk
-PFOyGcQXcXs
-uz7su4OTl1s
-czkZ0Pifl9Y
-Sqbq6Tnx4IY
-46Uv4DpX5F4
-1o5Rlr0H7gc
-eRkmT72YD1I
-fHs2ajQm1Hc
-_R6xwIwUwuU
-anvxpQAWYSk
-Vruuo4z3LYU
-OQ-zTKco2mM
-pNIigGG6IqM
-3N2O5hUGAE4
-AMsH-2mqbMk
-3FJitLtEq0g
-XlF1e_r0SqY
-IAW_PeFu8Rc
-QWIhgkJpzqQ
-tLmdoqibYAQ
-pVrs1HLDva0
-P6d4ZZF8lnE
-Zex5dyvLdEI
-msc73yEJqA4
-vMlVljYXCw0
-9IT3RnO6mrA
-cfSu3SjcswA
-RDl6Ilvr3fw
-kxm5SusrY00
-WU9TUGH7sNw
-QNl5FJKgQRU
-yPccrIfnGK8
-glxhyFVyM5w
-YjUwJVtjWnM
-qlwSm_D2aIw
-fLUzmOiAvHY
--LEyJlgBC8I
-oVXM5tQh9XM
-Y8XF9tcmxxE
-uhNr07kGwJ4
-CxBoHtpKapM
-diuROGyjli4
-r9ufQVsKpHs
-DCzX1i9m3lg
-hLyathoS0Ys
-f5-7tl5Fm2w
-4kwXTV7TpRU
-0ocIWQ_zHxo
-z4nH3Hpwh6s
-AzOV5PNrQZ0
-0BZt-RZznwo
-umMThmeBNIc
-5HQRrRcJ9dU
-BSsdH4SRfoY
-H1tU1jGppv0
-ByjBYvDWKKs
-Sjf2eI5bRsI
-z6nBK-WnUN8
-Za9wV3sGqo0
-wsFSqjhGNDw
-Z86UR_ulzs0
-laygkeD4jvM
-ztgoUn9CZN0
-NZhvWKtScuo
-PoL1xEgkCsg
-iiozCVBPKxA
-BZQjaupXoQY
-k-rYyz6v--E
-Ai7Cxx9WNSc
-rGxHcRCW97Y
-_su6MWxPlZY
-BXC0-o_w7No
-y6StZry5HLU
-aifq6DW5eZQ
-7wGAQgXP_CY
-lAryHT8bLy8
-giuyqCYSBqg
-0YsUvVK1zRg
-LY1TCeioc9k
-_sODbr4aq4Y
-t9eYfXwky6M
-hK2JDX0i1ws
-1QeStymkGqQ
-OCChkL7fyvA
-T82f5Tg5zCY
-3h7HMtdBnNw
-fmGOjlJoW2w
-Qxj_xoSk07c
-j6Wpb00q0s0
-hJne-3owI_4
-pVbZQi-78mI
-oZVTPk1aNRI
-QvRwXqc58Fg
-ziNkBel0Iz4
-ekWyS_Otzyg
-w_CGP9TxHG4
-MlUlzE5FcN4
-QmFAYCoLjvY
-EyJyra0pT4Q
-dQWuVhSslXY
-WDutZlTBVJs
-FV0VBy3AvBE
-N8NX7-hPpdc
-BKALSTaMUZk
-r7fri8H1YdQ
-OSXwwYqJqvc
-g5aoboYugME
-F4XweYjAUUk
-tFgsEKw8o5g
-fauZN5kJ2V8
--lnfUQ8koCk
-2g5vKV7l6m8
-f80KQunxMy8
-r1PIeLdDCIw
-nu_XpO7cWus
-QwfuKzdRL8s
-Z7wqEf-zUak
-zEMObyy1hN8
-XKaBOc9hfG0
-fkH48ZshX5w
-3-1gSSn0a94
-TfzXiLKTXdY
-61883dvwilQ
-UBUbSLSfspg
-sYSCOtb6gcE
-YmHFw5EOht0
-Wd7Ni-sLagM
-enhpRWPL2-Y
-T01iwoA1KIg
-ZnkuT_GZfi0
-pfAMRFRLzN0
-68MBF2K0OsA
-XK6-B81tjnc
-3k739D8rbfo
-p34mdFUqU8Q
-jIEMfkRgNK8
-RX_2nyEA1uc
-00ZUgJ6v1EQ
-P1VfqlnPKhM
-FIq7MqHY9x0
-7TSIfYAM9dE
-tVxMr-6tr5Q
-rVEUTCACwJY
-CsGtgkqy81w
-ERjEhftGJz8
-04f-No_jrpc
-gWgnQGmqhd0
-VqE16UlIddM
-5qg3_nxnoHU
-u0Ta8e7Ukj0
-7mnWzvSP8gs
-2r-DEBe8r9k
-x5YJAeAevNk
-dFR20mOHKqA
-oL1ZdIKyIrc
-rp8oj1SH2W4
-5AQW-NDRhC8
-_BHiZeIqvTM
-Sx_xy3dOsDs
-BNysOqt-JzQ
-ghO173LK1SM
-5d00cQrdWAI
-5rDiNc2K_JY
-6qbUSHTS71c
-QQp8EEIdUPo
-qGbZ624bgAo
-ejQ5aDM0Mns
-iH6hAtR7eaE
-wmrEIbFADlg
-dVSSwjJ7wCU
-8izF8x8KVIA
-Ch22AaENLMc
-nam7Crm6eDg
-pH4YNUeTB-c
-3pJH-StNfqY
-9GETLGbLck0
-32EEzI_dy3Q
-nMA33Gf39bs
-kNgFDA-lAZ8
-Hl8LiB4cdds
-8AdbYG-gBv4
-f_17R_4P2j8
-LVXRv_H_fzs
-PrvYVeLvtmM
-KSnJ5hxZVI8
-B4UT4ju3OFk
-6TIzGxwga3g
-ENu_gmkK_E8
-U5kMsX1bL8E
-fhSeqeN9bCg
-ctYncgH7Tc4
-gdQfIq_-Ui0
-H1Czzi0TMIs
-wxyErTrPv_4
-2k9AJuYhqHs
-tpaVmNdz2jQ
-s3wUK5XLNM0
-Mxk4XsyIb60
-Y0y76hmL4y4
-UDxbbgyu-2A
-Xivb7penCFk
-tVNtvweZonU
-FnYQoaBSoeE
-Fl9_SrgOe8s
-3BOd1rPU33g
-_IcxR4dHbTo
-R4gXtwS5dDc
-O-Ugs1ct3Tc
-Zde1l67bhpo
-6Zm3djQdY2c
-fwF0qXM6LVc
-jYDAseJ0Rr0
-7GGzU7IKS_k
-Ff70vm-Tkq4
-yV92L_OpsiY
-yx5mh5-ktp0
-kcGSqqjuUMs
-lKZUvwNi9Sk
-icWWnbl6ni4
-vTXVQrryylw
-ZJrDFAHSmas
-h7pZPJsqpiE
-R7qYgjDo70k
-my3MPKVPSvU
-1WPN3GhlgOc
-n1jEjuIlBTA
-t7j_nCI8Blo
-1V01zHDCjUo
-4jwej3s-ca8
-aCDITrh2cGY
-L9nSZpQMEsY
-GQ_iZtfJrGw
-NwFexk70-dY
-EmpQ17l87sw
-Tc0U7Do1LJQ
-SySpWymYNtw
-yOruvPZ06vc
-AhIYioy4fJ8
-NOBE5KdksWc
-IotH7rFATkY
-JKsgwoXUrnU
-ACsgSHV_e98
-JCh17A94xVM
-YTKfUGAz6tc
-xcN7m4E0v0o
-FKy3RznVkDE
-ZbXwyaVYUHQ
-mqRaLeAJXMw
-4J8nYzQWO3I
-HeJ3RJY4pns
-8e9TYXSV54U
-97oWtUgysC0
-IKSBxM27CNA
-nskwD9B7bWU
-uIl1heazfaA
-AVEhJXMKlC4
-7-5x_we_OtY
-amSVGpIE45s
-EmD5N0Vjww8
-rv4lZ2ye8TQ
-UYd2iAjWDiU
-v5IpW9LwhEU
--V-vKp0E-zw
-Uy80CApOQKo
-bXEX2ZIA-Ug
-N2QxBNG0gDo
-`.trim().split(/\s+/);
-
-// 맥체인 전체 계획: 월|본문1|본문2|본문3|본문4
-const PLAN_TEXT = `
-1|gen 1|mat 1|ezr 1|act 1
-1|gen 2|mat 2|ezr 2|act 2
-1|gen 3|mat 3|ezr 3|act 3
-1|gen 4|mat 4|ezr 4|act 4
-1|gen 5|mat 5|ezr 5|act 5
-1|gen 6|mat 6|ezr 6|act 6
-1|gen 7|mat 7|ezr 7|act 7
-1|gen 8|mat 8|ezr 8|act 8
-1|gen 9-10|mat 9|ezr 9|act 9
-1|gen 11|mat 10|ezr 10|act 10
-1|gen 12|mat 11|neh 1|act 11
-1|gen 13|mat 12|neh 2|act 12
-1|gen 14|mat 13|neh 3|act 13
-1|gen 15|mat 14|neh 4|act 14
-1|gen 16|mat 15|neh 5|act 15
-1|gen 17|mat 16|neh 6|act 16
-1|gen 18|mat 17|neh 7|act 17
-1|gen 19|mat 18|neh 8|act 18
-1|gen 20|mat 19|neh 9|act 19
-1|gen 21|mat 20|neh 10|act 20
-1|gen 22|mat 21|neh 11|act 21
-1|gen 23|mat 22|neh 12|act 22
-1|gen 24|mat 23|neh 13|act 23
-1|gen 25|mat 24|est 1|act 24
-1|gen 26|mat 25|est 2|act 25
-1|gen 27|mat 26|est 3|act 26
-1|gen 28|mat 27|est 4|act 27
-1|gen 29|mat 28|est 5|act 28
-1|gen 30|mrk 1|est 6|rom 1
-1|gen 31|mrk 2|est 7|rom 2
-1|gen 32|mrk 3|est 8|rom 3
-2|gen 33|mrk 4|est 9-10|rom 4
-2|gen 34|mrk 5|job 1|rom 5
-2|gen 35-36|mrk 6|job 2|rom 6
-2|gen 37|mrk 7|job 3|rom 7
-2|gen 38|mrk 8|job 4|rom 8
-2|gen 39|mrk 9|job 5|rom 9
-2|gen 40|mrk 10|job 6|rom 10
-2|gen 41|mrk 11|job 7|rom 11
-2|gen 42|mrk 12|job 8|rom 12
-2|gen 43|mrk 13|job 9|rom 13
-2|gen 44|mrk 14|job 10|rom 14
-2|gen 45|mrk 15|job 11|rom 15
-2|gen 46|mrk 16|job 12|rom 16
-2|gen 47|luk 1:1-38|job 13|1co 1
-2|gen 48|luk 1:39-80|job 14|1co 2
-2|gen 49|luk 2|job 15|1co 3
-2|gen 50|luk 3|job 16-17|1co 4
-2|exo 1|luk 4|job 18|1co 5
-2|exo 2|luk 5|job 19|1co 6
-2|exo 3|luk 6|job 20|1co 7
-2|exo 4|luk 7|job 21|1co 8
-2|exo 5|luk 8|job 22|1co 9
-2|exo 6|luk 9|job 23|1co 10
-2|exo 7|luk 10|job 24|1co 11
-2|exo 8|luk 11|job 25-26|1co 12
-2|exo 9|luk 12|job 27|1co 13
-2|exo 10|luk 13|job 28|1co 14
-2|exo 11-12:1-21|luk 14|job 29|1co 15
-3|exo 12:22-51|luk 15|job 30|1co 16
-3|exo 13|luk 16|job 31|2co 1
-3|exo 14|luk 17|job 32|2co 2
-3|exo 15|luk 18|job 33|2co 3
-3|exo 16|luk 19|job 34|2co 4
-3|exo 17|luk 20|job 35|2co 5
-3|exo 18|luk 21|job 36|2co 6
-3|exo 19|luk 22|job 37|2co 7
-3|exo 20|luk 23|job 38|2co 8
-3|exo 21|luk 24|job 39|2co 9
-3|exo 22|joh 1|job 40|2co 10
-3|exo 23|joh 2|job 41|2co 11
-3|exo 24|joh 3|job 42|2co 12
-3|exo 25|joh 4|pro 1|2co 13
-3|exo 26|joh 5|pro 2|gal 1
-3|exo 27|joh 6|pro 3|gal 2
-3|exo 28|joh 7|pro 4|gal 3
-3|exo 29|joh 8|pro 5|gal 4
-3|exo 30|joh 9|pro 6|gal 5
-3|exo 31|joh 10|pro 7|gal 6
-3|exo 32|joh 11|pro 8|eph 1
-3|exo 33|joh 12|pro 9|eph 2
-3|exo 34|joh 13|pro 10|eph 3
-3|exo 35|joh 14|pro 11|eph 4
-3|exo 36|joh 15|pro 12|eph 5
-3|exo 37|joh 16|pro 13|eph 6
-3|exo 38|joh 17|pro 14|php 1
-3|exo 39|joh 18|pro 15|php 2
-3|exo 40|joh 19|pro 16|php 3
-3|lev 1|joh 20|pro 17|php 4
-3|lev 2-3|joh 21|pro 18|col 1
-4|lev 4|psa 1-2|pro 19|col 2
-4|lev 5|psa 3-4|pro 20|col 3
-4|lev 6|psa 5-6|pro 21|col 4
-4|lev 7|psa 7-8|pro 22|1th 1
-4|lev 8|psa 9|pro 23|1th 2
-4|lev 9|psa 10|pro 24|1th 3
-4|lev 10|psa 11-12|pro 25|1th 4
-4|lev 11-12|psa 13-14|pro 26|1th 5
-4|lev 13|psa 15-16|pro 27|2th 1
-4|lev 14|psa 17|pro 28|2th 2
-4|lev 15|psa 18|pro 29|2th 3
-4|lev 16|psa 19|pro 30|1ti 1
-4|lev 17|psa 20-21|pro 31|1ti 2
-4|lev 18|psa 22|ecc 1|1ti 3
-4|lev 19|psa 23-24|ecc 2|1ti 4
-4|lev 20|psa 25|ecc 3|1ti 5
-4|lev 21|psa 26-27|ecc 4|1ti 6
-4|lev 22|psa 28-29|ecc 5|2ti 1
-4|lev 23|psa 30|ecc 6|2ti 2
-4|lev 24|psa 31|ecc 7|2ti 3
-4|lev 25|psa 32|ecc 8|2ti 4
-4|lev 26|psa 33|ecc 9|tit 1
-4|lev 27|psa 34|ecc 10|tit 2
-4|num 1|psa 35|ecc 11|tit 3
-4|num 2|psa 36|ecc 12|phm 1
-4|num 3|psa 37|sng 1|heb 1
-4|num 4|psa 38|sng 2|heb 2
-4|num 5|psa 39|sng 3|heb 3
-4|num 6|psa 40-41|sng 4|heb 4
-4|num 7|psa 42-43|sng 5|heb 5
-5|num 8|psa 44|sng 6|heb 6
-5|num 9|psa 45|sng 7|heb 7
-5|num 10|psa 46-47|sng 8|heb 8
-5|num 11|psa 48|isa 1|heb 9
-5|num 12-13|psa 49|isa 2|heb 10
-5|num 14|psa 50|isa 3-4|heb 11
-5|num 15|psa 51|isa 5|heb 12
-5|num 16|psa 52-54|isa 6|heb 13
-5|num 17-18|psa 55|isa 7|jas 1
-5|num 19|psa 56-57|isa 8|jas 2
-5|num 20|psa 58-59|isa 9|jas 3
-5|num 21|psa 60-61|isa 10|jas 4
-5|num 22|psa 62-63|isa 11-12|jas 5
-5|num 23|psa 64-65|isa 13|1pe 1
-5|num 24|psa 66-67|isa 14|1pe 2
-5|num 25|psa 68|isa 15|1pe 3
-5|num 26|psa 69|isa 16|1pe 4
-5|num 27|psa 70-71|isa 17-18|1pe 5
-5|num 28|psa 72|isa 19-20|2pe 1
-5|num 29|psa 73|isa 21|2pe 2
-5|num 30|psa 74|isa 22|2pe 3
-5|num 31|psa 75-76|isa 23|1jn 1
-5|num 32|psa 77|isa 24|1jn 2
-5|num 33|psa 78:1-39|isa 25|1jn 3
-5|num 34|psa 78:40-72|isa 26|1jn 4
-5|num 35|psa 79|isa 27|1jn 5
-5|num 36|psa 80|isa 28|2jn 1
-5|deu 1|psa 81-82|isa 29|3jn 1
-5|deu 2|psa 83-84|isa 30|jud 1
-5|deu 3|psa 85|isa 31|rev 1
-5|deu 4|psa 86-87|isa 32|rev 2
-6|deu 5|psa 88|isa 33|rev 3
-6|deu 6|psa 89|isa 34|rev 4
-6|deu 7|psa 90|isa 35|rev 5
-6|deu 8|psa 91|isa 36|rev 6
-6|deu 9|psa 92-93|isa 37|rev 7
-6|deu 10|psa 94|isa 38|rev 8
-6|deu 11|psa 95-96|isa 39|rev 9
-6|deu 12|psa 97-98|isa 40|rev 10
-6|deu 13-14|psa 99-101|isa 41|rev 11
-6|deu 15|psa 102|isa 42|rev 12
-6|deu 16|psa 103|isa 43|rev 13
-6|deu 17|psa 104|isa 44|rev 14
-6|deu 18|psa 105|isa 45|rev 15
-6|deu 19|psa 106|isa 46|rev 16
-6|deu 20|psa 107|isa 47|rev 17
-6|deu 21|psa 108-109|isa 48|rev 18
-6|deu 22|psa 110-111|isa 49|rev 19
-6|deu 23|psa 112-113|isa 50|rev 20
-6|deu 24|psa 114-115|isa 51|rev 21
-6|deu 25|psa 116|isa 52|rev 22
-6|deu 26|psa 117-118|isa 53|mat 1
-6|deu 27|psa 119:1-24|isa 54|mat 2
-6|deu 28|psa 119:25-48|isa 55|mat 3
-6|deu 29|psa 119:49-72|isa 56|mat 4
-6|deu 30|psa 119:73-96|isa 57|mat 5
-6|deu 31|psa 119:97-120|isa 58|mat 6
-6|deu 32|psa 119:121-144|isa 59|mat 7
-6|deu 33-34|psa 119:145-176|isa 60|mat 8
-6|jos 1|psa 120-122|isa 61|mat 9
-6|jos 2|psa 123-125|isa 62|mat 10
-7|jos 3|psa 126-128|isa 63|mat 11
-7|jos 4|psa 129-131|isa 64|mat 12
-7|jos 5|psa 132-134|isa 65|mat 13
-7|jos 6|psa 135-136|isa 66|mat 14
-7|jos 7|psa 137-138|jer 1|mat 15
-7|jos 8|psa 139|jer 2|mat 16
-7|jos 9|psa 140-141|jer 3|mat 17
-7|jos 10|psa 142-143|jer 4|mat 18
-7|jos 11|psa 144|jer 5|mat 19
-7|jos 12-13|psa 145|jer 6|mat 20
-7|jos 14-15|psa 146-147|jer 7|mat 21
-7|jos 16-17|psa 148|jer 8|mat 22
-7|jos 18-19|psa 149-150|jer 9|mat 23
-7|jos 20-21|act 1|jer 10|mat 24
-7|jos 22|act 2|jer 11|mat 25
-7|jos 23|act 3|jer 12|mat 26
-7|jos 24|act 4|jer 13|mat 27
-7|jdg 1|act 5|jer 14|mat 28
-7|jdg 2|act 6|jer 15|mrk 1
-7|jdg 3|act 7|jer 16|mrk 2
-7|jdg 4|act 8|jer 17|mrk 3
-7|jdg 5|act 9|jer 18|mrk 4
-7|jdg 6|act 10|jer 19|mrk 5
-7|jdg 7|act 11|jer 20|mrk 6
-7|jdg 8|act 12|jer 21|mrk 7
-7|jdg 9|act 13|jer 22|mrk 8
-7|jdg 10|act 14|jer 23|mrk 9
-7|jdg 11|act 15|jer 24|mrk 10
-7|jdg 12|act 16|jer 25|mrk 11
-7|jdg 13|act 17|jer 26|mrk 12
-7|jdg 14|act 18|jer 27|mrk 13
-8|jdg 15|act 19|jer 28|mrk 14
-8|jdg 16|act 20|jer 29|mrk 15
-8|jdg 17|act 21|jer 30-31|mrk 16
-8|jdg 18|act 22|jer 32|luk 1
-8|jdg 19|act 23|jer 33|luk 2
-8|jdg 20|act 24|jer 34|luk 3
-8|jdg 21|act 25|jer 35|luk 4
-8|rut 1|act 26|jer 36|luk 5
-8|rut 2|act 27|jer 37|luk 6
-8|rut 3-4|act 28|jer 38|luk 7
-8|1sa 1|rom 1|jer 39|luk 8
-8|1sa 2|rom 2|jer 40|luk 9
-8|1sa 3|rom 3|jer 41|luk 10
-8|1sa 4|rom 4|jer 42|luk 11
-8|1sa 5-6|rom 5|jer 43|luk 12
-8|1sa 7-8|rom 6|jer 44-45|luk 13
-8|1sa 9|rom 7|jer 46|luk 14
-8|1sa 10|rom 8|jer 47|luk 15
-8|1sa 11|rom 9|jer 48|luk 16
-8|1sa 12|rom 10|jer 49|luk 17
-8|1sa 13|rom 11|jer 50|luk 18
-8|1sa 14|rom 12|jer 51|luk 19
-8|1sa 15|rom 13|jer 52|luk 20
-8|1sa 16|rom 14|lam 1|luk 21
-8|1sa 17|rom 15|lam 2|luk 22
-8|1sa 18|rom 16|lam 3|luk 23
-8|1sa 19|1co 1|lam 4|luk 24
-8|1sa 20|1co 2|lam 5|joh 1
-8|1sa 21-22|1co 3|eze 1|joh 2
-8|1sa 23|1co 4|eze 2|joh 3
-8|1sa 24|1co 5|eze 3|joh 4
-9|1sa 25|1co 6|eze 4|joh 5
-9|1sa 26|1co 7|eze 5|joh 6
-9|1sa 27|1co 8|eze 6|joh 7
-9|1sa 28|1co 9|eze 7|joh 8
-9|1sa 29-30|1co 10|eze 8|joh 9
-9|1sa 31|1co 11|eze 9|joh 10
-9|2sa 1|1co 12|eze 10|joh 11
-9|2sa 2|1co 13|eze 11|joh 12
-9|2sa 3|1co 14|eze 12|joh 13
-9|2sa 4-5|1co 15|eze 13|joh 14
-9|2sa 6|1co 16|eze 14|joh 15
-9|2sa 7|2co 1|eze 15|joh 16
-9|2sa 8-9|2co 2|eze 16|joh 17
-9|2sa 10|2co 3|eze 17|joh 18
-9|2sa 11|2co 4|eze 18|joh 19
-9|2sa 12|2co 5|eze 19|joh 20
-9|2sa 13|2co 6|eze 20|joh 21
-9|2sa 14|2co 7|eze 21|psa 1-2
-9|2sa 15|2co 8|eze 22|psa 3-4
-9|2sa 16|2co 9|eze 23|psa 5-6
-9|2sa 17|2co 10|eze 24|psa 7-8
-9|2sa 18|2co 11|eze 25|psa 9
-9|2sa 19|2co 12|eze 26|psa 10
-9|2sa 20|2co 13|eze 27|psa 11-12
-9|2sa 21|gal 1|eze 28|psa 13-14
-9|2sa 22|gal 2|eze 29|psa 15-16
-9|2sa 23|gal 3|eze 30|psa 17
-9|2sa 24|gal 4|eze 31|psa 18
-9|1ki 1|gal 5|eze 32|psa 19
-9|1ki 2|gal 6|eze 33|psa 20-21
-10|1ki 3|eph 1|eze 34|psa 22
-10|1ki 4-5|eph 2|eze 35|psa 23-24
-10|1ki 6|eph 3|eze 36|psa 25
-10|1ki 7|eph 4|eze 37|psa 26-27
-10|1ki 8|eph 5|eze 38|psa 28-29
-10|1ki 9|eph 6|eze 39|psa 30
-10|1ki 10|php 1|eze 40|psa 31
-10|1ki 11|php 2|eze 41|psa 32
-10|1ki 12|php 3|eze 42|psa 33
-10|1ki 13|php 4|eze 43|psa 34
-10|1ki 14|col 1|eze 44|psa 35
-10|1ki 15|col 2|eze 45|psa 36
-10|1ki 16|col 3|eze 46|psa 37
-10|1ki 17|col 4|eze 47|psa 38
-10|1ki 18|1th 1|eze 48|psa 39
-10|1ki 19|1th 2|dan 1|psa 40-41
-10|1ki 20|1th 3|dan 2|psa 42-43
-10|1ki 21|1th 4|dan 3|psa 44
-10|1ki 22|1th 5|dan 4|psa 45
-10|2ki 1|2th 1|dan 5|psa 46-47
-10|2ki 2|2th 2|dan 6|psa 48
-10|2ki 3|2th 3|dan 7|psa 49
-10|2ki 4|1ti 1|dan 8|psa 50
-10|2ki 5|1ti 2|dan 9|psa 51
-10|2ki 6|1ti 3|dan 10|psa 52-54
-10|2ki 7|1ti 4|dan 11|psa 55
-10|2ki 8|1ti 5|dan 12|psa 56-57
-10|2ki 9|1ti 6|hos 1|psa 58-59
-10|2ki 10-11|2ti 1|hos 2|psa 60-61
-10|2ki 12|2ti 2|hos 3-4|psa 62-63
-10|2ki 13|2ti 3|hos 5-6|psa 64-65
-11|2ki 14|2ti 4|hos 7|psa 66-67
-11|2ki 15|tit 1|hos 8|psa 68
-11|2ki 16|tit 2|hos 9|psa 69
-11|2ki 17|tit 3|hos 10|psa 70-71
-11|2ki 18|phm 1|hos 11|psa 72
-11|2ki 19|heb 1|hos 12|psa 73
-11|2ki 20|heb 2|hos 13|psa 74
-11|2ki 21|heb 3|hos 14|psa 75-76
-11|2ki 22|heb 4|joe 1|psa 77
-11|2ki 23|heb 5|joe 2|psa 78
-11|2ki 24|heb 6|joe 3|psa 79
-11|2ki 25|heb 7|amo 1|psa 80
-11|1ch 1-2|heb 8|amo 2|psa 81-82
-11|1ch 3-4|heb 9|amo 3|psa 83-84
-11|1ch 5-6|heb 10|amo 4|psa 85
-11|1ch 7-8|heb 11|amo 5|psa 86
-11|1ch 9-10|heb 12|amo 6|psa 87-88
-11|1ch 11-12|heb 13|amo 7|psa 89
-11|1ch 13-14|jas 1|amo 8|psa 90
-11|1ch 15|jas 2|amo 9|psa 91
-11|1ch 16|jas 3|oba 1|psa 92-93
-11|1ch 17|jas 4|jon 1|psa 94
-11|1ch 18|jas 5|jon 2|psa 95-96
-11|1ch 19-20|1pe 1|jon 3|psa 97-98
-11|1ch 21|1pe 2|jon 4|psa 99-101
-11|1ch 22|1pe 3|mic 1|psa 102
-11|1ch 23|1pe 4|mic 2|psa 103
-11|1ch 24-25|1pe 5|mic 3|psa 104
-11|1ch 26-27|2pe 1|mic 4|psa 105
-11|1ch 28|2pe 2|mic 5|psa 106
-12|1ch 29|2pe 3|mic 6|psa 107
-12|2ch 1|1jn 1|mic 7|psa 108-109
-12|2ch 2|1jn 2|nah 1|psa 110-111
-12|2ch 3-4|1jn 3|nah 2|psa 112-113
-12|2ch 5|1jn 4|nah 3|psa 114-115
-12|2ch 6|1jn 5|hab 1|psa 116
-12|2ch 7|2jn 1|hab 2|psa 117-118
-12|2ch 8|3jn 1|hab 3|psa 119:1-24
-12|2ch 9|jud 1|zep 1|psa 119:25-48
-12|2ch 10|rev 1|zep 2|psa 119:49-72
-12|2ch 11-12|rev 2|zep 3|psa 119:73-96
-12|2ch 13|rev 3|hag 1|psa 119:97-120
-12|2ch 14-15|rev 4|hag 2|psa 119:121-144
-12|2ch 16|rev 5|zec 1|psa 119:145-176
-12|2ch 17|rev 6|zec 2|psa 120-122
-12|2ch 18|rev 7|zec 3|psa 123-125
-12|2ch 19-20|rev 8|zec 4|psa 126-128
-12|2ch 21|rev 9|zec 5|psa 129-131
-12|2ch 22-23|rev 10|zec 6|psa 132-134
-12|2ch 24|rev 11|zec 7|psa 135-136
-12|2ch 25|rev 12|zec 8|psa 137-138
-12|2ch 26|rev 13|zec 9|psa 139
-12|2ch 27-28|rev 14|zec 10|psa 140-141
-12|2ch 29|rev 15|zec 11|psa 142
-12|2ch 30|rev 16|zec 12|psa 143
-12|2ch 31|rev 17|zec 13|psa 144
-12|2ch 32|rev 18|zec 14|psa 145
-12|2ch 33|rev 19|mal 1|psa 146-147
-12|2ch 34|rev 20|mal 2|psa 148
-12|2ch 35|rev 21|mal 3|psa 149
-12|2ch 36|rev 22|mal 4|psa 150
-`.trim();
-
-// PLAN_TEXT를 실제 plan 객체로 변환
-function parsePlanText(text) {
-  const result = {};
-
-  text.split(/\n+/).forEach(line => {
-    const parts = line.trim().split("|");
-    if (parts.length !== 5) return;
-
-    const month = Number(parts[0]);
-    if (!result[month]) result[month] = [];
-
-    const readings = parts.slice(1).map(item => {
-      const firstSpace = item.indexOf(" ");
-      const bookCode = item.slice(0, firstSpace);
-      const chapSpec = item.slice(firstSpace + 1);
-      return [bookCode, chapSpec];
-    });
-
-    result[month].push(readings);
-  });
-
-  return result;
-}
-
-const plan = parsePlanText(PLAN_TEXT);
-
-// localStorage 안전 래퍼
+const plan = {
+  1: [
+    [["gen","1"],["mat","1"],["ezr","1"],["act","1"]],
+    [["gen","2"],["mat","2"],["ezr","2"],["act","2"]],
+    [["gen","3"],["mat","3"],["ezr","3"],["act","3"]],
+    [["gen","4"],["mat","4"],["ezr","4"],["act","4"]],
+    [["gen","5"],["mat","5"],["ezr","5"],["act","5"]],
+    [["gen","6"],["mat","6"],["ezr","6"],["act","6"]],
+    [["gen","7"],["mat","7"],["ezr","7"],["act","7"]],
+    [["gen","8"],["mat","8"],["ezr","8"],["act","8"]],
+    [["gen","9-10"],["mat","9"],["ezr","9"],["act","9"]],
+    [["gen","11"],["mat","10"],["ezr","10"],["act","10"]],
+    [["gen","12"],["mat","11"],["neh","1"],["act","11"]],
+    [["gen","13"],["mat","12"],["neh","2"],["act","12"]],
+    [["gen","14"],["mat","13"],["neh","3"],["act","13"]],
+    [["gen","15"],["mat","14"],["neh","4"],["act","14"]],
+    [["gen","16"],["mat","15"],["neh","5"],["act","15"]],
+    [["gen","17"],["mat","16"],["neh","6"],["act","16"]],
+    [["gen","18"],["mat","17"],["neh","7"],["act","17"]],
+    [["gen","19"],["mat","18"],["neh","8"],["act","18"]],
+    [["gen","20"],["mat","19"],["neh","9"],["act","19"]],
+    [["gen","21"],["mat","20"],["neh","10"],["act","20"]],
+    [["gen","22"],["mat","21"],["neh","11"],["act","21"]],
+    [["gen","23"],["mat","22"],["neh","12"],["act","22"]],
+    [["gen","24"],["mat","23"],["neh","13"],["act","23"]],
+    [["gen","25"],["mat","24"],["est","1"],["act","24"]],
+    [["gen","26"],["mat","25"],["est","2"],["act","25"]],
+    [["gen","27"],["mat","26"],["est","3"],["act","26"]],
+    [["gen","28"],["mat","27"],["est","4"],["act","27"]],
+    [["gen","29"],["mat","28"],["est","5"],["act","28"]],
+    [["gen","30"],["mrk","1"],["est","6"],["rom","1"]],
+    [["gen","31"],["mrk","2"],["est","7"],["rom","2"]],
+    [["gen","32"],["mrk","3"],["est","8"],["rom","3"]]
+  ],
+  2: [
+    [["gen","33"],["mrk","4"],["est","9-10"],["rom","4"]],
+    [["gen","34"],["mrk","5"],["job","1"],["rom","5"]],
+    [["gen","35-36"],["mrk","6"],["job","2"],["rom","6"]],
+    [["gen","37"],["mrk","7"],["job","3"],["rom","7"]],
+    [["gen","38"],["mrk","8"],["job","4"],["rom","8"]],
+    [["gen","39"],["mrk","9"],["job","5"],["rom","9"]],
+    [["gen","40"],["mrk","10"],["job","6"],["rom","10"]],
+    [["gen","41"],["mrk","11"],["job","7"],["rom","11"]],
+    [["gen","42"],["mrk","12"],["job","8"],["rom","12"]],
+    [["gen","43"],["mrk","13"],["job","9"],["rom","13"]],
+    [["gen","44"],["mrk","14"],["job","10"],["rom","14"]],
+    [["gen","45"],["mrk","15"],["job","11"],["rom","15"]],
+    [["gen","46"],["mrk","16"],["job","12"],["rom","16"]],
+    [["gen","47"],["luk","1:1-38"],["job","13"],["1co","1"]],
+    [["gen","48"],["luk","1:39-80"],["job","14"],["1co","2"]],
+    [["gen","49"],["luk","2"],["job","15"],["1co","3"]],
+    [["gen","50"],["luk","3"],["job","16-17"],["1co","4"]],
+    [["exo","1"],["luk","4"],["job","18"],["1co","5"]],
+    [["exo","2"],["luk","5"],["job","19"],["1co","6"]],
+    [["exo","3"],["luk","6"],["job","20"],["1co","7"]],
+    [["exo","4"],["luk","7"],["job","21"],["1co","8"]],
+    [["exo","5"],["luk","8"],["job","22"],["1co","9"]],
+    [["exo","6"],["luk","9"],["job","23"],["1co","10"]],
+    [["exo","7"],["luk","10"],["job","24"],["1co","11"]],
+    [["exo","8"],["luk","11"],["job","25-26"],["1co","12"]],
+    [["exo","9"],["luk","12"],["job","27"],["1co","13"]],
+    [["exo","10"],["luk","13"],["job","28"],["1co","14"]],
+    [["exo","11-12:1-21"],["luk","14"],["job","29"],["1co","15"]]
+  ],
+  3: [
+    [["exo","12:22-51"],["luk","15"],["job","30"],["1co","16"]],
+    [["exo","13"],["luk","16"],["job","31"],["2co","1"]],
+    [["exo","14"],["luk","17"],["job","32"],["2co","2"]],
+    [["exo","15"],["luk","18"],["job","33"],["2co","3"]],
+    [["exo","16"],["luk","19"],["job","34"],["2co","4"]],
+    [["exo","17"],["luk","20"],["job","35"],["2co","5"]],
+    [["exo","18"],["luk","21"],["job","36"],["2co","6"]],
+    [["exo","19"],["luk","22"],["job","37"],["2co","7"]],
+    [["exo","20"],["luk","23"],["job","38"],["2co","8"]],
+    [["exo","21"],["luk","24"],["job","39"],["2co","9"]],
+    [["exo","22"],["joh","1"],["job","40"],["2co","10"]],
+    [["exo","23"],["joh","2"],["job","41"],["2co","11"]],
+    [["exo","24"],["joh","3"],["job","42"],["2co","12"]],
+    [["exo","25"],["joh","4"],["pro","1"],["2co","13"]],
+    [["exo","26"],["joh","5"],["pro","2"],["gal","1"]],
+    [["exo","27"],["joh","6"],["pro","3"],["gal","2"]],
+    [["exo","28"],["joh","7"],["pro","4"],["gal","3"]],
+    [["exo","29"],["joh","8"],["pro","5"],["gal","4"]],
+    [["exo","30"],["joh","9"],["pro","6"],["gal","5"]],
+    [["exo","31"],["joh","10"],["pro","7"],["gal","6"]],
+    [["exo","32"],["joh","11"],["pro","8"],["eph","1"]],
+    [["exo","33"],["joh","12"],["pro","9"],["eph","2"]],
+    [["exo","34"],["joh","13"],["pro","10"],["eph","3"]],
+    [["exo","35"],["joh","14"],["pro","11"],["eph","4"]],
+    [["exo","36"],["joh","15"],["pro","12"],["eph","5"]],
+    [["exo","37"],["joh","16"],["pro","13"],["eph","6"]],
+    [["exo","38"],["joh","17"],["pro","14"],["php","1"]],
+    [["exo","39"],["joh","18"],["pro","15"],["php","2"]],
+    [["exo","40"],["joh","19"],["pro","16"],["php","3"]],
+    [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
+    [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
+  ],
+  4: [
+    [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
+    [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
+    [["lev","6"],["psa","5-6"],["pro","21"],["col","4"]],
+    [["lev","7"],["psa","7-8"],["pro","22"],["1th","1"]],
+    [["lev","8"],["psa","9"],["pro","23"],["1th","2"]],
+    [["lev","9"],["psa","10"],["pro","24"],["1th","3"]],
+    [["lev","10"],["psa","11-12"],["pro","25"],["1th","4"]],
+    [["lev","11-12"],["psa","13-14"],["pro","26"],["1th","5"]],
+    [["lev","13"],["psa","15-16"],["pro","27"],["2th","1"]],
+    [["lev","14"],["psa","17"],["pro","28"],["2th","2"]],
+    [["lev","15"],["psa","18"],["pro","29"],["2th","3"]],
+    [["lev","16"],["psa","19"],["pro","30"],["1ti","1"]],
+    [["lev","17"],["psa","20-21"],["pro","31"],["1ti","2"]],
+    [["lev","18"],["psa","22"],["ecc","1"],["1ti","3"]],
+    [["lev","19"],["psa","23-24"],["ecc","2"],["1ti","4"]],
+    [["lev","20"],["psa","25"],["ecc","3"],["1ti","5"]],
+    [["lev","21"],["psa","26-27"],["ecc","4"],["1ti","6"]],
+    [["lev","22"],["psa","28-29"],["ecc","5"],["2ti","1"]],
+    [["lev","23"],["psa","30"],["ecc","6"],["2ti","2"]],
+    [["lev","24"],["psa","31"],["ecc","7"],["2ti","3"]],
+    [["lev","25"],["psa","32"],["ecc","8"],["2ti","4"]],
+    [["lev","26"],["psa","33"],["ecc","9"],["tit","1"]],
+    [["lev","27"],["psa","34"],["ecc","10"],["tit","2"]],
+    [["num","1"],["psa","35"],["ecc","11"],["tit","3"]],
+    [["num","2"],["psa","36"],["ecc","12"],["phm","1"]],
+    [["num","3"],["psa","37"],["sng","1"],["heb","1"]],
+    [["num","4"],["psa","38"],["sng","2"],["heb","2"]],
+    [["num","5"],["psa","39"],["sng","3"],["heb","3"]],
+    [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
+    [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
+  ],
+  5: [
+    [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
+    [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
+    [["num","10"],["psa","46-47"],["sng","8"],["heb","8"]],
+    [["num","11"],["psa","48"],["isa","1"],["heb","9"]],
+    [["num","12-13"],["psa","49"],["isa","2"],["heb","10"]],
+    [["num","14"],["psa","50"],["isa","3-4"],["heb","11"]],
+    [["num","15"],["psa","51"],["isa","5"],["heb","12"]],
+    [["num","16"],["psa","52-54"],["isa","6"],["heb","13"]],
+    [["num","17-18"],["psa","55"],["isa","7"],["jas","1"]],
+    [["num","19"],["psa","56-57"],["isa","8"],["jas","2"]],
+    [["num","20"],["psa","58-59"],["isa","9"],["jas","3"]],
+    [["num","21"],["psa","60-61"],["isa","10"],["jas","4"]],
+    [["num","22"],["psa","62-63"],["isa","11-12"],["jas","5"]],
+    [["num","23"],["psa","64-65"],["isa","13"],["1pe","1"]],
+    [["num","24"],["psa","66-67"],["isa","14"],["1pe","2"]],
+    [["num","25"],["psa","68"],["isa","15"],["1pe","3"]],
+    [["num","26"],["psa","69"],["isa","16"],["1pe","4"]],
+    [["num","27"],["psa","70-71"],["isa","17-18"],["1pe","5"]],
+    [["num","28"],["psa","72"],["isa","19-20"],["2pe","1"]],
+    [["num","29"],["psa","73"],["isa","21"],["2pe","2"]],
+    [["num","30"],["psa","74"],["isa","22"],["2pe","3"]],
+    [["num","31"],["psa","75-76"],["isa","23"],["1jn","1"]],
+    [["num","32"],["psa","77"],["isa","24"],["1jn","2"]],
+    [["num","33"],["psa","78:1-39"],["isa","25"],["1jn","3"]],
+    [["num","34"],["psa","78:40-72"],["isa","26"],["1jn","4"]],
+    [["num","35"],["psa","79"],["isa","27"],["1jn","5"]],
+    [["num","36"],["psa","80"],["isa","28"],["2jn","1"]],
+    [["deu","1"],["psa","81-82"],["isa","29"],["3jn","1"]],
+    [["deu","2"],["psa","83-84"],["isa","30"],["jud","1"]],
+    [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
+    [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
+  ],
+  6: [
+    [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
+    [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
+    [["deu","7"],["psa","90"],["isa","35"],["rev","5"]],
+    [["deu","8"],["psa","91"],["isa","36"],["rev","6"]],
+    [["deu","9"],["psa","92-93"],["isa","37"],["rev","7"]],
+    [["deu","10"],["psa","94"],["isa","38"],["rev","8"]],
+    [["deu","11"],["psa","95-96"],["isa","39"],["rev","9"]],
+    [["deu","12"],["psa","97-98"],["isa","40"],["rev","10"]],
+    [["deu","13-14"],["psa","99-101"],["isa","41"],["rev","11"]],
+    [["deu","15"],["psa","102"],["isa","42"],["rev","12"]],
+    [["deu","16"],["psa","103"],["isa","43"],["rev","13"]],
+    [["deu","17"],["psa","104"],["isa","44"],["rev","14"]],
+    [["deu","18"],["psa","105"],["isa","45"],["rev","15"]],
+    [["deu","19"],["psa","106"],["isa","46"],["rev","16"]],
+    [["deu","20"],["psa","107"],["isa","47"],["rev","17"]],
+    [["deu","21"],["psa","108-109"],["isa","48"],["rev","18"]],
+    [["deu","22"],["psa","110-111"],["isa","49"],["rev","19"]],
+    [["deu","23"],["psa","112-113"],["isa","50"],["rev","20"]],
+    [["deu","24"],["psa","114-115"],["isa","51"],["rev","21"]],
+    [["deu","25"],["psa","116"],["isa","52"],["rev","22"]],
+    [["deu","26"],["psa","117-118"],["isa","53"],["mat","1"]],
+    [["deu","27"],["psa","119:1-24"],["isa","54"],["mat","2"]],
+    [["deu","28"],["psa","119:25-48"],["isa","55"],["mat","3"]],
+    [["deu","29"],["psa","119:49-72"],["isa","56"],["mat","4"]],
+    [["deu","30"],["psa","119:73-96"],["isa","57"],["mat","5"]],
+    [["deu","31"],["psa","119:97-120"],["isa","58"],["mat","6"]],
+    [["deu","32"],["psa","119:121-144"],["isa","59"],["mat","7"]],
+    [["deu","33-34"],["psa","119:145-176"],["isa","60"],["mat","8"]],
+    [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
+    [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
+  ],
+  7: [
+    [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
+    [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
+    [["jos","5"],["psa","132-134"],["isa","65"],["mat","13"]],
+    [["jos","6"],["psa","135-136"],["isa","66"],["mat","14"]],
+    [["jos","7"],["psa","137-138"],["jer","1"],["mat","15"]],
+    [["jos","8"],["psa","139"],["jer","2"],["mat","16"]],
+    [["jos","9"],["psa","140-141"],["jer","3"],["mat","17"]],
+    [["jos","10"],["psa","142-143"],["jer","4"],["mat","18"]],
+    [["jos","11"],["psa","144"],["jer","5"],["mat","19"]],
+    [["jos","12-13"],["psa","145"],["jer","6"],["mat","20"]],
+    [["jos","14-15"],["psa","146-147"],["jer","7"],["mat","21"]],
+    [["jos","16-17"],["psa","148"],["jer","8"],["mat","22"]],
+    [["jos","18-19"],["psa","149-150"],["jer","9"],["mat","23"]],
+    [["jos","20-21"],["act","1"],["jer","10"],["mat","24"]],
+    [["jos","22"],["act","2"],["jer","11"],["mat","25"]],
+    [["jos","23"],["act","3"],["jer","12"],["mat","26"]],
+    [["jos","24"],["act","4"],["jer","13"],["mat","27"]],
+    [["jdg","1"],["act","5"],["jer","14"],["mat","28"]],
+    [["jdg","2"],["act","6"],["jer","15"],["mrk","1"]],
+    [["jdg","3"],["act","7"],["jer","16"],["mrk","2"]],
+    [["jdg","4"],["act","8"],["jer","17"],["mrk","3"]],
+    [["jdg","5"],["act","9"],["jer","18"],["mrk","4"]],
+    [["jdg","6"],["act","10"],["jer","19"],["mrk","5"]],
+    [["jdg","7"],["act","11"],["jer","20"],["mrk","6"]],
+    [["jdg","8"],["act","12"],["jer","21"],["mrk","7"]],
+    [["jdg","9"],["act","13"],["jer","22"],["mrk","8"]],
+    [["jdg","10"],["act","14"],["jer","23"],["mrk","9"]],
+    [["jdg","11"],["act","15"],["jer","24"],["mrk","10"]],
+    [["jdg","12"],["act","16"],["jer","25"],["mrk","11"]],
+    [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
+    [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
+  ],
+  8: [
+    [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
+    [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
+    [["jdg","17"],["act","21"],["jer","30-31"],["mrk","16"]],
+    [["jdg","18"],["act","22"],["jer","32"],["luk","1"]],
+    [["jdg","19"],["act","23"],["jer","33"],["luk","2"]],
+    [["jdg","20"],["act","24"],["jer","34"],["luk","3"]],
+    [["jdg","21"],["act","25"],["jer","35"],["luk","4"]],
+    [["rut","1"],["act","26"],["jer","36"],["luk","5"]],
+    [["rut","2"],["act","27"],["jer","37"],["luk","6"]],
+    [["rut","3-4"],["act","28"],["jer","38"],["luk","7"]],
+    [["1sa","1"],["rom","1"],["jer","39"],["luk","8"]],
+    [["1sa","2"],["rom","2"],["jer","40"],["luk","9"]],
+    [["1sa","3"],["rom","3"],["jer","41"],["luk","10"]],
+    [["1sa","4"],["rom","4"],["jer","42"],["luk","11"]],
+    [["1sa","5-6"],["rom","5"],["jer","43"],["luk","12"]],
+    [["1sa","7-8"],["rom","6"],["jer","44-45"],["luk","13"]],
+    [["1sa","9"],["rom","7"],["jer","46"],["luk","14"]],
+    [["1sa","10"],["rom","8"],["jer","47"],["luk","15"]],
+    [["1sa","11"],["rom","9"],["jer","48"],["luk","16"]],
+    [["1sa","12"],["rom","10"],["jer","49"],["luk","17"]],
+    [["1sa","13"],["rom","11"],["jer","50"],["luk","18"]],
+    [["1sa","14"],["rom","12"],["jer","51"],["luk","19"]],
+    [["1sa","15"],["rom","13"],["jer","52"],["luk","20"]],
+    [["1sa","16"],["rom","14"],["lam","1"],["luk","21"]],
+    [["1sa","17"],["rom","15"],["lam","2"],["luk","22"]],
+    [["1sa","18"],["rom","16"],["lam","3"],["luk","23"]],
+    [["1sa","19"],["1co","1"],["lam","4"],["luk","24"]],
+    [["1sa","20"],["1co","2"],["lam","5"],["joh","1"]],
+    [["1sa","21-22"],["1co","3"],["eze","1"],["joh","2"]],
+    [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
+    [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
+  ],
+  9: [
+    [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
+    [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
+    [["1sa","27"],["1co","8"],["eze","6"],["joh","7"]],
+    [["1sa","28"],["1co","9"],["eze","7"],["joh","8"]],
+    [["1sa","29-30"],["1co","10"],["eze","8"],["joh","9"]],
+    [["1sa","31"],["1co","11"],["eze","9"],["joh","10"]],
+    [["2sa","1"],["1co","12"],["eze","10"],["joh","11"]],
+    [["2sa","2"],["1co","13"],["eze","11"],["joh","12"]],
+    [["2sa","3"],["1co","14"],["eze","12"],["joh","13"]],
+    [["2sa","4-5"],["1co","15"],["eze","13"],["joh","14"]],
+    [["2sa","6"],["1co","16"],["eze","14"],["joh","15"]],
+    [["2sa","7"],["2co","1"],["eze","15"],["joh","16"]],
+    [["2sa","8-9"],["2co","2"],["eze","16"],["joh","17"]],
+    [["2sa","10"],["2co","3"],["eze","17"],["joh","18"]],
+    [["2sa","11"],["2co","4"],["eze","18"],["joh","19"]],
+    [["2sa","12"],["2co","5"],["eze","19"],["joh","20"]],
+    [["2sa","13"],["2co","6"],["eze","20"],["joh","21"]],
+    [["2sa","14"],["2co","7"],["eze","21"],["psa","1-2"]],
+    [["2sa","15"],["2co","8"],["eze","22"],["psa","3-4"]],
+    [["2sa","16"],["2co","9"],["eze","23"],["psa","5-6"]],
+    [["2sa","17"],["2co","10"],["eze","24"],["psa","7-8"]],
+    [["2sa","18"],["2co","11"],["eze","25"],["psa","9"]],
+    [["2sa","19"],["2co","12"],["eze","26"],["psa","10"]],
+    [["2sa","20"],["2co","13"],["eze","27"],["psa","11-12"]],
+    [["2sa","21"],["gal","1"],["eze","28"],["psa","13-14"]],
+    [["2sa","22"],["gal","2"],["eze","29"],["psa","15-16"]],
+    [["2sa","23"],["gal","3"],["eze","30"],["psa","17"]],
+    [["2sa","24"],["gal","4"],["eze","31"],["psa","18"]],
+    [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
+    [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
+  ],
+  10: [
+    [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
+    [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
+    [["1ki","6"],["eph","3"],["eze","36"],["psa","25"]],
+    [["1ki","7"],["eph","4"],["eze","37"],["psa","26-27"]],
+    [["1ki","8"],["eph","5"],["eze","38"],["psa","28-29"]],
+    [["1ki","9"],["eph","6"],["eze","39"],["psa","30"]],
+    [["1ki","10"],["php","1"],["eze","40"],["psa","31"]],
+    [["1ki","11"],["php","2"],["eze","41"],["psa","32"]],
+    [["1ki","12"],["php","3"],["eze","42"],["psa","33"]],
+    [["1ki","13"],["php","4"],["eze","43"],["psa","34"]],
+    [["1ki","14"],["col","1"],["eze","44"],["psa","35"]],
+    [["1ki","15"],["col","2"],["eze","45"],["psa","36"]],
+    [["1ki","16"],["col","3"],["eze","46"],["psa","37"]],
+    [["1ki","17"],["col","4"],["eze","47"],["psa","38"]],
+    [["1ki","18"],["1th","1"],["eze","48"],["psa","39"]],
+    [["1ki","19"],["1th","2"],["dan","1"],["psa","40-41"]],
+    [["1ki","20"],["1th","3"],["dan","2"],["psa","42-43"]],
+    [["1ki","21"],["1th","4"],["dan","3"],["psa","44"]],
+    [["1ki","22"],["1th","5"],["dan","4"],["psa","45"]],
+    [["2ki","1"],["2th","1"],["dan","5"],["psa","46-47"]],
+    [["2ki","2"],["2th","2"],["dan","6"],["psa","48"]],
+    [["2ki","3"],["2th","3"],["dan","7"],["psa","49"]],
+    [["2ki","4"],["1ti","1"],["dan","8"],["psa","50"]],
+    [["2ki","5"],["1ti","2"],["dan","9"],["psa","51"]],
+    [["2ki","6"],["1ti","3"],["dan","10"],["psa","52-54"]],
+    [["2ki","7"],["1ti","4"],["dan","11"],["psa","55"]],
+    [["2ki","8"],["1ti","5"],["dan","12"],["psa","56-57"]],
+    [["2ki","9"],["1ti","6"],["hos","1"],["psa","58-59"]],
+    [["2ki","10-11"],["2ti","1"],["hos","2"],["psa","60-61"]],
+    [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
+    [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
+  ],
+  11: [
+    [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
+    [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
+    [["2ki","16"],["tit","2"],["hos","9"],["psa","69"]],
+    [["2ki","17"],["tit","3"],["hos","10"],["psa","70-71"]],
+    [["2ki","18"],["phm","1"],["hos","11"],["psa","72"]],
+    [["2ki","19"],["heb","1"],["hos","12"],["psa","73"]],
+    [["2ki","20"],["heb","2"],["hos","13"],["psa","74"]],
+    [["2ki","21"],["heb","3"],["hos","14"],["psa","75-76"]],
+    [["2ki","22"],["heb","4"],["joe","1"],["psa","77"]],
+    [["2ki","23"],["heb","5"],["joe","2"],["psa","78"]],
+    [["2ki","24"],["heb","6"],["joe","3"],["psa","79"]],
+    [["2ki","25"],["heb","7"],["amo","1"],["psa","80"]],
+    [["1ch","1-2"],["heb","8"],["amo","2"],["psa","81-82"]],
+    [["1ch","3-4"],["heb","9"],["amo","3"],["psa","83-84"]],
+    [["1ch","5-6"],["heb","10"],["amo","4"],["psa","85"]],
+    [["1ch","7-8"],["heb","11"],["amo","5"],["psa","86"]],
+    [["1ch","9-10"],["heb","12"],["amo","6"],["psa","87-88"]],
+    [["1ch","11-12"],["heb","13"],["amo","7"],["psa","89"]],
+    [["1ch","13-14"],["jas","1"],["amo","8"],["psa","90"]],
+    [["1ch","15"],["jas","2"],["amo","9"],["psa","91"]],
+    [["1ch","16"],["jas","3"],["oba","1"],["psa","92-93"]],
+    [["1ch","17"],["jas","4"],["jon","1"],["psa","94"]],
+    [["1ch","18"],["jas","5"],["jon","2"],["psa","95-96"]],
+    [["1ch","19-20"],["1pe","1"],["jon","3"],["psa","97-98"]],
+    [["1ch","21"],["1pe","2"],["jon","4"],["psa","99-101"]],
+    [["1ch","22"],["1pe","3"],["mic","1"],["psa","102"]],
+    [["1ch","23"],["1pe","4"],["mic","2"],["psa","103"]],
+    [["1ch","24-25"],["1pe","5"],["mic","3"],["psa","104"]],
+    [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
+    [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
+  ],
+  12: [
+    [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
+    [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
+    [["2ch","2"],["1jn","2"],["nah","1"],["psa","110-111"]],
+    [["2ch","3-4"],["1jn","3"],["nah","2"],["psa","112-113"]],
+    [["2ch","5"],["1jn","4"],["nah","3"],["psa","114-115"]],
+    [["2ch","6"],["1jn","5"],["hab","1"],["psa","116"]],
+    [["2ch","7"],["2jn","1"],["hab","2"],["psa","117-118"]],
+    [["2ch","8"],["3jn","1"],["hab","3"],["psa","119:1-24"]],
+    [["2ch","9"],["jud","1"],["zep","1"],["psa","119:25-48"]],
+    [["2ch","10"],["rev","1"],["zep","2"],["psa","119:49-72"]],
+    [["2ch","11-12"],["rev","2"],["zep","3"],["psa","119:73-96"]],
+    [["2ch","13"],["rev","3"],["hag","1"],["psa","119:97-120"]],
+    [["2ch","14-15"],["rev","4"],["hag","2"],["psa","119:121-144"]],
+    [["2ch","16"],["rev","5"],["zec","1"],["psa","119:145-176"]],
+    [["2ch","17"],["rev","6"],["zec","2"],["psa","120-122"]],
+    [["2ch","18"],["rev","7"],["zec","3"],["psa","123-125"]],
+    [["2ch","19-20"],["rev","8"],["zec","4"],["psa","126-128"]],
+    [["2ch","21"],["rev","9"],["zec","5"],["psa","129-131"]],
+    [["2ch","22-23"],["rev","10"],["zec","6"],["psa","132-134"]],
+    [["2ch","24"],["rev","11"],["zec","7"],["psa","135-136"]],
+    [["2ch","25"],["rev","12"],["zec","8"],["psa","137-138"]],
+    [["2ch","26"],["rev","13"],["zec","9"],["psa","139"]],
+    [["2ch","27-28"],["rev","14"],["zec","10"],["psa","140-141"]],
+    [["2ch","29"],["rev","15"],["zec","11"],["psa","142"]],
+    [["2ch","30"],["rev","16"],["zec","12"],["psa","143"]],
+    [["2ch","31"],["rev","17"],["zec","13"],["psa","144"]],
+    [["2ch","32"],["rev","18"],["zec","14"],["psa","145"]],
+    [["2ch","33"],["rev","19"],["mal","1"],["psa","146-147"]],
+    [["2ch","34"],["rev","20"],["mal","2"],["psa","148"]],
+    [["2ch","35"],["rev","21"],["mal","3"],["psa","149"]],
+    [["2ch","36"],["rev","22"],["mal","4"],["psa","150"]]
+  ]
+};
 function lsGet(key) {
   try {
     if (window.localStorage) return localStorage.getItem(key);
   } catch (e) {}
   return null;
 }
-
 function lsSet(key, val) {
   try {
     if (window.localStorage) localStorage.setItem(key, val);
   } catch (e) {}
 }
-
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
     const keys = [];
-
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("mcheyne_read_")) keys.push(k);
     }
-
     keys.forEach(k => localStorage.removeItem(k));
   } catch (e) {}
 }
-
-// 날짜를 1~365번째 순번으로 변환
-function getDayNumber(month, date) {
-  const monthDays = [31,28,31,30,31,30,31,31,30,31,30,31];
-  let total = 0;
-
-  for (let i = 0; i < month - 1; i++) {
-    total += monthDays[i];
-  }
-
-  return total + date;
-}
-
-// 장/절 표기 분석
-function parseChapSpec(spec) {
+function parseFirstChapSpec(spec) {
   const s = String(spec).trim();
-
-  const rangeMatch = s.match(/^(\d+)-(\d+)/);
-  if (rangeMatch) {
-    return [{
-      chap: Number(rangeMatch[1]),
-      sec: 1
-    }];
-  }
-
   const verseMatch = s.match(/^(\d+):(\d+)/);
   if (verseMatch) {
-    return [{
+    return {
       chap: Number(verseMatch[1]),
       sec: Number(verseMatch[2])
-    }];
+    };
   }
-
+  const rangeMatch = s.match(/^(\d+)-(\d+)/);
+  if (rangeMatch) {
+    return {
+      chap: Number(rangeMatch[1]),
+      sec: 1
+    };
+  }
   const chapMatch = s.match(/^(\d+)/);
   if (chapMatch) {
-    return [{
+    return {
       chap: Number(chapMatch[1]),
       sec: 1
-    }];
+    };
   }
-
-  return [{ chap: 1, sec: 1 }];
+  return { chap: 1, sec: 1 };
 }
-
-// 대한성서공회 링크 생성
 function makeBibleUrl(bookCode, chap, sec) {
   const bskBook = getBskBookCode(bookCode);
-
   return "https://www.bskorea.or.kr/bible/korbibReadpage.php"
     + "?version=GAE"
     + "&book=" + encodeURIComponent(bskBook)
@@ -1026,84 +992,82 @@ function makeBibleUrl(bookCode, chap, sec) {
     + "&fontSize=19px"
     + "&fontWeight=bold";
 }
-
-// 본문 표기
-function makeReadingText(bookCode, chapSpec) {
-  const bookName = BOOKS[bookCode] || bookCode;
-  return bookName + " " + (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
+function makeYoutubeUrl(bookCode, chap) {
+  const arr = YOUTUBE_LINKS[bookCode];
+  if (!arr) return null;
+  const videoId = arr[chap - 1];
+  if (!videoId) return null;
+  return YT_BASE + String(videoId).trim();
 }
-
-// 본문 링크 셀 생성
 function makeCell(bookCode, chapSpec, id) {
-  const a = document.createElement("a");
-
-  a.className = "bible";
-  a.dataset.book = bookCode;
-  a.dataset.chapSpec = chapSpec;
-  a.dataset.id = id;
-
-  a.textContent = makeReadingText(bookCode, chapSpec);
-
-  const chapItems = parseChapSpec(chapSpec);
-  const first = chapItems[0];
-  const url = makeBibleUrl(bookCode, first.chap, first.sec);
-
-  a.href = url;
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-
+  const wrap = document.createElement("span");
+  wrap.className = "reading-cell";
+  const firstItem = parseFirstChapSpec(chapSpec);
+  const bibleLink = document.createElement("a");
+  bibleLink.className = "bible";
+  bibleLink.dataset.book = bookCode;
+  bibleLink.dataset.chapSpec = chapSpec;
+  bibleLink.dataset.id = id;
+  bibleLink.textContent =
+    (BOOKS[bookCode] || bookCode) + " " +
+    (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
+  bibleLink.href = makeBibleUrl(bookCode, firstItem.chap, firstItem.sec);
+  bibleLink.target = "_blank";
+  bibleLink.rel = "noopener noreferrer";
   const key = "mcheyne_read_" + id;
-
   if (lsGet(key) === "1") {
-    a.classList.add("read");
+    bibleLink.classList.add("read");
   }
-
-  a.addEventListener("click", function () {
+  bibleLink.addEventListener("click", function () {
     this.classList.toggle("read");
-
     const v = this.classList.contains("read") ? "1" : "0";
     lsSet(key, v);
   });
-
-  return a;
+  wrap.appendChild(bibleLink);
+  const youtubeUrl = makeYoutubeUrl(bookCode, firstItem.chap);
+  if (youtubeUrl) {
+    const ytLink = document.createElement("a");
+    ytLink.className = "youtube-link";
+    ytLink.href = youtubeUrl;
+    ytLink.target = "_blank";
+    ytLink.rel = "noopener noreferrer";
+    ytLink.textContent = "▶";
+    ytLink.title = "공동체성경읽기 유튜브로 듣기";
+    ytLink.addEventListener("click", function () {
+      setTimeout(function () {
+        try {
+          window.focus();
+        } catch (e) {}
+      }, 300);
+    });
+    wrap.appendChild(ytLink);
+  }
+  return wrap;
 }
-
-// 렌더링
 (function render() {
   const root = document.getElementById("plans");
-
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
     const days = plan[month];
-
     const wrap = document.createElement("div");
     wrap.className = "month-block";
-
     const h2 = document.createElement("h2");
     h2.textContent = month + "월";
     wrap.appendChild(h2);
-
     const table = document.createElement("table");
-
     const thead = document.createElement("thead");
     thead.innerHTML = "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
     table.appendChild(thead);
-
     const tbody = document.createElement("tbody");
-
     days.forEach((dayArr, dayIdx) => {
       const tr = document.createElement("tr");
-
       const tdDate = document.createElement("td");
       tdDate.className = "date";
-
       const date = dayIdx + 1;
-      const dayNumber = getDayNumber(month, date);
-      const febcId = FEBC_IDS[dayNumber - 1];
-
+      const febcId = getFebcId(month, date);
       if (febcId) {
         const dateLink = document.createElement("a");
-        dateLink.href = "https://youtu.be/" + febcId;
+        dateLink.href = YT_BASE + febcId;
         dateLink.target = "_blank";
         dateLink.rel = "noopener noreferrer";
         dateLink.className = "date-link";
@@ -1113,44 +1077,31 @@ function makeCell(bookCode, chapSpec, id) {
       } else {
         tdDate.textContent = date;
       }
-
       if (month === TODAY_MONTH && date === TODAY_DATE) {
         tdDate.classList.add("today");
       }
-
       tr.appendChild(tdDate);
-
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
-
         const td = document.createElement("td");
         const id = month + "-" + date + "-" + (i + 1);
-
         td.appendChild(makeCell(bookCode, chapSpec, id));
         tr.appendChild(td);
       }
-
       tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
     wrap.appendChild(table);
     root.appendChild(wrap);
   });
 })();
-
-// 읽음 표시 전체 초기화
 document.getElementById("resetRead").addEventListener("click", function () {
   if (!confirm("모든 읽음 표시를 초기화할까요?")) return;
-
   document.querySelectorAll("a.bible.read").forEach(a => {
     a.classList.remove("read");
   });
-
   lsClearMcheyne();
 });
-
-// 우클릭 방지
 document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
 });
