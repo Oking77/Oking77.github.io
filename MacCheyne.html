@@ -32,6 +32,38 @@
     margin: 4px 0 8px 0;
   }
 
+  .mode-box {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0 14px 0;
+    flex-wrap: wrap;
+  }
+
+  .mode-btn {
+    border: 1px solid #bbb;
+    background: #f5f5f5;
+    color: #333;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .mode-btn.active {
+    background: #222;
+    color: #fff;
+    border-color: #222;
+    font-weight: 700;
+  }
+
+  #modeStatus {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #666;
+    margin: -4px 0 10px 0;
+  }
+
   table {
     border-collapse: collapse;
     width: 100%;
@@ -181,14 +213,21 @@
 <h3>*^^* Oking's 맥체인 성경읽기표 ^^"</h3>
 
 <p>
-  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭으로 열림<br>
+  · 모바일폰 모드: 유튜브가 새 탭/유튜브 앱 방식으로 열림<br>
+  · 패드/탭 모드: 유튜브가 웹페이지 안 내장형 플레이어로 실행됨<br>
+  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 실행<br>
   · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
-  · 유튜브 아이콘(▶) 클릭 시 웹페이지 안에서 공동체성경읽기 유튜브가 실행됨<br>
-  · 여러 장 범위는 장 순서대로 연속 재생됨<br>
-  · 절 단위 분할 본문은 지정 구간만 재생 후 자동 정지됨<br>
-  · 읽음 표시는 동일 브라우저에 저장됨<br>
-  · 다른 브라우저 또는 다른 기기에서는 읽음 표시가 새로 시작됨
+  · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 실행<br>
+  · 패드/탭 모드에서는 여러 장 범위가 장 순서대로 연속 재생됨<br>
+  · 패드/탭 모드에서는 절 단위 분할 본문이 지정 구간만 재생 후 자동 정지됨<br>
+  · 읽음 표시는 동일 브라우저에 저장됨
 </p>
+
+<div class="mode-box">
+  <button id="modePhone" class="mode-btn">모바일폰 모드</button>
+  <button id="modeTablet" class="mode-btn">패드/탭 모드</button>
+</div>
+<div id="modeStatus"></div>
 
 <div id="plans"></div>
 
@@ -197,7 +236,7 @@
 <div id="youtubeModal">
   <div id="youtubeBox">
     <div id="youtubeHeader">
-      <span id="youtubeTitle">공동체성경읽기</span>
+      <span id="youtubeTitle">유튜브 재생</span>
       <button id="youtubeClose">닫기</button>
     </div>
     <div id="youtubePlayer"></div>
@@ -345,9 +384,7 @@ const YOUTUBE_LINKS = {
     "Bve5all1sjg"
   ],
 
-  rut: [
-    "NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"
-  ],
+  rut: ["NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"],
 
   "1sa": [
     "xdK4dqCYIGI", "PC1GaCn9c4k", "QE2W7ZNN3Vs", "zAAUCINKsXY", "F51PeN02lMQ",
@@ -994,12 +1031,9 @@ const plan = {
 const YOUTUBE_SEGMENTS = {
   "luk|1:1-38":  { chapter: 1, start: 0,   end: 291 },
   "luk|1:39-80": { chapter: 1, start: 291, end: 563 },
-
   "exo|12:22-51": { chapter: 12, start: 203, end: 485 },
-
   "psa|78:1-39":  { chapter: 78, start: 0,   end: 272 },
   "psa|78:40-72": { chapter: 78, start: 272, end: 496 },
-
   "psa|119:1-24":    { chapter: 119, start: 0,    end: 161 },
   "psa|119:25-48":   { chapter: 119, start: 161,  end: 348 },
   "psa|119:49-72":   { chapter: 119, start: 348,  end: 517 },
@@ -1009,11 +1043,55 @@ const YOUTUBE_SEGMENTS = {
   "psa|119:145-176": { chapter: 119, start: 1046, end: 1281 }
 };
 
+let PLAY_MODE = "embed";
 let ytPlayer = null;
 let ytStopTimer = null;
 let ytApiReady = false;
 let currentSequence = [];
 let currentIndex = 0;
+
+function lsGet(key) {
+  try {
+    if (window.localStorage) return localStorage.getItem(key);
+  } catch (e) {}
+  return null;
+}
+
+function lsSet(key, val) {
+  try {
+    if (window.localStorage) localStorage.setItem(key, val);
+  } catch (e) {}
+}
+
+function getDefaultPlayMode() {
+  return window.innerWidth < 768 ? "external" : "embed";
+}
+
+function loadPlayMode() {
+  PLAY_MODE = lsGet("mcheyne_play_mode") || getDefaultPlayMode();
+}
+
+function setPlayMode(mode) {
+  PLAY_MODE = mode;
+  lsSet("mcheyne_play_mode", mode);
+  updateModeUI();
+}
+
+function updateModeUI() {
+  const phoneBtn = document.getElementById("modePhone");
+  const tabletBtn = document.getElementById("modeTablet");
+  const status = document.getElementById("modeStatus");
+
+  phoneBtn.classList.toggle("active", PLAY_MODE === "external");
+  tabletBtn.classList.toggle("active", PLAY_MODE === "embed");
+
+  status.textContent =
+    PLAY_MODE === "external"
+      ? "현재: 모바일폰 모드 / 유튜브 새 탭 또는 앱으로 열림"
+      : "현재: 패드·탭 모드 / 웹페이지 안 내장 플레이어로 재생";
+}
+
+loadPlayMode();
 
 const ytApiScript = document.createElement("script");
 ytApiScript.src = "https://www.youtube.com/iframe_api";
@@ -1079,14 +1157,40 @@ function getChapterRangeFromSpec(chapSpec) {
     };
   }
 
-  return {
-    type: "single",
-    startChapter: 1,
-    endChapter: 1
-  };
+  return { type: "single", startChapter: 1, endChapter: 1 };
 }
 
 function buildPlaySequence(bookCode, chapSpec) {
+  if (bookCode === "exo" && chapSpec === "11-12:1-21") {
+    const exo11 = getVideoId("exo", 11);
+    const exo12 = getVideoId("exo", 12);
+    const sequence = [];
+
+    if (exo11) {
+      sequence.push({
+        videoId: String(exo11).trim(),
+        bookCode: "exo",
+        chapter: 11,
+        start: 0,
+        end: null,
+        label: "출 11장"
+      });
+    }
+
+    if (exo12) {
+      sequence.push({
+        videoId: String(exo12).trim(),
+        bookCode: "exo",
+        chapter: 12,
+        start: 0,
+        end: 203,
+        label: "출 12장 1-21절"
+      });
+    }
+
+    return sequence;
+  }
+
   const segmentKey = bookCode + "|" + chapSpec;
   const segment = YOUTUBE_SEGMENTS[segmentKey];
 
@@ -1107,22 +1211,6 @@ function buildPlaySequence(bookCode, chapSpec) {
   const parsed = getChapterRangeFromSpec(chapSpec);
   const sequence = [];
 
-  if (parsed.type === "multiWithVerse") {
-    for (let ch = parsed.startChapter; ch <= parsed.endChapter; ch++) {
-      const videoId = getVideoId(bookCode, ch);
-      if (!videoId) continue;
-      sequence.push({
-        videoId: String(videoId).trim(),
-        bookCode,
-        chapter: ch,
-        start: 0,
-        end: null,
-        label: (BOOKS[bookCode] || bookCode) + " " + ch + "장"
-      });
-    }
-    return sequence;
-  }
-
   for (let ch = parsed.startChapter; ch <= parsed.endChapter; ch++) {
     const videoId = getVideoId(bookCode, ch);
     if (!videoId) continue;
@@ -1140,11 +1228,34 @@ function buildPlaySequence(bookCode, chapSpec) {
   return sequence;
 }
 
+function openYoutubeExternal(sequence) {
+  if (!sequence || !sequence.length) return;
+
+  const first = sequence[0];
+  let url = YT_BASE + first.videoId;
+
+  if (first.start && first.start > 0) {
+    url += "?t=" + Math.floor(first.start);
+  }
+
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function playYoutube(sequence, title) {
+  if (!sequence || !sequence.length) return;
+
+  if (PLAY_MODE === "external") {
+    openYoutubeExternal(sequence);
+  } else {
+    playSequence(sequence, title);
+  }
+}
+
 function openYoutubeModal(title) {
   const modal = document.getElementById("youtubeModal");
   const titleEl = document.getElementById("youtubeTitle");
 
-  titleEl.textContent = title || "공동체성경읽기";
+  titleEl.textContent = title || "유튜브 재생";
   modal.style.display = "flex";
 }
 
@@ -1265,19 +1376,6 @@ document.addEventListener("click", function (e) {
   }
 });
 
-function lsGet(key) {
-  try {
-    if (window.localStorage) return localStorage.getItem(key);
-  } catch (e) {}
-  return null;
-}
-
-function lsSet(key, val) {
-  try {
-    if (window.localStorage) localStorage.setItem(key, val);
-  } catch (e) {}
-}
-
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
@@ -1367,11 +1465,11 @@ function makeCell(bookCode, chapSpec, id) {
     ytLink.className = "youtube-link";
     ytLink.href = "#";
     ytLink.textContent = "▶";
-    ytLink.title = "공동체성경읽기 내장 플레이어로 듣기";
+    ytLink.title = "공동체성경읽기 유튜브 듣기";
 
     ytLink.addEventListener("click", function (e) {
       e.preventDefault();
-      playSequence(sequence, (BOOKS[bookCode] || bookCode) + " " + chapSpec);
+      playYoutube(sequence, (BOOKS[bookCode] || bookCode) + " " + chapSpec);
     });
 
     wrap.appendChild(ytLink);
@@ -1381,6 +1479,16 @@ function makeCell(bookCode, chapSpec, id) {
 }
 
 (function render() {
+  updateModeUI();
+
+  document.getElementById("modePhone").addEventListener("click", function () {
+    setPlayMode("external");
+  });
+
+  document.getElementById("modeTablet").addEventListener("click", function () {
+    setPlayMode("embed");
+  });
+
   const root = document.getElementById("plans");
 
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
@@ -1413,12 +1521,27 @@ function makeCell(bookCode, chapSpec, id) {
 
       if (febcId) {
         const dateLink = document.createElement("a");
-        dateLink.href = YT_BASE + febcId;
-        dateLink.target = "_blank";
-        dateLink.rel = "noopener noreferrer";
+        dateLink.href = "#";
         dateLink.className = "date-link";
         dateLink.textContent = date;
         dateLink.title = "극동방송 맥체인 성경읽기 " + month + "월 " + date + "일";
+
+        dateLink.addEventListener("click", function (e) {
+          e.preventDefault();
+
+          playYoutube(
+            [{
+              videoId: String(febcId).trim(),
+              bookCode: "febc",
+              chapter: date,
+              start: 0,
+              end: null,
+              label: "극동방송 맥체인 성경읽기 " + month + "월 " + date + "일"
+            }],
+            "극동방송 맥체인 성경읽기 " + month + "월 " + date + "일"
+          );
+        });
+
         tdDate.appendChild(dateLink);
       } else {
         tdDate.textContent = date;
@@ -1465,3 +1588,4 @@ document.addEventListener("contextmenu", function (e) {
 </script>
 </body>
 </html>
+
