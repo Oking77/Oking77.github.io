@@ -185,16 +185,17 @@
 <body>
 <h3>*^^* Oking's 맥체인 성경읽기표 ^^"</h3>
 <p>
-  · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
-  · 읽음 표시는 동일 브라우저에 저장됨<br>
-  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭<br>
+  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브가 새 탭/유튜브 앱으로 열림<br>
   · 모바일폰 모드: 공동체성경읽기 유튜브가 새 탭/유튜브 앱 방식으로 열림<br>
   · 패드/탭 모드: 공동체성경읽기 유튜브가 웹페이지 안 내장형 플레이어로 실행됨<br>
-  · 패드/탭 모드에서는 여러 장,절 범위가 장 순서대로 연속 재생됨<br>
-  </p>
+  · 통독 모드: 공동체성경읽기 유튜브가 현재 장부터 해당 성경 끝장까지 내장 연속재생됨<br>
+  · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
+  · 읽음 표시는 동일 브라우저에 저장됨
+</p>
 <div class="mode-box">
   <button id="modePhone" class="mode-btn">모바일폰 모드</button>
   <button id="modeTablet" class="mode-btn">패드/탭 모드</button>
+  <button id="modeReadthrough" class="mode-btn">통독 모드</button>
 </div>
 <div id="modeStatus"></div>
 <div id="plans"></div>
@@ -239,6 +240,29 @@ const BOOKS = {
   "1pe": "벧전", "2pe": "벧후",
   "1jn": "요일", "2jn": "요이", "3jn": "요삼",
   "jud": "유", "rev": "계"
+};
+const BOOK_CHAPTERS = {
+  gen: 50, exo: 40, lev: 27, num: 36, deu: 34,
+  jos: 24, jdg: 21, rut: 4,
+  "1sa": 31, "2sa": 24,
+  "1ki": 22, "2ki": 25,
+  "1ch": 29, "2ch": 36,
+  ezr: 10, neh: 13, est: 10,
+  job: 42, psa: 150, pro: 31, ecc: 12, sng: 8,
+  isa: 66, jer: 52, lam: 5, eze: 48, dan: 12,
+  hos: 14, joe: 3, amo: 9, oba: 1, jon: 4,
+  mic: 7, nah: 3, hab: 3, zep: 3, hag: 2, zec: 14, mal: 4,
+  mat: 28, mrk: 16, luk: 24, joh: 21,
+  act: 28, rom: 16,
+  "1co": 16, "2co": 13,
+  gal: 6, eph: 6, php: 4, col: 4,
+  "1th": 5, "2th": 3,
+  "1ti": 6, "2ti": 4,
+  tit: 3, phm: 1, heb: 13,
+  jas: 5,
+  "1pe": 5, "2pe": 3,
+  "1jn": 5, "2jn": 1, "3jn": 1,
+  jud: 1, rev: 22
 };
 const BSK_BOOK_CODES = {
   joh: "jhn",
@@ -334,9 +358,7 @@ const YOUTUBE_LINKS = {
     "JpcjuOGI_RI", "W31Z2naBmHo", "HVjhCzvJqVk", "7bysS_bcRHw", "PPDgWpwYniA",
     "Bve5all1sjg"
   ],
-  rut: [
-    "NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"
-  ],
+  rut: ["NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"],
   "1sa": [
     "xdK4dqCYIGI", "PC1GaCn9c4k", "QE2W7ZNN3Vs", "zAAUCINKsXY", "F51PeN02lMQ",
     "Jf0FtWPHdBY", "xiSZxll-ff0", "AOQNzfqGUXs", "Gn9xasmVS58", "sgnOIxreUNk",
@@ -989,13 +1011,18 @@ function setPlayMode(mode) {
 function updateModeUI() {
   const phoneBtn = document.getElementById("modePhone");
   const tabletBtn = document.getElementById("modeTablet");
+  const readthroughBtn = document.getElementById("modeReadthrough");
   const status = document.getElementById("modeStatus");
   phoneBtn.classList.toggle("active", PLAY_MODE === "external");
   tabletBtn.classList.toggle("active", PLAY_MODE === "embed");
-  status.textContent =
-    PLAY_MODE === "external"
-      ? "현재: 모바일폰 모드 / 공동체성경읽기 새 탭 또는 유튜브 앱으로 열림"
-      : "현재: 패드·탭 모드 / 공동체성경읽기 내장 플레이어로 재생";
+  readthroughBtn.classList.toggle("active", PLAY_MODE === "readthrough");
+  if (PLAY_MODE === "external") {
+    status.textContent = "현재: 모바일폰 모드 / 공동체성경읽기 새 탭 또는 유튜브 앱으로 열림";
+  } else if (PLAY_MODE === "embed") {
+    status.textContent = "현재: 패드·탭 모드 / 공동체성경읽기 현재 본문만 내장 재생";
+  } else {
+    status.textContent = "현재: 통독 모드 / 공동체성경읽기 현재 장부터 해당 성경 끝까지 내장 연속재생";
+  }
 }
 loadPlayMode();
 const ytApiScript = document.createElement("script");
@@ -1112,6 +1139,26 @@ function buildPlaySequence(bookCode, chapSpec) {
   }
   return sequence;
 }
+function buildReadThroughSequence(bookCode, chapSpec) {
+  const firstItem = parseFirstChapSpec(chapSpec);
+  const startChapter = firstItem.chap;
+  const endChapter = BOOK_CHAPTERS[bookCode];
+  if (!endChapter) return [];
+  const sequence = [];
+  for (let ch = startChapter; ch <= endChapter; ch++) {
+    const videoId = getVideoId(bookCode, ch);
+    if (!videoId) continue;
+    sequence.push({
+      videoId: String(videoId).trim(),
+      bookCode,
+      chapter: ch,
+      start: 0,
+      end: null,
+      label: (BOOKS[bookCode] || bookCode) + " " + ch + "장"
+    });
+  }
+  return sequence;
+}
 function openYoutubeExternal(sequence) {
   if (!sequence || !sequence.length) return;
   const first = sequence[0];
@@ -1121,13 +1168,16 @@ function openYoutubeExternal(sequence) {
   }
   window.open(url, "_blank", "noopener,noreferrer");
 }
-function playYoutube(sequence, title) {
-  if (!sequence || !sequence.length) return;
+function playYoutube(normalSequence, readThroughSequence, title, readThroughTitle) {
   if (PLAY_MODE === "external") {
-    openYoutubeExternal(sequence);
-  } else {
-    playSequence(sequence, title);
+    openYoutubeExternal(normalSequence);
+    return;
   }
+  if (PLAY_MODE === "readthrough") {
+    playSequence(readThroughSequence, readThroughTitle);
+    return;
+  }
+  playSequence(normalSequence, title);
 }
 function openYoutubeModal(title) {
   const modal = document.getElementById("youtubeModal");
@@ -1294,8 +1344,9 @@ function makeCell(bookCode, chapSpec, id) {
     lsSet(key, this.classList.contains("read") ? "1" : "0");
   });
   wrap.appendChild(bibleLink);
-  const sequence = buildPlaySequence(bookCode, chapSpec);
-  if (sequence.length) {
+  const normalSequence = buildPlaySequence(bookCode, chapSpec);
+  const readThroughSequence = buildReadThroughSequence(bookCode, chapSpec);
+  if (normalSequence.length) {
     const ytLink = document.createElement("a");
     ytLink.className = "youtube-link";
     ytLink.href = "#";
@@ -1303,7 +1354,13 @@ function makeCell(bookCode, chapSpec, id) {
     ytLink.title = "공동체성경읽기 유튜브 듣기";
     ytLink.addEventListener("click", function (e) {
       e.preventDefault();
-      playYoutube(sequence, (BOOKS[bookCode] || bookCode) + " " + chapSpec);
+      const startChapter = parseFirstChapSpec(chapSpec).chap;
+      playYoutube(
+        normalSequence,
+        readThroughSequence,
+        (BOOKS[bookCode] || bookCode) + " " + chapSpec,
+        (BOOKS[bookCode] || bookCode) + " " + startChapter + "장부터 통독"
+      );
     });
     wrap.appendChild(ytLink);
   }
@@ -1316,6 +1373,9 @@ function makeCell(bookCode, chapSpec, id) {
   });
   document.getElementById("modeTablet").addEventListener("click", function () {
     setPlayMode("embed");
+  });
+  document.getElementById("modeReadthrough").addEventListener("click", function () {
+    setPlayMode("readthrough");
   });
   const root = document.getElementById("plans");
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
