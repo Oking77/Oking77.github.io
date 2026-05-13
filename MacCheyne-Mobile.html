@@ -48,17 +48,14 @@
   td:not(.date) {
     width: 20.5%;
   }
-
-tr.today-row td {
-  background: #ffe9a8;
-}
-
-tr.today-row td.date {
-  color: #c00;
-  font-weight: 700;
-  border-width: 2px;
-}
-
+  tr.today-row td {
+    background: #ffe9a8;
+  }
+  tr.today-row td.date {
+    color: #c00;
+    font-weight: 700;
+    border-width: 2px;
+  }
   a.date-link {
     color: inherit;
     text-decoration: none;
@@ -93,6 +90,42 @@ tr.today-row td.date {
     display: inline-block;
     transform: translateY(-1px);
   }
+  #youtubeModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+  }
+  #youtubeBox {
+    width: min(960px, 96vw);
+    background: #111;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  #youtubeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  #youtubeClose {
+    background: #fff;
+    border: 0;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #youtubePlayer {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+  }
   #resetRead {
     display: block;
     margin: 16px auto 24px;
@@ -117,13 +150,23 @@ tr.today-row td.date {
 <p>
   · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭으로 열림<br>
   · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
-  · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 새 탭으로 열림<br>
+  · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 새 탭 또는 구간 플레이어로 열림<br>
+  · 절 단위 분할 본문은 지정 구간만 재생 후 자동 정지됨<br>
   · 여러 장 범위는 첫 장 기준으로 연결됨<br>
   · 읽음 표시는 동일 브라우저에 저장됨<br>
   · 다른 브라우저 또는 다른 기기에서는 읽음 표시가 새로 시작됨
 </p>
 <div id="plans"></div>
 <button id="resetRead">읽음 표시 전체 초기화</button>
+<div id="youtubeModal">
+  <div id="youtubeBox">
+    <div id="youtubeHeader">
+      <span id="youtubeTitle">공동체성경읽기</span>
+      <button id="youtubeClose">닫기</button>
+    </div>
+    <div id="youtubePlayer"></div>
+  </div>
+</div>
 <p style="margin:0 0 6px 0; font-size:12px; color:#666; text-align:center;">
   성경 본문 저작권 © 대한성서공회. 이 페이지는 성경 본문을 저장·복제하지 않고,<br>
   대한성서공회 공식 사이트, 공동체성경읽기 유튜브, 극동방송 맥체인 유튜브 링크만 제공합니다.
@@ -934,6 +977,109 @@ const plan = {
     [["2ch","36"],["rev","22"],["mal","4"],["psa","150"]]
   ]
 };
+const YOUTUBE_SEGMENTS = {
+  // 누가복음 1장 분할
+  "luk|1:1-38":  { chapter: 1, start: 0,   end: 291 }, // 00:00 - 04:51
+  "luk|1:39-80": { chapter: 1, start: 291, end: 563 }, // 04:51 - 09:23
+  // 출애굽기 12장 분할
+  // 출 11-12:1-21은 예외 처리하지 않음: 기존처럼 출 11장만 새 탭으로 열림
+  "exo|12:22-51": { chapter: 12, start: 203, end: 485 }, // 03:23 - 08:05
+  // 시편 78편 분할
+  "psa|78:1-39":  { chapter: 78, start: 0,   end: 272 }, // 00:00 - 04:32
+  "psa|78:40-72": { chapter: 78, start: 272, end: 496 }, // 04:32 - 08:16
+  // 시편 119편 분할
+  "psa|119:1-24":    { chapter: 119, start: 0,    end: 161 },  // 00:00 - 02:41
+  "psa|119:25-48":   { chapter: 119, start: 161,  end: 348 },  // 02:41 - 05:48
+  "psa|119:49-72":   { chapter: 119, start: 348,  end: 517 },  // 05:48 - 08:37
+  "psa|119:73-96":   { chapter: 119, start: 517,  end: 703 },  // 08:37 - 11:43
+  "psa|119:97-120":  { chapter: 119, start: 703,  end: 885 },  // 11:43 - 14:45
+  "psa|119:121-144": { chapter: 119, start: 885,  end: 1046 }, // 14:45 - 17:26
+  "psa|119:145-176": { chapter: 119, start: 1046, end: 1281 }  // 17:26 - 21:21
+};
+let ytPlayer = null;
+let ytStopTimer = null;
+let ytApiReady = false;
+const ytApiScript = document.createElement("script");
+ytApiScript.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(ytApiScript);
+function onYouTubeIframeAPIReady() {
+  ytApiReady = true;
+}
+function clearYoutubeTimer() {
+  if (ytStopTimer) {
+    clearInterval(ytStopTimer);
+    ytStopTimer = null;
+  }
+}
+function openSegmentPlayer(videoId, start, end, title) {
+  const modal = document.getElementById("youtubeModal");
+  const titleEl = document.getElementById("youtubeTitle");
+  titleEl.textContent = title || "공동체성경읽기";
+  modal.style.display = "flex";
+  clearYoutubeTimer();
+  function startTimer() {
+    clearYoutubeTimer();
+    ytStopTimer = setInterval(function () {
+      if (!ytPlayer || typeof ytPlayer.getCurrentTime !== "function") return;
+      const current = ytPlayer.getCurrentTime();
+      if (current >= end) {
+        ytPlayer.pauseVideo();
+        clearYoutubeTimer();
+      }
+    }, 300);
+  }
+  function createOrLoad() {
+    if (!ytPlayer) {
+      ytPlayer = new YT.Player("youtubePlayer", {
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          start: start,
+          rel: 0
+        },
+        events: {
+          onReady: function (event) {
+            event.target.seekTo(start, true);
+            event.target.playVideo();
+            startTimer();
+          }
+        }
+      });
+    } else {
+      ytPlayer.loadVideoById({
+        videoId: videoId,
+        startSeconds: start
+      });
+      startTimer();
+    }
+  }
+  if (ytApiReady && window.YT && YT.Player) {
+    createOrLoad();
+  } else {
+    const wait = setInterval(function () {
+      if (ytApiReady && window.YT && YT.Player) {
+        clearInterval(wait);
+        createOrLoad();
+      }
+    }, 100);
+  }
+}
+function closeSegmentPlayer() {
+  const modal = document.getElementById("youtubeModal");
+  modal.style.display = "none";
+  clearYoutubeTimer();
+  if (ytPlayer && typeof ytPlayer.pauseVideo === "function") {
+    ytPlayer.pauseVideo();
+  }
+}
+document.addEventListener("click", function (e) {
+  if (e.target && e.target.id === "youtubeClose") {
+    closeSegmentPlayer();
+  }
+  if (e.target && e.target.id === "youtubeModal") {
+    closeSegmentPlayer();
+  }
+});
 function lsGet(key) {
   try {
     if (window.localStorage) return localStorage.getItem(key);
@@ -1025,23 +1171,47 @@ function makeCell(bookCode, chapSpec, id) {
     lsSet(key, v);
   });
   wrap.appendChild(bibleLink);
-  const youtubeUrl = makeYoutubeUrl(bookCode, firstItem.chap);
-  if (youtubeUrl) {
-    const ytLink = document.createElement("a");
-    ytLink.className = "youtube-link";
-    ytLink.href = youtubeUrl;
-    ytLink.target = "_blank";
-    ytLink.rel = "noopener noreferrer";
-    ytLink.textContent = "▶";
-    ytLink.title = "공동체성경읽기 유튜브로 듣기";
-    ytLink.addEventListener("click", function () {
-      setTimeout(function () {
-        try {
-          window.focus();
-        } catch (e) {}
-      }, 300);
-    });
-    wrap.appendChild(ytLink);
+  const segmentKey = bookCode + "|" + chapSpec;
+  const segment = YOUTUBE_SEGMENTS[segmentKey];
+  if (segment) {
+    const arr = YOUTUBE_LINKS[bookCode];
+    const videoId = arr && arr[segment.chapter - 1];
+    if (videoId) {
+      const ytLink = document.createElement("a");
+      ytLink.className = "youtube-link";
+      ytLink.href = "#";
+      ytLink.textContent = "▶";
+      ytLink.title = "공동체성경읽기 구간 재생";
+      ytLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        openSegmentPlayer(
+          String(videoId).trim(),
+          segment.start,
+          segment.end,
+          (BOOKS[bookCode] || bookCode) + " " + chapSpec
+        );
+      });
+      wrap.appendChild(ytLink);
+    }
+  } else {
+    const youtubeUrl = makeYoutubeUrl(bookCode, firstItem.chap);
+    if (youtubeUrl) {
+      const ytLink = document.createElement("a");
+      ytLink.className = "youtube-link";
+      ytLink.href = youtubeUrl;
+      ytLink.target = "_blank";
+      ytLink.rel = "noopener noreferrer";
+      ytLink.textContent = "▶";
+      ytLink.title = "공동체성경읽기 유튜브로 듣기";
+      ytLink.addEventListener("click", function () {
+        setTimeout(function () {
+          try {
+            window.focus();
+          } catch (e) {}
+        }, 300);
+      });
+      wrap.appendChild(ytLink);
+    }
   }
   return wrap;
 }
@@ -1079,8 +1249,8 @@ function makeCell(bookCode, chapSpec, id) {
         tdDate.textContent = date;
       }
       if (month === TODAY_MONTH && date === TODAY_DATE) {
-  tr.classList.add("today-row");
-    }
+        tr.classList.add("today-row");
+      }
       tr.appendChild(tdDate);
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
