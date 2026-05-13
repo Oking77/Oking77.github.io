@@ -48,12 +48,17 @@
   td:not(.date) {
     width: 20.5%;
   }
-  td.date.today {
-    background: #ffe9a8;
-    color: #c00;
-    font-weight: 700;
-    border-width: 2px;
-  }
+
+tr.today-row td {
+  background: #ffe9a8;
+}
+
+tr.today-row td.date {
+  color: #c00;
+  font-weight: 700;
+  border-width: 2px;
+}
+
   a.date-link {
     color: inherit;
     text-decoration: none;
@@ -1074,8 +1079,8 @@ function makeCell(bookCode, chapSpec, id) {
         tdDate.textContent = date;
       }
       if (month === TODAY_MONTH && date === TODAY_DATE) {
-        tdDate.classList.add("today");
-      }
+  tr.classList.add("today-row");
+    }
       tr.appendChild(tdDate);
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
