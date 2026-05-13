@@ -4,34 +4,28 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>오킹의 맥체인 성경읽기</title>
-
 <style>
   :root {
     --base-font: clamp(14px, 4vw, 18px);
     --title-font: clamp(22px, 6vw, 30px);
   }
-
   body {
     margin: 8px;
     font-family: system-ui, -apple-system, sans-serif;
     font-size: var(--base-font);
   }
-
   h2 {
     margin: 14px 0 6px 0;
     text-align: center;
   }
-
   h3 {
     font-size: var(--title-font);
     color: red;
     margin: 0 0 8px 0;
   }
-
   p {
     margin: 4px 0 8px 0;
   }
-
   .mode-box {
     display: flex;
     justify-content: center;
@@ -39,44 +33,41 @@
     margin: 10px 0 14px 0;
     flex-wrap: wrap;
   }
-
   .mode-btn {
-    border: 1px solid #bbb;
-    background: #f5f5f5;
-    color: #333;
-    border-radius: 6px;
-    padding: 7px 12px;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-
-  .mode-btn.active {
-    background: #222;
-    color: #fff;
-    border-color: #222;
+    border: 1px solid #1d4ed8;
+    background: #eaf2ff;
+    color: #0b3a8f;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.92rem;
     font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   }
-
+  .mode-btn.active {
+    background: #1d4ed8;
+    color: #fff;
+    border-color: #1d4ed8;
+    box-shadow: 0 2px 6px rgba(29,78,216,0.35);
+  }
   #modeStatus {
     text-align: center;
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.82rem;
+    color: #1e3a8a;
     margin: -4px 0 10px 0;
+    font-weight: 600;
   }
-
   table {
     border-collapse: collapse;
     width: 100%;
     table-layout: auto;
     margin-bottom: 10px;
   }
-
   th, td {
     border: 1px solid #ccc;
     padding: 4px 2px;
     text-align: center;
   }
-
   th:first-child,
   td.date {
     width: 18%;
@@ -84,22 +75,18 @@
     font-weight: 700;
     white-space: nowrap;
   }
-
   th:not(:first-child),
   td:not(.date) {
     width: 20.5%;
   }
-
   tr.today-row td {
     background: #ffe9a8;
   }
-
   tr.today-row td.date {
     color: #c00;
     font-weight: 700;
     border-width: 2px;
   }
-
   a.date-link {
     color: inherit;
     text-decoration: none;
@@ -107,7 +94,6 @@
     display: inline-block;
     width: 100%;
   }
-
   .reading-cell {
     display: inline-flex;
     align-items: center;
@@ -115,7 +101,6 @@
     gap: 8px;
     white-space: nowrap;
   }
-
   a.bible {
     text-decoration: none;
     color: #0044aa;
@@ -123,12 +108,10 @@
     white-space: nowrap;
     font-size: 0.95em;
   }
-
   a.bible.read {
     color: #888;
     text-decoration: line-through;
   }
-
   a.youtube-link {
     text-decoration: none;
     color: #ff0000;
@@ -138,7 +121,6 @@
     display: inline-block;
     transform: translateY(-1px);
   }
-
   #youtubeModal {
     display: none;
     position: fixed;
@@ -149,14 +131,12 @@
     justify-content: center;
     padding: 14px;
   }
-
   #youtubeBox {
     width: min(960px, 96vw);
     background: #111;
     border-radius: 10px;
     overflow: hidden;
   }
-
   #youtubeHeader {
     display: flex;
     justify-content: space-between;
@@ -165,14 +145,12 @@
     padding: 8px 10px;
     font-size: 14px;
   }
-
   #youtubeTitle {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     padding-right: 10px;
   }
-
   #youtubeClose {
     background: #fff;
     border: 0;
@@ -181,19 +159,16 @@
     font-weight: 700;
     cursor: pointer;
   }
-
   #youtubePlayer {
     width: 100%;
     aspect-ratio: 16 / 9;
   }
-
   #resetRead {
     display: block;
     margin: 16px auto 24px;
     padding: 6px 14px;
     font-size: 0.9rem;
   }
-
   footer {
     text-align: center;
     font-size: 0.75rem;
@@ -202,37 +177,28 @@
     border-top: 1px solid #ccc;
     padding-top: 10px;
   }
-
   .month-block {
     margin-bottom: 32px;
   }
 </style>
 </head>
-
 <body>
 <h3>*^^* Oking's 맥체인 성경읽기표 ^^"</h3>
-
 <p>
-  · 모바일폰 모드: 유튜브가 새 탭/유튜브 앱 방식으로 열림<br>
-  · 패드/탭 모드: 유튜브가 웹페이지 안 내장형 플레이어로 실행됨<br>
-  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 실행<br>
   · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
-  · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 실행<br>
-  · 패드/탭 모드에서는 여러 장 범위가 장 순서대로 연속 재생됨<br>
-  · 패드/탭 모드에서는 절 단위 분할 본문이 지정 구간만 재생 후 자동 정지됨<br>
-  · 읽음 표시는 동일 브라우저에 저장됨
-</p>
-
+  · 읽음 표시는 동일 브라우저에 저장됨<br>
+  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭<br>
+  · 모바일폰 모드: 공동체성경읽기 유튜브가 새 탭/유튜브 앱 방식으로 열림<br>
+  · 패드/탭 모드: 공동체성경읽기 유튜브가 웹페이지 안 내장형 플레이어로 실행됨<br>
+  · 패드/탭 모드에서는 여러 장,절 범위가 장 순서대로 연속 재생됨<br>
+  </p>
 <div class="mode-box">
   <button id="modePhone" class="mode-btn">모바일폰 모드</button>
   <button id="modeTablet" class="mode-btn">패드/탭 모드</button>
 </div>
 <div id="modeStatus"></div>
-
 <div id="plans"></div>
-
 <button id="resetRead">읽음 표시 전체 초기화</button>
-
 <div id="youtubeModal">
   <div id="youtubeBox">
     <div id="youtubeHeader">
@@ -242,17 +208,14 @@
     <div id="youtubePlayer"></div>
   </div>
 </div>
-
 <p style="margin:0 0 6px 0; font-size:12px; color:#666; text-align:center;">
   성경 본문 저작권 © 대한성서공회. 이 페이지는 성경 본문을 저장·복제하지 않고,<br>
   대한성서공회 공식 사이트, 공동체성경읽기 유튜브, 극동방송 맥체인 유튜브 링크만 제공합니다.
 </p>
-
 <footer>
   copyright © 2025 Oking Kwon.<br>
   No rights reserved.
 </footer>
-
 <script>
 const BOOKS = {
   "gen": "창", "exo": "출", "lev": "레", "num": "민", "deu": "신",
@@ -277,20 +240,16 @@ const BOOKS = {
   "1jn": "요일", "2jn": "요이", "3jn": "요삼",
   "jud": "유", "rev": "계"
 };
-
 const BSK_BOOK_CODES = {
   joh: "jhn",
   eze: "ezk",
   joe: "jol",
   nah: "nam"
 };
-
 function getBskBookCode(bookCode) {
   return BSK_BOOK_CODES[bookCode] || bookCode;
 }
-
 const YT_BASE = "https://youtu.be/";
-
 const FEBC_MONTH_IDS = {
   1: "OPvoVVWBEF4 NImmoygAVpA 6yxMBJyXcj4 sfyI-EbsEpw OQARqRyBK5M NxRYOlWI-y0 ty0ZtLTqbLw iv5XEyfrBuo HjqtW_3tmRg H4QwYo_6JE8 zwBQGllN-DQ yK1pPwosWoM G8S1tV3td2c vMNdDxfpqIo BQRP2dVLO8U -FznhTAToKc Y2J8bAnRRsQ NGdnPBsrUbs 6WdKAWK48WU nf748kTqVxc tX9g2YmVJS0 c8Tn-BGWSrQ BYhLFDOBDdk vPX0sgk0jBs ajpaT7BidKY LkKl1kFFpvY n61yDMRSv0U GEJt3-xPhJA na7NdhafJeQ X10ah02GXM8 LYVc6BDCRkw",
   2: "luwZEJjkKvQ l_EAgcDxy3U MG_kRkaeSgs icDvUAa7jyk FYREiRS6YnM ZiLE8xA_9g0 rNtvOtdIpWo sKm2VTlCg50 A8twMyB5Mrc N_ge71qBEY0 GVTZ8N-PdP4 Tn825uqKQwo kuGCgnnlgeQ 3gOsLgoYEZQ PmiiCvN3uyM fzjqFhC9uvo gT4rQROWzgw 4lJ-XEQu0Ws v5gAFS_6OlY RHQvdcKM-yQ 5UtgcK_9TYE hA0b_T2yeYY JEDMG1cZJFs rreQhBht8EU 7myvG4sYqP4 Sm_d1-5v7qY 4skyTkPBzhs orCkLxuEPRI",
@@ -305,14 +264,12 @@ const FEBC_MONTH_IDS = {
   11: "_IcxR4dHbTo R4gXtwS5dDc O-Ugs1ct3Tc Zde1l67bhpo 6Zm3djQdY2c fwF0qXM6LVc jYDAseJ0Rr0 7GGzU7IKS_k Ff70vm-Tkq4 yV92L_OpsiY yx5mh5-ktp0 kcGSqqjuUMs lKZUvwNi9Sk icWWnbl6ni4 vTXVQrryylw ZJrDFAHSmas h7pZPJsqpiE R7qYgjDo70k my3MPKVPSvU 1WPN3GhlgOc n1jEjuIlBTA t7j_nCI8Blo 1V01zHDCjUo 4jwej3s-ca8 aCDITrh2cGY L9nSZpQMEsY GQ_iZtfJrGw NwFexk70-dY EmpQ17l87sw Tc0U7Do1LJQ",
   12: "SySpWymYNtw yOruvPZ06vc AhIYioy4fJ8 NOBE5KdksWc IotH7rFATkY JKsgwoXUrnU ACsgSHV_e98 JCh17A94xVM YTKfUGAz6tc xcN7m4E0v0o FKy3RznVkDE ZbXwyaVYUHQ mqRaLeAJXMw 4J8nYzQWO3I HeJ3RJY4pns 8e9TYXSV54U 97oWtUgysC0 IKSBxM27CNA nskwD9B7bWU uIl1heazfaA AVEhJXMKlC4 7-5x_we_OtY amSVGpIE45s EmD5N0Vjww8 rv4lZ2ye8TQ UYd2iAjWDiU v5IpW9LwhEU -V-vKp0E-zw Uy80CApOQKo bXEX2ZIA-Ug N2QxBNG0gDo"
 };
-
 function getFebcId(month, date) {
   const monthText = FEBC_MONTH_IDS[month];
   if (!monthText) return null;
   const ids = monthText.trim().split(/\s+/);
   return ids[date - 1] || null;
 }
-
 const YOUTUBE_LINKS = {
   gen: [
     "NbGHNcPhlUY", "JlNThwGgoaU", "wWcCSauvELk", "Q3Mb0fPQw90", "XN5GAc9l3co",
@@ -326,7 +283,6 @@ const YOUTUBE_LINKS = {
     "C_7b-KY-Xmw", "txsikH9fa9g", "LFtlF1IUWqw", "ZuipSBYlg3c", "v7XocqpGA6M",
     "GN6ibcpmLk8", "RG2QaiupsxM", "PxL65Wq3tJI", "2yZUowOLXto", "hDGu7oXeT_0"
   ],
-
   exo: [
     "Ji1UqqkcF5k", "1lw1seQoT-k", "BgfXs6grcl0", "aBYo4aQ_tX0", "uk-fGmSXU5s",
     "2KS515ksaSA", "0xEBlqkC5CQ", "b3g9DG5O15Q", "3v04k45xSyE", "ANf76mjIoME",
@@ -337,7 +293,6 @@ const YOUTUBE_LINKS = {
     "v9PiXa-05so", "NmuOfGCOxI8", "PnvbfUEsmKs", "j7bKpxz2ewk", "C7eEQJ_AasI",
     "4_vOKp6YMOE", "vinMrTFhjD4", "9cYefG7rMwI", "HGw6Oq9Ygsw", "y7gL9f8MagE"
   ],
-
   lev: [
     "03-zwx1Dvv0", "IV8w7H4EkmU", "1zKvs8RwLZA", "2sUiyUtRB70", "ncN6gLlO5Yw",
     "Rk0Ex7QpeHM", "oWVQWY5M-XA", "_DCeaGP1Qao", "YnePhW95A0I", "iLZVDUDjpPk",
@@ -346,7 +301,6 @@ const YOUTUBE_LINKS = {
     "a5NMaV0RsWI", "YWPYTwAI5lY", "QwV4R1xAwpQ", "qu9YN7ToVtQ", "z5zwZx_NVcQ",
     "JLlKWHLGAlE", "XQaRJ5H60CQ"
   ],
-
   num: [
     "yPMLXwH0Ns8", "vQYldvHewsw", "uoND_nMFYD0", "5nNs6ip5Mk4", "z2xYdVQaSqs",
     "_OdO4d1N7pE", "S1gCMwlwBP8", "JEISP5uJz0k", "eTqcfSb7p9o", "3Cs7jUxXNxg",
@@ -357,7 +311,6 @@ const YOUTUBE_LINKS = {
     "bj5oppW5wVY", "Sqxn68z_jfw", "xxNs1VFkIF0", "DFip3UPYgcM", "1rmxkEN0dq0",
     "cBJPVJ_7Ri0"
   ],
-
   deu: [
     "1l2WaKwyZcQ", "-vbnWbqlb2E", "5vYAACpfS2I", "U6QFC9AnjZw", "uPttPPD-ZTo",
     "2pjkk4slEFg", "J1M8OHI7920", "kuKi9ysEwP4", "KcmI1YlLSqo", "7jOHABewffg",
@@ -367,7 +320,6 @@ const YOUTUBE_LINKS = {
     "YT_oOsVQCvc", "vScjEwhyRD4", "sTiIqsL0pHk", "LRRfQbz4Fgs", "CldpAoiRw8c",
     "UNmD0UUnwvI", "wqHF7mH2Owc", "o__LH6jT6Xg", "v0AexUrTEmg"
   ],
-
   jos: [
     "8aRa1qWXHx0", "vBmJ7MXCR1U", "PGkHnCl8Dsc", "c22uX9e3x4U", "i4w-SlAhHvM",
     "_UdlbrYGPz0", "g_FUGj6wMPw", "GwBhXA85uAA", "V2DdFSCDquY", "kI5By-aWsQI",
@@ -375,7 +327,6 @@ const YOUTUBE_LINKS = {
     "i5MjtqpeSsg", "XGdfbj1W9Ls", "djyDDo2Wr4k", "-5Q8QRFKdTw", "NPKZuT3hcFE",
     "VskD96iDNqs", "TDeqP9xUwW8", "I-uil1Hi-rk", "wi9U3cZrYrI"
   ],
-
   jdg: [
     "wMDoAIN1bxw", "hPlinmeKBU4", "11WhoHMPemI", "3D1TymCfy-4", "3nWE2Ds_xQI",
     "BSnrjPA46b8", "r56pZxC8Ehg", "pSOPSDs69z0", "qautBD--tWs", "qPKEiUBDgP0",
@@ -383,9 +334,9 @@ const YOUTUBE_LINKS = {
     "JpcjuOGI_RI", "W31Z2naBmHo", "HVjhCzvJqVk", "7bysS_bcRHw", "PPDgWpwYniA",
     "Bve5all1sjg"
   ],
-
-  rut: ["NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"],
-
+  rut: [
+    "NjbjTAkgEG4", "MU0k78HzAqU", "A7c3XV4xIrk", "lxGlJyLGpgQ"
+  ],
   "1sa": [
     "xdK4dqCYIGI", "PC1GaCn9c4k", "QE2W7ZNN3Vs", "zAAUCINKsXY", "F51PeN02lMQ",
     "Jf0FtWPHdBY", "xiSZxll-ff0", "AOQNzfqGUXs", "Gn9xasmVS58", "sgnOIxreUNk",
@@ -395,7 +346,6 @@ const YOUTUBE_LINKS = {
     "Er73SSQs-wY", "Pld7XRGoqGs", "Sz3YqBzieCw", "CXpynE2a70s", "qFcQ8FznWv4",
     "Or5cd-95Ufc"
   ],
-
   "2sa": [
     "ak_FCK1YbbA", "sE2_ouuyWDc", "jfJRdXoVclE", "fTqoiT6JUq8", "hTitDcrkZpQ",
     "ZUnUIpqrTHQ", "gUKPpaAjlrc", "7n_2q3CVeKg", "VQx0ruGSk5U", "-h-IqjAS6-g",
@@ -403,7 +353,6 @@ const YOUTUBE_LINKS = {
     "79BvNYU1rKI", "qD4laobb9Xg", "bUy75C2rN6A", "0QCxo4iU1VQ", "ezSW6LZUxBA",
     "00ssq0d5EK8", "K6KrK1paa18", "q_KesQU6Q4w", "gVZLGfNpm7Y"
   ],
-
   "1ki": [
     "Lven74B7GnQ", "MvhxMnMrOLc", "Bf5fivf7oUw", "9iUnm1mpW8c", "XNEfhHEJsZk",
     "18wgsENwm-M", "vOwc2Xua7EI", "M2EOir_y5qE", "zqnfdtVC3jM", "qldVIU_FbRw",
@@ -411,7 +360,6 @@ const YOUTUBE_LINKS = {
     "_-QsyT3bfGg", "Xhq6ptvsT94", "7GZ2W_C1S8Y", "CdL4N9nDFC8", "1_HtW42FwWY",
     "EYoicJO0S8w", "9VCkbZcB8WM"
   ],
-
   "2ki": [
     "cQUTps8Owuk", "Nrk9wnJcK2g", "WwfwgPmBBfc", "pxY8x0_Iw5o", "oImdKwuWJ9U",
     "jL-JL1b1yjI", "YxDPoECBXJY", "NJ6_ODclQw0", "jfMXdhNqSRg", "OKRhsRkRz3I",
@@ -419,7 +367,6 @@ const YOUTUBE_LINKS = {
     "DxA8ICojMhI", "COZB9Ah7yJs", "Ga7LEa8MrSc", "p2i2pzphTlU", "YdQBGBjU5zs",
     "jaYki9NcWQM", "0_rt3QNJEmU", "t2nvEBdDGhI", "tswMo3uNqT0", "-Uot2j3FHCY"
   ],
-
   "1ch": [
     "xwkcZq4h9Fk", "jw45dGmloBc", "vKSt7TJSDT8", "fYwqnjsApa8", "fYimTgIGBLU",
     "a7Sgiog1uoU", "oS_iiiASDLA", "XV7hYelAPBY", "pX3_5rbDcTk", "V4SKkHZz_uo",
@@ -428,7 +375,6 @@ const YOUTUBE_LINKS = {
     "5w8zGBNnz3U", "qZcmLKv454o", "7L5c2lfzK30", "yPGzjeDBM-E", "HTKjiiNd5-8",
     "8Jfl4UFUNog", "OVzfV57HD64", "lWePeWdBb1Y", "V9SejNMdNdw"
   ],
-
   "2ch": [
     "L7gDPo16Ohw", "tkRBWILE1RI", "JVFaL96N2Lo", "gE1oP1zGzBs", "Ze4N8c-hyYw",
     "n2Yxq8hwGtk", "Nx4smfgiJZI", "kIbvieQwB14", "DsVa8XlUO58", "R6safMYtglo",
@@ -439,23 +385,19 @@ const YOUTUBE_LINKS = {
     "nWdd8c00aLE", "_9_kJ7UVLGY", "SrlDBbyd0Sk", "jIsKPFiF0A4", "9dhFuvNnMnw",
     "SfJh7RLV2LU"
   ],
-
   ezr: [
     "6OSxSCePzEY", "zQEBMZ1Q7Rc", "pN3UbMNxZ8Y", "bAx37m6o7UI", "zC764B3DGpw",
     "NIV7krmliso", "cHQ4jjiTq5A", "PJCT4j5ezA0", "H76dS6ud8Eg", "1x7SJ6D3hGs"
   ],
-
   neh: [
     "CVWwBsZeVPc", "kpBVk42Y_Ko", "-SdeaFf2y80", "ECl43T52Rxs", "9reo7QpRkGQ",
     "01dv8PeVXWk", "Bi1GwxBTUzg", "9BdCUIkqZL4", "TgHCBY8O7Hw", "GCR0WF-VtVE",
     "t53qZqYdiZI", "stbEFtIpHKM", "I2NrgmS5DXo"
   ],
-
   est: [
     "rBrW4ayABtc", "wzd-HSpMAWQ", "PKROFE_TXqo", "EES2rljCK_s", "8vqmKekPvlg",
     "cr2O8W43248", "oQKpQssZa9k", "3bk0OihV3-M", "zCkyfuljT20", "eBqpSSog4dE"
   ],
-
   job: [
     "_qSXEsm1aD4", "VNH4KH7QEi4", "zMSy14Usitk", "1nTXXdA63c0", "IGAdP1FfrVY",
     "YzznhkSe5Q4", "1tdO_UwtDcA", "jPMT03I9dy0", "Wb07Qa9u-G8", "-CBVB1U4Otg",
@@ -467,7 +409,6 @@ const YOUTUBE_LINKS = {
     "OQWLQ1ZGzNw", "s7JMSbDAIc4", "FyhibjkcP5g", "pMBUFljso7M", "HGHhuZvKBmE",
     "01VsQW1vM3M", "GtbQXEMjg-U"
   ],
-
   psa: [
     "su56E09_3Gw", "92BalbIC7Pk", "C-l4VDOzXrY", "EcWUIIC8_qs", "ctkV4e_PJUY",
     "0khyWw5wVng", "JdRC13O0LV4", "FeAZpjl8Js0", "Mnp6R1Xnsds", "FbXN2DptSV0",
@@ -500,7 +441,6 @@ const YOUTUBE_LINKS = {
     "DVZkXdF82mI", "j-OdUBlagqM", "sUYNTV5s4UQ", "KjuKEUv1D2E", "HQlzqviJsq8",
     "M0ZN2a_RLzo", "VlQfEXGKtDk", "1KPXpIbAz8E", "yb_KGuIajMk", "KXl-Ou0WuQw"
   ],
-
   pro: [
     "KBKrwBDYkwo", "GBzS88DZylA", "kgp0--ncuCk", "CLPdz0RMBG4", "gzjhTvI24Z4",
     "A9eIIRkU-4E", "N2MYyTibhgs", "byd-NzFScz8", "agyibAkCa_U", "PbvmAVLnSYY",
@@ -510,18 +450,15 @@ const YOUTUBE_LINKS = {
     "dP9FqJlFBXo", "L4exYhD89DA", "JWnkzDHyLos", "K5iTdkkII58", "XsrcofG6tiU",
     "Rg8vuwFyEj4"
   ],
-
   ecc: [
     "qogNnspMegw", "u-mQRy_wi6Y", "db2UjyR1Cz4", "2i5oQyEZECk", "AIensdChkcU",
     "TDHqBJeCpcM", "tosjd7kniXY", "11-enAC_jfg", "TgqV26Q7pxY", "4FKYNCufmqo",
     "J9W_zTNCiSI", "DaojoBrJ8Zg"
   ],
-
   sng: [
     "IhWTbAngLFw", "t5304ZaSfhA", "7CU4qRfGwzs", "e0_IGeh537E",
     "AgHHHFx6JF8", "heLnEe4j7ww", "mViZMCW-kYM", "kmYS5jC-GnQ"
   ],
-
   isa: [
     "jKWCOIKnj4k", "vUC_5hDzihE", "RQQVY8nNNd8", "mOm4Xoi558M", "Yh5itxpY7GI",
     "tEmkrXtwZfI", "UbXdgX64wmU", "Ly0sYJXsp3k", "A5Em2R-wFNc", "3KHQYtuS4d4",
@@ -538,7 +475,6 @@ const YOUTUBE_LINKS = {
     "TwtGk5r0kHY", "nXZfPiFJikE", "n4bPzIFNifY", "NfwxYjb6M7Y", "1oXAVvX4h_M",
     "pXVIvg2cVJc"
   ],
-
   jer: [
     "1O6yrFWhgGQ", "My_zRWHFOIw", "WJp162oq7s8", "xOC9eZ231WI", "sMaEf6Ht2LU",
     "3D_wkaCZ3wM", "d2mlKEemma4", "H2B-QJwftXU", "6xOSGbW-ZqM", "JA2OPFL5SN8",
@@ -552,9 +488,7 @@ const YOUTUBE_LINKS = {
     "kTBhso2FkjI", "AqNiGX6S35E", "n46EPg9lVJ8", "LBuIlLH6HGA", "fTsWgENEqT8",
     "9-2LKbP3WcQ", "wDejfvfK9wg"
   ],
-
   lam: ["Yi395KsKj2M", "B1cdAySDA5U", "fazMJm4WeGw", "xOC9eZ231WI", "zFjZCD_9iW8"],
-
   eze: [
     "UHUMIZ6hZ5M", "WU9U2g5aJVc", "O02tP7MQEbA", "DD1bPp-4WII", "LlSzVsI81uA",
     "rXU4dasn9Hg", "CQxXXc1vNhQ", "_6pNv1io9Kk", "PassT5KYufk", "2YWVPJg3yvQ",
@@ -567,19 +501,16 @@ const YOUTUBE_LINKS = {
     "fXK6HzVSK74", "k99K-1A_ths", "yst3jBgVvfk", "Wtcnb1C2MjI", "njAh78ipzcE",
     "WVoD8qdoqMw", "8NgTSYLOz1c", "rJiIyF46pNE"
   ],
-
   dan: [
     "OY1zClBtTU4", "mC8r7LXFidU", "19_GBx_sleg", "0hIMIJhcCQQ", "wM6O5wDKBjA",
     "HHfwypUOvFk", "HydaUq2YTSE", "CqN5bPcRXO8", "h6KU4bWx7A0", "2PFsx38vVOo",
     "8v6np1pKlDA", "nRBNHZGLv9M"
   ],
-
   hos: [
     "z_HEz12noYs", "VV4JxE9zmVg", "M58HxxrKk1E", "C4kQfvtjfgk", "CbSuphGlDWE",
     "WuZnLWi4t-s", "X5pmAmkzQkc", "zAIBbtX_z7g", "txVSbifEhhs", "EsyH7Mt5PEQ",
     "g_ouljvyDsM", "frDk_j9m7lE", "lWAaBQw5I1A", "WrPbjs5PZyQ"
   ],
-
   joe: ["DQErwtUd5Jk", "bSwk9-JnNgI", "3QT114StZi0"],
   amo: ["2d-wW5HLFSg", "JEO9GEXtn38", "G-W4UXh6P84", "K7drJUJABes", "61qYTqX9fWk", "Xz5VSRGUKoc", "oqlnYrfxMq0", "OhN-oXNDvYU", "k-FY8M_5ii8"],
   oba: ["QRljlWVgTWk"],
@@ -591,7 +522,6 @@ const YOUTUBE_LINKS = {
   hag: ["RqIQupTeQgw", "tB3GwC-lmq0"],
   zec: ["3fOGFMPIFZc", "RVrPXGTA6Y4", "odQ4odimchg", "cHqV7DyyKSo", "VrgsvPVm3qE", "7YC_KhUXBJY", "Gaizq8zHqdc", "Jhb-DA8fH4c", "k9J1xbpn8Y0", "X0RUd955dYA", "h2fZCsvpNMQ", "bljtiMdI6TE", "4waWlKjvNN0", "eemUQvyJ82g"],
   mal: ["dXEee9Z3BN8", "7-n95yaui5w", "bRXYXKzzxRQ", "oMOQEkYVLeo"],
-
   mat: ["FVFbo1J476I", "-FNtyXrsauM", "ULfrnwHvTZg", "u_EcmPUz1E8", "29zJ7aqlQi4", "oSFkTHjrMVg", "BIbzj1WFNbk", "RqYfvfcN0as", "KNXSDf0VZow", "XMYSdyERib4", "lGAyTlnm32k", "c7xSyy9PJos", "OOcQHlEvWTM", "zupWlaberqI", "WAF-DL8HFQQ", "75ehwVm1PP0", "hPwd6xWdgxI", "XbCk8a1dWsc", "-gn8Y1yyzyM", "SzImorHhyJI", "X578Q08jpTg", "JgCh_8uZOJE", "0jftTFbNNJg", "CBlh7urgFUE", "g022Gvpkhtc", "YaiOxb3Ys0Y", "aIDr5nJ0CZ4", "oNPFbbcmXEU"],
   mrk: ["2JMVIgTNR14", "QUyVDQpU_3Y", "bmOUTfzdAy0", "xlNVj89_-bA", "JugjNH_X9ao", "zdaw7bWSTSk", "CwRX_QIGuKA", "woGhIvslcnQ", "MB_rTRE7eaY", "1db4nNBPSP8", "RZN58E7KUwk", "ccOERZYZUdQ", "3Q_52yoKFTY", "nqn5ypmODi0", "GPDl3pYiFLc", "xfJ5xXhWqek"],
   luk: ["nQPQe0zoHLM", "uVaOmNHfVqM", "t47RA_w7ltM", "8oO2qEw5uVg", "R0xG6v40xXg", "tY4xyb59Niw", "eA2f_c4_47Y", "1OqbrDzKlpo", "kupguTCC6Ok", "NMnsCCIqpJ0", "xpfTGTXOgvs", "jK0t0UzICGE", "ndvvmN9NXUQ", "_OH_wuU8ruE", "nnGWma3OiSk", "m6xfmahTdis", "XK3tiw3Oi6k", "WtE8nebAat0", "Q0CL6j63YbY", "BvTwgkR5tqA", "w6POsxd-TJ8", "q_u_Cf2VYeA", "1UumxKuQJzs", "AoZJc-0yTmM"],
@@ -620,11 +550,9 @@ const YOUTUBE_LINKS = {
   jud: ["QTrzN5zdZMA"],
   rev: ["toK8qZBYBxc", "qMw64_ZA0jc", "l_xcKoY7UgQ", "0OOoFPNHK0I", "8KyWYML2pso", "fwnguj_PffY", "3kXaHykpnv0", "z9i5ZKLZ9ck", "R3iZGMDafNY", "B6FbiFjJmpY", "sB5e-7uUAME", "z9a7MZ5wpPg", "qeT-eF4XpFs", "9Nok3YULAtI", "1tV3IywdSso", "tCAP5ctofzs", "9mzdoz8xMGg", "WL9mJ8P49oc", "qp1vfFu10L8", "pB7WKZ0vy9U", "tf5uj1gNATQ", "rm1JcHXBKVk"]
 };
-
 const TODAY = new Date();
 const TODAY_MONTH = TODAY.getMonth() + 1;
 const TODAY_DATE = TODAY.getDate();
-
 const plan = {
   1: [
     [["gen","1"],["mat","1"],["ezr","1"],["act","1"]],
@@ -659,7 +587,6 @@ const plan = {
     [["gen","31"],["mrk","2"],["est","7"],["rom","2"]],
     [["gen","32"],["mrk","3"],["est","8"],["rom","3"]]
   ],
-
   2: [
     [["gen","33"],["mrk","4"],["est","9-10"],["rom","4"]],
     [["gen","34"],["mrk","5"],["job","1"],["rom","5"]],
@@ -690,7 +617,6 @@ const plan = {
     [["exo","10"],["luk","13"],["job","28"],["1co","14"]],
     [["exo","11-12:1-21"],["luk","14"],["job","29"],["1co","15"]]
   ],
-
   3: [
     [["exo","12:22-51"],["luk","15"],["job","30"],["1co","16"]],
     [["exo","13"],["luk","16"],["job","31"],["2co","1"]],
@@ -724,7 +650,6 @@ const plan = {
     [["lev","1"],["joh","20"],["pro","17"],["php","4"]],
     [["lev","2-3"],["joh","21"],["pro","18"],["col","1"]]
   ],
-
   4: [
     [["lev","4"],["psa","1-2"],["pro","19"],["col","2"]],
     [["lev","5"],["psa","3-4"],["pro","20"],["col","3"]],
@@ -757,7 +682,6 @@ const plan = {
     [["num","6"],["psa","40-41"],["sng","4"],["heb","4"]],
     [["num","7"],["psa","42-43"],["sng","5"],["heb","5"]]
   ],
-
   5: [
     [["num","8"],["psa","44"],["sng","6"],["heb","6"]],
     [["num","9"],["psa","45"],["sng","7"],["heb","7"]],
@@ -791,7 +715,6 @@ const plan = {
     [["deu","3"],["psa","85"],["isa","31"],["rev","1"]],
     [["deu","4"],["psa","86-87"],["isa","32"],["rev","2"]]
   ],
-
   6: [
     [["deu","5"],["psa","88"],["isa","33"],["rev","3"]],
     [["deu","6"],["psa","89"],["isa","34"],["rev","4"]],
@@ -824,7 +747,6 @@ const plan = {
     [["jos","1"],["psa","120-122"],["isa","61"],["mat","9"]],
     [["jos","2"],["psa","123-125"],["isa","62"],["mat","10"]]
   ],
-
   7: [
     [["jos","3"],["psa","126-128"],["isa","63"],["mat","11"]],
     [["jos","4"],["psa","129-131"],["isa","64"],["mat","12"]],
@@ -858,7 +780,6 @@ const plan = {
     [["jdg","13"],["act","17"],["jer","26"],["mrk","12"]],
     [["jdg","14"],["act","18"],["jer","27"],["mrk","13"]]
   ],
-
   8: [
     [["jdg","15"],["act","19"],["jer","28"],["mrk","14"]],
     [["jdg","16"],["act","20"],["jer","29"],["mrk","15"]],
@@ -892,7 +813,6 @@ const plan = {
     [["1sa","23"],["1co","4"],["eze","2"],["joh","3"]],
     [["1sa","24"],["1co","5"],["eze","3"],["joh","4"]]
   ],
-
   9: [
     [["1sa","25"],["1co","6"],["eze","4"],["joh","5"]],
     [["1sa","26"],["1co","7"],["eze","5"],["joh","6"]],
@@ -925,7 +845,6 @@ const plan = {
     [["1ki","1"],["gal","5"],["eze","32"],["psa","19"]],
     [["1ki","2"],["gal","6"],["eze","33"],["psa","20-21"]]
   ],
-
   10: [
     [["1ki","3"],["eph","1"],["eze","34"],["psa","22"]],
     [["1ki","4-5"],["eph","2"],["eze","35"],["psa","23-24"]],
@@ -959,7 +878,6 @@ const plan = {
     [["2ki","12"],["2ti","2"],["hos","3-4"],["psa","62-63"]],
     [["2ki","13"],["2ti","3"],["hos","5-6"],["psa","64-65"]]
   ],
-
   11: [
     [["2ki","14"],["2ti","4"],["hos","7"],["psa","66-67"]],
     [["2ki","15"],["tit","1"],["hos","8"],["psa","68"]],
@@ -992,7 +910,6 @@ const plan = {
     [["1ch","26-27"],["2pe","1"],["mic","4"],["psa","105"]],
     [["1ch","28"],["2pe","2"],["mic","5"],["psa","106"]]
   ],
-
   12: [
     [["1ch","29"],["2pe","3"],["mic","6"],["psa","107"]],
     [["2ch","1"],["1jn","1"],["mic","7"],["psa","108-109"]],
@@ -1027,7 +944,6 @@ const plan = {
     [["2ch","36"],["rev","22"],["mal","4"],["psa","150"]]
   ]
 };
-
 const YOUTUBE_SEGMENTS = {
   "luk|1:1-38":  { chapter: 1, start: 0,   end: 291 },
   "luk|1:39-80": { chapter: 1, start: 291, end: 563 },
@@ -1042,81 +958,65 @@ const YOUTUBE_SEGMENTS = {
   "psa|119:121-144": { chapter: 119, start: 885,  end: 1046 },
   "psa|119:145-176": { chapter: 119, start: 1046, end: 1281 }
 };
-
 let PLAY_MODE = "embed";
 let ytPlayer = null;
 let ytStopTimer = null;
 let ytApiReady = false;
 let currentSequence = [];
 let currentIndex = 0;
-
 function lsGet(key) {
   try {
     if (window.localStorage) return localStorage.getItem(key);
   } catch (e) {}
   return null;
 }
-
 function lsSet(key, val) {
   try {
     if (window.localStorage) localStorage.setItem(key, val);
   } catch (e) {}
 }
-
 function getDefaultPlayMode() {
   return window.innerWidth < 768 ? "external" : "embed";
 }
-
 function loadPlayMode() {
   PLAY_MODE = lsGet("mcheyne_play_mode") || getDefaultPlayMode();
 }
-
 function setPlayMode(mode) {
   PLAY_MODE = mode;
   lsSet("mcheyne_play_mode", mode);
   updateModeUI();
 }
-
 function updateModeUI() {
   const phoneBtn = document.getElementById("modePhone");
   const tabletBtn = document.getElementById("modeTablet");
   const status = document.getElementById("modeStatus");
-
   phoneBtn.classList.toggle("active", PLAY_MODE === "external");
   tabletBtn.classList.toggle("active", PLAY_MODE === "embed");
-
   status.textContent =
     PLAY_MODE === "external"
-      ? "현재: 모바일폰 모드 / 유튜브 새 탭 또는 앱으로 열림"
-      : "현재: 패드·탭 모드 / 웹페이지 안 내장 플레이어로 재생";
+      ? "현재: 모바일폰 모드 / 공동체성경읽기 새 탭 또는 유튜브 앱으로 열림"
+      : "현재: 패드·탭 모드 / 공동체성경읽기 내장 플레이어로 재생";
 }
-
 loadPlayMode();
-
 const ytApiScript = document.createElement("script");
 ytApiScript.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(ytApiScript);
-
 function onYouTubeIframeAPIReady() {
   ytApiReady = true;
 }
-
 function clearYoutubeTimer() {
   if (ytStopTimer) {
     clearInterval(ytStopTimer);
     ytStopTimer = null;
   }
 }
-
 function getVideoId(bookCode, chapter) {
   const arr = YOUTUBE_LINKS[bookCode];
   if (!arr) return null;
   return arr[chapter - 1] || null;
 }
-
 function getChapterRangeFromSpec(chapSpec) {
   const s = String(chapSpec).trim();
-
   const verseRange = s.match(/^(\d+):(\d+)-(\d+)$/);
   if (verseRange) {
     return {
@@ -1127,7 +1027,6 @@ function getChapterRangeFromSpec(chapSpec) {
       endVerse: Number(verseRange[3])
     };
   }
-
   const multiWithVerse = s.match(/^(\d+)-(\d+):(\d+)-(\d+)$/);
   if (multiWithVerse) {
     return {
@@ -1138,7 +1037,6 @@ function getChapterRangeFromSpec(chapSpec) {
       endVerseEnd: Number(multiWithVerse[4])
     };
   }
-
   const range = s.match(/^(\d+)-(\d+)$/);
   if (range) {
     return {
@@ -1147,7 +1045,6 @@ function getChapterRangeFromSpec(chapSpec) {
       endChapter: Number(range[2])
     };
   }
-
   const single = s.match(/^(\d+)$/);
   if (single) {
     return {
@@ -1156,16 +1053,13 @@ function getChapterRangeFromSpec(chapSpec) {
       endChapter: Number(single[1])
     };
   }
-
   return { type: "single", startChapter: 1, endChapter: 1 };
 }
-
 function buildPlaySequence(bookCode, chapSpec) {
   if (bookCode === "exo" && chapSpec === "11-12:1-21") {
     const exo11 = getVideoId("exo", 11);
     const exo12 = getVideoId("exo", 12);
     const sequence = [];
-
     if (exo11) {
       sequence.push({
         videoId: String(exo11).trim(),
@@ -1176,7 +1070,6 @@ function buildPlaySequence(bookCode, chapSpec) {
         label: "출 11장"
       });
     }
-
     if (exo12) {
       sequence.push({
         videoId: String(exo12).trim(),
@@ -1187,17 +1080,13 @@ function buildPlaySequence(bookCode, chapSpec) {
         label: "출 12장 1-21절"
       });
     }
-
     return sequence;
   }
-
   const segmentKey = bookCode + "|" + chapSpec;
   const segment = YOUTUBE_SEGMENTS[segmentKey];
-
   if (segment) {
     const videoId = getVideoId(bookCode, segment.chapter);
     if (!videoId) return [];
-
     return [{
       videoId: String(videoId).trim(),
       bookCode,
@@ -1207,14 +1096,11 @@ function buildPlaySequence(bookCode, chapSpec) {
       label: (BOOKS[bookCode] || bookCode) + " " + chapSpec
     }];
   }
-
   const parsed = getChapterRangeFromSpec(chapSpec);
   const sequence = [];
-
   for (let ch = parsed.startChapter; ch <= parsed.endChapter; ch++) {
     const videoId = getVideoId(bookCode, ch);
     if (!videoId) continue;
-
     sequence.push({
       videoId: String(videoId).trim(),
       bookCode,
@@ -1224,77 +1110,56 @@ function buildPlaySequence(bookCode, chapSpec) {
       label: (BOOKS[bookCode] || bookCode) + " " + ch + "장"
     });
   }
-
   return sequence;
 }
-
 function openYoutubeExternal(sequence) {
   if (!sequence || !sequence.length) return;
-
   const first = sequence[0];
   let url = YT_BASE + first.videoId;
-
   if (first.start && first.start > 0) {
     url += "?t=" + Math.floor(first.start);
   }
-
   window.open(url, "_blank", "noopener,noreferrer");
 }
-
 function playYoutube(sequence, title) {
   if (!sequence || !sequence.length) return;
-
   if (PLAY_MODE === "external") {
     openYoutubeExternal(sequence);
   } else {
     playSequence(sequence, title);
   }
 }
-
 function openYoutubeModal(title) {
   const modal = document.getElementById("youtubeModal");
   const titleEl = document.getElementById("youtubeTitle");
-
   titleEl.textContent = title || "유튜브 재생";
   modal.style.display = "flex";
 }
-
 function playSequence(sequence, title) {
   if (!sequence || !sequence.length) return;
-
   currentSequence = sequence;
   currentIndex = 0;
-
   openYoutubeModal(title || sequence[0].label);
   loadCurrentSequenceItem();
 }
-
 function loadCurrentSequenceItem() {
   clearYoutubeTimer();
-
   const item = currentSequence[currentIndex];
   if (!item) {
     closeSegmentPlayer();
     return;
   }
-
   const titleEl = document.getElementById("youtubeTitle");
   titleEl.textContent = item.label + " (" + (currentIndex + 1) + "/" + currentSequence.length + ")";
-
   function startTimerIfNeeded() {
     clearYoutubeTimer();
-
     if (item.end == null) return;
-
     ytStopTimer = setInterval(function () {
       if (!ytPlayer || typeof ytPlayer.getCurrentTime !== "function") return;
-
       const current = ytPlayer.getCurrentTime();
-
       if (current >= item.end) {
         clearYoutubeTimer();
         currentIndex += 1;
-
         if (currentIndex < currentSequence.length) {
           loadCurrentSequenceItem();
         } else {
@@ -1303,7 +1168,6 @@ function loadCurrentSequenceItem() {
       }
     }, 300);
   }
-
   function createOrLoad() {
     if (!ytPlayer) {
       ytPlayer = new YT.Player("youtubePlayer", {
@@ -1323,7 +1187,6 @@ function loadCurrentSequenceItem() {
             if (event.data === YT.PlayerState.ENDED) {
               clearYoutubeTimer();
               currentIndex += 1;
-
               if (currentIndex < currentSequence.length) {
                 loadCurrentSequenceItem();
               }
@@ -1339,7 +1202,6 @@ function loadCurrentSequenceItem() {
       startTimerIfNeeded();
     }
   }
-
   if (ytApiReady && window.YT && YT.Player) {
     createOrLoad();
   } else {
@@ -1351,69 +1213,53 @@ function loadCurrentSequenceItem() {
     }, 100);
   }
 }
-
 function closeSegmentPlayer() {
   const modal = document.getElementById("youtubeModal");
   modal.style.display = "none";
-
   clearYoutubeTimer();
-
   currentSequence = [];
   currentIndex = 0;
-
   if (ytPlayer && typeof ytPlayer.pauseVideo === "function") {
     ytPlayer.pauseVideo();
   }
 }
-
 document.addEventListener("click", function (e) {
   if (e.target && e.target.id === "youtubeClose") {
     closeSegmentPlayer();
   }
-
   if (e.target && e.target.id === "youtubeModal") {
     closeSegmentPlayer();
   }
 });
-
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
     const keys = [];
-
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("mcheyne_read_")) keys.push(k);
     }
-
     keys.forEach(k => localStorage.removeItem(k));
   } catch (e) {}
 }
-
 function parseFirstChapSpec(spec) {
   const s = String(spec).trim();
-
   const verseMatch = s.match(/^(\d+):(\d+)/);
   if (verseMatch) {
     return { chap: Number(verseMatch[1]), sec: Number(verseMatch[2]) };
   }
-
   const rangeMatch = s.match(/^(\d+)-(\d+)/);
   if (rangeMatch) {
     return { chap: Number(rangeMatch[1]), sec: 1 };
   }
-
   const chapMatch = s.match(/^(\d+)/);
   if (chapMatch) {
     return { chap: Number(chapMatch[1]), sec: 1 };
   }
-
   return { chap: 1, sec: 1 };
 }
-
 function makeBibleUrl(bookCode, chap, sec) {
   const bskBook = getBskBookCode(bookCode);
-
   return "https://www.bskorea.or.kr/bible/korbibReadpage.php"
     + "?version=GAE"
     + "&book=" + encodeURIComponent(bskBook)
@@ -1424,168 +1270,113 @@ function makeBibleUrl(bookCode, chap, sec) {
     + "&fontSize=19px"
     + "&fontWeight=bold";
 }
-
 function makeCell(bookCode, chapSpec, id) {
   const wrap = document.createElement("span");
   wrap.className = "reading-cell";
-
   const firstItem = parseFirstChapSpec(chapSpec);
-
   const bibleLink = document.createElement("a");
   bibleLink.className = "bible";
   bibleLink.dataset.book = bookCode;
   bibleLink.dataset.chapSpec = chapSpec;
   bibleLink.dataset.id = id;
-
   bibleLink.textContent =
     (BOOKS[bookCode] || bookCode) + " " +
     (/^\d+$/.test(chapSpec) ? chapSpec + "장" : chapSpec);
-
   bibleLink.href = makeBibleUrl(bookCode, firstItem.chap, firstItem.sec);
   bibleLink.target = "_blank";
   bibleLink.rel = "noopener noreferrer";
-
   const key = "mcheyne_read_" + id;
-
   if (lsGet(key) === "1") {
     bibleLink.classList.add("read");
   }
-
   bibleLink.addEventListener("click", function () {
     this.classList.toggle("read");
     lsSet(key, this.classList.contains("read") ? "1" : "0");
   });
-
   wrap.appendChild(bibleLink);
-
   const sequence = buildPlaySequence(bookCode, chapSpec);
-
   if (sequence.length) {
     const ytLink = document.createElement("a");
     ytLink.className = "youtube-link";
     ytLink.href = "#";
     ytLink.textContent = "▶";
     ytLink.title = "공동체성경읽기 유튜브 듣기";
-
     ytLink.addEventListener("click", function (e) {
       e.preventDefault();
       playYoutube(sequence, (BOOKS[bookCode] || bookCode) + " " + chapSpec);
     });
-
     wrap.appendChild(ytLink);
   }
-
   return wrap;
 }
-
 (function render() {
   updateModeUI();
-
   document.getElementById("modePhone").addEventListener("click", function () {
     setPlayMode("external");
   });
-
   document.getElementById("modeTablet").addEventListener("click", function () {
     setPlayMode("embed");
   });
-
   const root = document.getElementById("plans");
-
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
     const days = plan[month];
-
     const wrap = document.createElement("div");
     wrap.className = "month-block";
-
     const h2 = document.createElement("h2");
     h2.textContent = month + "월";
     wrap.appendChild(h2);
-
     const table = document.createElement("table");
-
     const thead = document.createElement("thead");
     thead.innerHTML = "<tr><th>날짜</th><th>1</th><th>2</th><th>3</th><th>4</th></tr>";
     table.appendChild(thead);
-
     const tbody = document.createElement("tbody");
-
     days.forEach((dayArr, dayIdx) => {
       const tr = document.createElement("tr");
-
       const tdDate = document.createElement("td");
       tdDate.className = "date";
-
       const date = dayIdx + 1;
       const febcId = getFebcId(month, date);
-
       if (febcId) {
         const dateLink = document.createElement("a");
-        dateLink.href = "#";
+        dateLink.href = YT_BASE + String(febcId).trim();
+        dateLink.target = "_blank";
+        dateLink.rel = "noopener noreferrer";
         dateLink.className = "date-link";
         dateLink.textContent = date;
         dateLink.title = "극동방송 맥체인 성경읽기 " + month + "월 " + date + "일";
-
-        dateLink.addEventListener("click", function (e) {
-          e.preventDefault();
-
-          playYoutube(
-            [{
-              videoId: String(febcId).trim(),
-              bookCode: "febc",
-              chapter: date,
-              start: 0,
-              end: null,
-              label: "극동방송 맥체인 성경읽기 " + month + "월 " + date + "일"
-            }],
-            "극동방송 맥체인 성경읽기 " + month + "월 " + date + "일"
-          );
-        });
-
         tdDate.appendChild(dateLink);
       } else {
         tdDate.textContent = date;
       }
-
       if (month === TODAY_MONTH && date === TODAY_DATE) {
         tr.classList.add("today-row");
       }
-
       tr.appendChild(tdDate);
-
       for (let i = 0; i < 4; i++) {
         const [bookCode, chapSpec] = dayArr[i];
-
         const td = document.createElement("td");
         const id = month + "-" + date + "-" + (i + 1);
-
         td.appendChild(makeCell(bookCode, chapSpec, id));
         tr.appendChild(td);
       }
-
       tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
     wrap.appendChild(table);
     root.appendChild(wrap);
   });
 })();
-
 document.getElementById("resetRead").addEventListener("click", function () {
   if (!confirm("모든 읽음 표시를 초기화할까요?")) return;
-
   document.querySelectorAll("a.bible.read").forEach(a => {
     a.classList.remove("read");
   });
-
   lsClearMcheyne();
 });
-
 document.addEventListener("contextmenu", function (e) {
   e.preventDefault();
 });
 </script>
 </body>
 </html>
-
