@@ -26,6 +26,37 @@
   p {
     margin: 4px 0 8px 0;
   }
+  .mode-box {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 10px 0 14px 0;
+    flex-wrap: wrap;
+  }
+  .mode-btn {
+    border: 1px solid #1d4ed8;
+    background: #eaf2ff;
+    color: #0b3a8f;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .mode-btn.active {
+    background: #1d4ed8;
+    color: #fff;
+    border-color: #1d4ed8;
+    box-shadow: 0 2px 6px rgba(29,78,216,0.35);
+  }
+  #modeStatus {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #1e3a8a;
+    margin: -4px 0 10px 0;
+    font-weight: 600;
+  }
   table {
     border-collapse: collapse;
     width: 100%;
@@ -114,6 +145,12 @@
     padding: 8px 10px;
     font-size: 14px;
   }
+  #youtubeTitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 10px;
+  }
   #youtubeClose {
     background: #fff;
     border: 0;
@@ -148,20 +185,24 @@
 <body>
 <h3>*^^* Oking's 맥체인 성경읽기표 ^^"</h3>
 <p>
-  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭으로 열림<br>
   · 성경 본문 클릭 시 대한성서공회 새 탭으로 열림<br>
-  · 유튜브 아이콘(▶) 클릭 시 공동체성경읽기 유튜브 새 탭 또는 구간 플레이어로 열림<br>
-  · 절 단위 분할 본문은 지정 구간만 재생 후 자동 정지됨<br>
-  · 여러 장 범위는 첫 장 기준으로 연결됨<br>
   · 읽음 표시는 동일 브라우저에 저장됨<br>
-  · 다른 브라우저 또는 다른 기기에서는 읽음 표시가 새로 시작됨
-</p>
+  · 날짜 숫자 클릭 시 극동방송 맥체인 성경읽기 유튜브 새 탭<br>
+  · 모바일폰 모드: 공동체성경읽기 유튜브가 새 탭/유튜브 앱 방식으로 열림<br>
+  · 패드/탭 모드: 공동체성경읽기 유튜브가 웹페이지 안 내장형 플레이어로 실행됨<br>
+  · 패드/탭 모드에서는 여러 장,절 범위가 장 순서대로 연속 재생됨<br>
+  </p>
+<div class="mode-box">
+  <button id="modePhone" class="mode-btn">모바일폰 모드</button>
+  <button id="modeTablet" class="mode-btn">패드/탭 모드</button>
+</div>
+<div id="modeStatus"></div>
 <div id="plans"></div>
 <button id="resetRead">읽음 표시 전체 초기화</button>
 <div id="youtubeModal">
   <div id="youtubeBox">
     <div id="youtubeHeader">
-      <span id="youtubeTitle">공동체성경읽기</span>
+      <span id="youtubeTitle">유튜브 재생</span>
       <button id="youtubeClose">닫기</button>
     </div>
     <div id="youtubePlayer"></div>
@@ -447,9 +488,7 @@ const YOUTUBE_LINKS = {
     "kTBhso2FkjI", "AqNiGX6S35E", "n46EPg9lVJ8", "LBuIlLH6HGA", "fTsWgENEqT8",
     "9-2LKbP3WcQ", "wDejfvfK9wg"
   ],
-  lam: [
-    "Yi395KsKj2M", "B1cdAySDA5U", "fazMJm4WeGw", "xOC9eZ231WI", "zFjZCD_9iW8"
-  ],
+  lam: ["Yi395KsKj2M", "B1cdAySDA5U", "fazMJm4WeGw", "xOC9eZ231WI", "zFjZCD_9iW8"],
   eze: [
     "UHUMIZ6hZ5M", "WU9U2g5aJVc", "O02tP7MQEbA", "DD1bPp-4WII", "LlSzVsI81uA",
     "rXU4dasn9Hg", "CQxXXc1vNhQ", "_6pNv1io9Kk", "PassT5KYufk", "2YWVPJg3yvQ",
@@ -473,84 +512,24 @@ const YOUTUBE_LINKS = {
     "g_ouljvyDsM", "frDk_j9m7lE", "lWAaBQw5I1A", "WrPbjs5PZyQ"
   ],
   joe: ["DQErwtUd5Jk", "bSwk9-JnNgI", "3QT114StZi0"],
-  amo: [
-    "2d-wW5HLFSg", "JEO9GEXtn38", "G-W4UXh6P84", "K7drJUJABes", "61qYTqX9fWk",
-    "Xz5VSRGUKoc", "oqlnYrfxMq0", "OhN-oXNDvYU", "k-FY8M_5ii8"
-  ],
+  amo: ["2d-wW5HLFSg", "JEO9GEXtn38", "G-W4UXh6P84", "K7drJUJABes", "61qYTqX9fWk", "Xz5VSRGUKoc", "oqlnYrfxMq0", "OhN-oXNDvYU", "k-FY8M_5ii8"],
   oba: ["QRljlWVgTWk"],
   jon: ["XQ3QEOmze5g", "lSURC-wLKN4", "VQ06NfhE-_4", "sXgkP3aWASc"],
-  mic: [
-    "Hzp9YadOi4Y", "la-GiPY9nmY", "oGX0o82_On4", "T9d95vMAyyI",
-    "nQkn7dD1JxM", "PXB5x7K2rpE", "tNFjwqB2pqw"
-  ],
+  mic: ["Hzp9YadOi4Y", "la-GiPY9nmY", "oGX0o82_On4", "T9d95vMAyyI", "nQkn7dD1JxM", "PXB5x7K2rpE", "tNFjwqB2pqw"],
   nah: ["lJN-cYwODWo", "N4K4IRoHljg", "KsDqoevwaQY"],
   hab: ["DNW6LvkGclA", "xPn9Bn85zmY", "U10ChFy6exI"],
   zep: ["MBM9xO3YG0A", "WpYHttwmhRk", "4m0bxFA0fyI"],
   hag: ["RqIQupTeQgw", "tB3GwC-lmq0"],
-  zec: [
-    "3fOGFMPIFZc", "RVrPXGTA6Y4", "odQ4odimchg", "cHqV7DyyKSo", "VrgsvPVm3qE",
-    "7YC_KhUXBJY", "Gaizq8zHqdc", "Jhb-DA8fH4c", "k9J1xbpn8Y0", "X0RUd955dYA",
-    "h2fZCsvpNMQ", "bljtiMdI6TE", "4waWlKjvNN0", "eemUQvyJ82g"
-  ],
+  zec: ["3fOGFMPIFZc", "RVrPXGTA6Y4", "odQ4odimchg", "cHqV7DyyKSo", "VrgsvPVm3qE", "7YC_KhUXBJY", "Gaizq8zHqdc", "Jhb-DA8fH4c", "k9J1xbpn8Y0", "X0RUd955dYA", "h2fZCsvpNMQ", "bljtiMdI6TE", "4waWlKjvNN0", "eemUQvyJ82g"],
   mal: ["dXEee9Z3BN8", "7-n95yaui5w", "bRXYXKzzxRQ", "oMOQEkYVLeo"],
-  mat: [
-    "FVFbo1J476I", "-FNtyXrsauM", "ULfrnwHvTZg", "u_EcmPUz1E8",
-    "29zJ7aqlQi4", "oSFkTHjrMVg", "BIbzj1WFNbk", "RqYfvfcN0as",
-    "KNXSDf0VZow", "XMYSdyERib4", "lGAyTlnm32k", "c7xSyy9PJos",
-    "OOcQHlEvWTM", "zupWlaberqI", "WAF-DL8HFQQ", "75ehwVm1PP0",
-    "hPwd6xWdgxI", "XbCk8a1dWsc", "-gn8Y1yyzyM", "SzImorHhyJI",
-    "X578Q08jpTg", "JgCh_8uZOJE", "0jftTFbNNJg", "CBlh7urgFUE",
-    "g022Gvpkhtc", "YaiOxb3Ys0Y", "aIDr5nJ0CZ4", "oNPFbbcmXEU"
-  ],
-  mrk: [
-    "2JMVIgTNR14", "QUyVDQpU_3Y", "bmOUTfzdAy0", "xlNVj89_-bA",
-    "JugjNH_X9ao", "zdaw7bWSTSk", "CwRX_QIGuKA", "woGhIvslcnQ",
-    "MB_rTRE7eaY", "1db4nNBPSP8", "RZN58E7KUwk", "ccOERZYZUdQ",
-    "3Q_52yoKFTY", "nqn5ypmODi0", "GPDl3pYiFLc", "xfJ5xXhWqek"
-  ],
-  luk: [
-    "nQPQe0zoHLM", "uVaOmNHfVqM", "t47RA_w7ltM", "8oO2qEw5uVg",
-    "R0xG6v40xXg", "tY4xyb59Niw", "eA2f_c4_47Y", "1OqbrDzKlpo",
-    "kupguTCC6Ok", "NMnsCCIqpJ0", "xpfTGTXOgvs", "jK0t0UzICGE",
-    "ndvvmN9NXUQ", "_OH_wuU8ruE", "nnGWma3OiSk", "m6xfmahTdis",
-    "XK3tiw3Oi6k", "WtE8nebAat0", "Q0CL6j63YbY", "BvTwgkR5tqA",
-    "w6POsxd-TJ8", "q_u_Cf2VYeA", "1UumxKuQJzs", "AoZJc-0yTmM"
-  ],
-  joh: [
-    "9e05_NLtNa8", "Un_r327ddfU", "K3fIRZWzrCo", "dL5yY_u7BBo",
-    "cEdefldCb_I", "Nkit8Sl4Qwk", "PTF-GVZdcn0", "m25a3LHySeg",
-    "FvPtFWJIqc8", "GJQJXQ7AFVY", "mFq5yi8GH8k", "bu4Di_RZTBo",
-    "8tVOK3G0M28", "8XSQCEKnH74", "hJXKfdcxPYA", "SWbUZhPr19U",
-    "QNbHo2Fhd_E", "pnEPyRYEUEA", "lwiKsXRCbho", "xdJ4ZPHjyZ4",
-    "usZ71caEcGE"
-  ],
-  act: [
-    "YAu1h0JFwjI", "MJdOWgmgl1Y", "maV62T5HQ7Q", "4a3qZIIeH_A",
-    "VNoIqCDNPyU", "RGDjHtSb8Fw", "7RvmAUmRBW8", "p_gdmD-_Qnk",
-    "j97D0vF_i4c", "ZYZSlY2_Zvk", "bimqC37Jwe4", "ZNw8URfZaA8",
-    "EM9FPB5mBJw", "GCu3WikTEEM", "g5ZfSHt8fng", "EvEwcJ0NnZQ",
-    "sBO30J7PSqA", "WKmVJUPc_vE", "WeRMbJE4d1Y", "YeV00PmWyZY",
-    "vlhMBuDbam8", "_awnm8zE3WE", "89_JSLUPt10", "rovpYez523w",
-    "dNrzhsUZd14", "jSprkukru6U", "VSIzbDMcQMQ", "bOTBcp8sJYE"
-  ],
-  rom: [
-    "zDVkOQYmI0o", "A82VfIeeYkc", "TzORuIS0MM8", "329xEfNAb6g",
-    "0578hxkVKNQ", "fm-ib6hMfac", "SRoP3GedkL0", "wWpUMLoAjV4",
-    "174zSO186M8", "N5OSNQFbXUE", "10ZXohnqVA8", "WAIavTv9xJ4",
-    "_GqcM3sTSmc", "oe2Vn7V_IbY", "EN1CzTxYlS0", "ao523cxK3bs"
-  ],
-  "1co": [
-    "EKoXIgVMv6Y", "lREebLjHdEo", "4TZye0AncTQ", "-SzEmNFFzic",
-    "an71xG5yIq8", "H8PnC_em0VE", "U9qrBl0BEpw", "BnB8RjDW1tk",
-    "U8krDQdOxw8", "YudjjOVeKfo", "6IXzVoyIaeE", "MWgqYeVeEw8",
-    "4PWHObBH_Ck", "z2O9g6AvSuc", "gCOXHOO9Gy8", "xdIl4vz46XI"
-  ],
-  "2co": [
-    "pecL1Uk1fLE", "ara0tRnDYSg", "m62fpbKKGiU", "yKi0ERtMxmc",
-    "vvPTt2DZlDE", "7z16JF7J1b0", "mh2kqUriXxQ", "h3qSyx_pjgk",
-    "4qPtvTcnLjo", "yeNR1Mzj5XE", "zhgqV6YVdvs", "95lgy2dXbww",
-    "tXIfJrAHrDY"
-  ],
+  mat: ["FVFbo1J476I", "-FNtyXrsauM", "ULfrnwHvTZg", "u_EcmPUz1E8", "29zJ7aqlQi4", "oSFkTHjrMVg", "BIbzj1WFNbk", "RqYfvfcN0as", "KNXSDf0VZow", "XMYSdyERib4", "lGAyTlnm32k", "c7xSyy9PJos", "OOcQHlEvWTM", "zupWlaberqI", "WAF-DL8HFQQ", "75ehwVm1PP0", "hPwd6xWdgxI", "XbCk8a1dWsc", "-gn8Y1yyzyM", "SzImorHhyJI", "X578Q08jpTg", "JgCh_8uZOJE", "0jftTFbNNJg", "CBlh7urgFUE", "g022Gvpkhtc", "YaiOxb3Ys0Y", "aIDr5nJ0CZ4", "oNPFbbcmXEU"],
+  mrk: ["2JMVIgTNR14", "QUyVDQpU_3Y", "bmOUTfzdAy0", "xlNVj89_-bA", "JugjNH_X9ao", "zdaw7bWSTSk", "CwRX_QIGuKA", "woGhIvslcnQ", "MB_rTRE7eaY", "1db4nNBPSP8", "RZN58E7KUwk", "ccOERZYZUdQ", "3Q_52yoKFTY", "nqn5ypmODi0", "GPDl3pYiFLc", "xfJ5xXhWqek"],
+  luk: ["nQPQe0zoHLM", "uVaOmNHfVqM", "t47RA_w7ltM", "8oO2qEw5uVg", "R0xG6v40xXg", "tY4xyb59Niw", "eA2f_c4_47Y", "1OqbrDzKlpo", "kupguTCC6Ok", "NMnsCCIqpJ0", "xpfTGTXOgvs", "jK0t0UzICGE", "ndvvmN9NXUQ", "_OH_wuU8ruE", "nnGWma3OiSk", "m6xfmahTdis", "XK3tiw3Oi6k", "WtE8nebAat0", "Q0CL6j63YbY", "BvTwgkR5tqA", "w6POsxd-TJ8", "q_u_Cf2VYeA", "1UumxKuQJzs", "AoZJc-0yTmM"],
+  joh: ["9e05_NLtNa8", "Un_r327ddfU", "K3fIRZWzrCo", "dL5yY_u7BBo", "cEdefldCb_I", "Nkit8Sl4Qwk", "PTF-GVZdcn0", "m25a3LHySeg", "FvPtFWJIqc8", "GJQJXQ7AFVY", "mFq5yi8GH8k", "bu4Di_RZTBo", "8tVOK3G0M28", "8XSQCEKnH74", "hJXKfdcxPYA", "SWbUZhPr19U", "QNbHo2Fhd_E", "pnEPyRYEUEA", "lwiKsXRCbho", "xdJ4ZPHjyZ4", "usZ71caEcGE"],
+  act: ["YAu1h0JFwjI", "MJdOWgmgl1Y", "maV62T5HQ7Q", "4a3qZIIeH_A", "VNoIqCDNPyU", "RGDjHtSb8Fw", "7RvmAUmRBW8", "p_gdmD-_Qnk", "j97D0vF_i4c", "ZYZSlY2_Zvk", "bimqC37Jwe4", "ZNw8URfZaA8", "EM9FPB5mBJw", "GCu3WikTEEM", "g5ZfSHt8fng", "EvEwcJ0NnZQ", "sBO30J7PSqA", "WKmVJUPc_vE", "WeRMbJE4d1Y", "YeV00PmWyZY", "vlhMBuDbam8", "_awnm8zE3WE", "89_JSLUPt10", "rovpYez523w", "dNrzhsUZd14", "jSprkukru6U", "VSIzbDMcQMQ", "bOTBcp8sJYE"],
+  rom: ["zDVkOQYmI0o", "A82VfIeeYkc", "TzORuIS0MM8", "329xEfNAb6g", "0578hxkVKNQ", "fm-ib6hMfac", "SRoP3GedkL0", "wWpUMLoAjV4", "174zSO186M8", "N5OSNQFbXUE", "10ZXohnqVA8", "WAIavTv9xJ4", "_GqcM3sTSmc", "oe2Vn7V_IbY", "EN1CzTxYlS0", "ao523cxK3bs"],
+  "1co": ["EKoXIgVMv6Y", "lREebLjHdEo", "4TZye0AncTQ", "-SzEmNFFzic", "an71xG5yIq8", "H8PnC_em0VE", "U9qrBl0BEpw", "BnB8RjDW1tk", "U8krDQdOxw8", "YudjjOVeKfo", "6IXzVoyIaeE", "MWgqYeVeEw8", "4PWHObBH_Ck", "z2O9g6AvSuc", "gCOXHOO9Gy8", "xdIl4vz46XI"],
+  "2co": ["pecL1Uk1fLE", "ara0tRnDYSg", "m62fpbKKGiU", "yKi0ERtMxmc", "vvPTt2DZlDE", "7z16JF7J1b0", "mh2kqUriXxQ", "h3qSyx_pjgk", "4qPtvTcnLjo", "yeNR1Mzj5XE", "zhgqV6YVdvs", "95lgy2dXbww", "tXIfJrAHrDY"],
   gal: ["fj0rAyMYeow", "obmGBNjmhpQ", "e6mXwFyShrk", "5YBmbeA487k", "BsxpXm4COHs", "DwGQZRSRp3Y"],
   eph: ["LbquANbw0T0", "XtUbPQ50p6I", "ytKQaSYB2b0", "9ZHR_9laqLM", "Bn8TQ3kn1Zo", "BMDFcZSK2E0"],
   php: ["4teyRYSKFGk", "3Qg6hrY_Vlk", "Xbmko7_dMqU", "ET-Qor5tVhU"],
@@ -561,12 +540,7 @@ const YOUTUBE_LINKS = {
   "2ti": ["Wmp4mjDioCs", "LVPdXKVFT9s", "f8hQ2Z9NUIA", "4zeRVtR6FSY"],
   tit: ["XDhX2VJl0D4", "3LhjtPOspuQ", "zwH0EyVGt-I"],
   phm: ["JW8aOeWaiWU"],
-  heb: [
-    "gfcLtl1RoUA", "ZEPgzqfeSq4", "ziRNttBXADM", "B8-VnvjdBc8",
-    "v08LLz3K3Bc", "pALZ7oNECWE", "QkcDcf1bi2g", "JgNFHZG4PlA",
-    "Uaruz5UzDEc", "iOZmIKbQhOE", "MJJcw9M_iU4", "_U4ql-tsaGA",
-    "Y5IcDDw-v8U"
-  ],
+  heb: ["gfcLtl1RoUA", "ZEPgzqfeSq4", "ziRNttBXADM", "B8-VnvjdBc8", "v08LLz3K3Bc", "pALZ7oNECWE", "QkcDcf1bi2g", "JgNFHZG4PlA", "Uaruz5UzDEc", "iOZmIKbQhOE", "MJJcw9M_iU4", "_U4ql-tsaGA", "Y5IcDDw-v8U"],
   jas: ["Uc7cUlr0hzw", "3r8BHYv_tXc", "SdlnL_TMzhk", "iQYJ1oRVTzQ", "oQsatSBzbKQ"],
   "1pe": ["9yzcbTCN7Wc", "sWXpD5zwpi8", "Bit4CxdE2Lk", "QjTc-Bfa1rw", "AIzAYIJeiaM"],
   "2pe": ["NyPxmw7ECd8", "-5llnoB2GgY", "Tdw7ijfUBII"],
@@ -574,14 +548,7 @@ const YOUTUBE_LINKS = {
   "2jn": ["-Mqisl6tFu8"],
   "3jn": ["w6EeE0D7hQ4"],
   jud: ["QTrzN5zdZMA"],
-  rev: [
-    "toK8qZBYBxc", "qMw64_ZA0jc", "l_xcKoY7UgQ", "0OOoFPNHK0I",
-    "8KyWYML2pso", "fwnguj_PffY", "3kXaHykpnv0", "z9i5ZKLZ9ck",
-    "R3iZGMDafNY", "B6FbiFjJmpY", "sB5e-7uUAME", "z9a7MZ5wpPg",
-    "qeT-eF4XpFs", "9Nok3YULAtI", "1tV3IywdSso", "tCAP5ctofzs",
-    "9mzdoz8xMGg", "WL9mJ8P49oc", "qp1vfFu10L8", "pB7WKZ0vy9U",
-    "tf5uj1gNATQ", "rm1JcHXBKVk"
-  ]
+  rev: ["toK8qZBYBxc", "qMw64_ZA0jc", "l_xcKoY7UgQ", "0OOoFPNHK0I", "8KyWYML2pso", "fwnguj_PffY", "3kXaHykpnv0", "z9i5ZKLZ9ck", "R3iZGMDafNY", "B6FbiFjJmpY", "sB5e-7uUAME", "z9a7MZ5wpPg", "qeT-eF4XpFs", "9Nok3YULAtI", "1tV3IywdSso", "tCAP5ctofzs", "9mzdoz8xMGg", "WL9mJ8P49oc", "qp1vfFu10L8", "pB7WKZ0vy9U", "tf5uj1gNATQ", "rm1JcHXBKVk"]
 };
 const TODAY = new Date();
 const TODAY_MONTH = TODAY.getMonth() + 1;
@@ -978,27 +945,59 @@ const plan = {
   ]
 };
 const YOUTUBE_SEGMENTS = {
-  // 누가복음 1장 분할
-  "luk|1:1-38":  { chapter: 1, start: 0,   end: 291 }, // 00:00 - 04:51
-  "luk|1:39-80": { chapter: 1, start: 291, end: 563 }, // 04:51 - 09:23
-  // 출애굽기 12장 분할
-  // 출 11-12:1-21은 예외 처리하지 않음: 기존처럼 출 11장만 새 탭으로 열림
-  "exo|12:22-51": { chapter: 12, start: 203, end: 485 }, // 03:23 - 08:05
-  // 시편 78편 분할
-  "psa|78:1-39":  { chapter: 78, start: 0,   end: 272 }, // 00:00 - 04:32
-  "psa|78:40-72": { chapter: 78, start: 272, end: 496 }, // 04:32 - 08:16
-  // 시편 119편 분할
-  "psa|119:1-24":    { chapter: 119, start: 0,    end: 161 },  // 00:00 - 02:41
-  "psa|119:25-48":   { chapter: 119, start: 161,  end: 348 },  // 02:41 - 05:48
-  "psa|119:49-72":   { chapter: 119, start: 348,  end: 517 },  // 05:48 - 08:37
-  "psa|119:73-96":   { chapter: 119, start: 517,  end: 703 },  // 08:37 - 11:43
-  "psa|119:97-120":  { chapter: 119, start: 703,  end: 885 },  // 11:43 - 14:45
-  "psa|119:121-144": { chapter: 119, start: 885,  end: 1046 }, // 14:45 - 17:26
-  "psa|119:145-176": { chapter: 119, start: 1046, end: 1281 }  // 17:26 - 21:21
+  "luk|1:1-38":  { chapter: 1, start: 0,   end: 291 },
+  "luk|1:39-80": { chapter: 1, start: 291, end: 563 },
+  "exo|12:22-51": { chapter: 12, start: 203, end: 485 },
+  "psa|78:1-39":  { chapter: 78, start: 0,   end: 272 },
+  "psa|78:40-72": { chapter: 78, start: 272, end: 496 },
+  "psa|119:1-24":    { chapter: 119, start: 0,    end: 161 },
+  "psa|119:25-48":   { chapter: 119, start: 161,  end: 348 },
+  "psa|119:49-72":   { chapter: 119, start: 348,  end: 517 },
+  "psa|119:73-96":   { chapter: 119, start: 517,  end: 703 },
+  "psa|119:97-120":  { chapter: 119, start: 703,  end: 885 },
+  "psa|119:121-144": { chapter: 119, start: 885,  end: 1046 },
+  "psa|119:145-176": { chapter: 119, start: 1046, end: 1281 }
 };
+let PLAY_MODE = "embed";
 let ytPlayer = null;
 let ytStopTimer = null;
 let ytApiReady = false;
+let currentSequence = [];
+let currentIndex = 0;
+function lsGet(key) {
+  try {
+    if (window.localStorage) return localStorage.getItem(key);
+  } catch (e) {}
+  return null;
+}
+function lsSet(key, val) {
+  try {
+    if (window.localStorage) localStorage.setItem(key, val);
+  } catch (e) {}
+}
+function getDefaultPlayMode() {
+  return window.innerWidth < 768 ? "external" : "embed";
+}
+function loadPlayMode() {
+  PLAY_MODE = lsGet("mcheyne_play_mode") || getDefaultPlayMode();
+}
+function setPlayMode(mode) {
+  PLAY_MODE = mode;
+  lsSet("mcheyne_play_mode", mode);
+  updateModeUI();
+}
+function updateModeUI() {
+  const phoneBtn = document.getElementById("modePhone");
+  const tabletBtn = document.getElementById("modeTablet");
+  const status = document.getElementById("modeStatus");
+  phoneBtn.classList.toggle("active", PLAY_MODE === "external");
+  tabletBtn.classList.toggle("active", PLAY_MODE === "embed");
+  status.textContent =
+    PLAY_MODE === "external"
+      ? "현재: 모바일폰 모드 / 공동체성경읽기 새 탭 또는 유튜브 앱으로 열림"
+      : "현재: 패드·탭 모드 / 공동체성경읽기 내장 플레이어로 재생";
+}
+loadPlayMode();
 const ytApiScript = document.createElement("script");
 ytApiScript.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(ytApiScript);
@@ -1011,46 +1010,196 @@ function clearYoutubeTimer() {
     ytStopTimer = null;
   }
 }
-function openSegmentPlayer(videoId, start, end, title) {
+function getVideoId(bookCode, chapter) {
+  const arr = YOUTUBE_LINKS[bookCode];
+  if (!arr) return null;
+  return arr[chapter - 1] || null;
+}
+function getChapterRangeFromSpec(chapSpec) {
+  const s = String(chapSpec).trim();
+  const verseRange = s.match(/^(\d+):(\d+)-(\d+)$/);
+  if (verseRange) {
+    return {
+      type: "verse",
+      startChapter: Number(verseRange[1]),
+      startVerse: Number(verseRange[2]),
+      endChapter: Number(verseRange[1]),
+      endVerse: Number(verseRange[3])
+    };
+  }
+  const multiWithVerse = s.match(/^(\d+)-(\d+):(\d+)-(\d+)$/);
+  if (multiWithVerse) {
+    return {
+      type: "multiWithVerse",
+      startChapter: Number(multiWithVerse[1]),
+      endChapter: Number(multiWithVerse[2]),
+      endVerseStart: Number(multiWithVerse[3]),
+      endVerseEnd: Number(multiWithVerse[4])
+    };
+  }
+  const range = s.match(/^(\d+)-(\d+)$/);
+  if (range) {
+    return {
+      type: "range",
+      startChapter: Number(range[1]),
+      endChapter: Number(range[2])
+    };
+  }
+  const single = s.match(/^(\d+)$/);
+  if (single) {
+    return {
+      type: "single",
+      startChapter: Number(single[1]),
+      endChapter: Number(single[1])
+    };
+  }
+  return { type: "single", startChapter: 1, endChapter: 1 };
+}
+function buildPlaySequence(bookCode, chapSpec) {
+  if (bookCode === "exo" && chapSpec === "11-12:1-21") {
+    const exo11 = getVideoId("exo", 11);
+    const exo12 = getVideoId("exo", 12);
+    const sequence = [];
+    if (exo11) {
+      sequence.push({
+        videoId: String(exo11).trim(),
+        bookCode: "exo",
+        chapter: 11,
+        start: 0,
+        end: null,
+        label: "출 11장"
+      });
+    }
+    if (exo12) {
+      sequence.push({
+        videoId: String(exo12).trim(),
+        bookCode: "exo",
+        chapter: 12,
+        start: 0,
+        end: 203,
+        label: "출 12장 1-21절"
+      });
+    }
+    return sequence;
+  }
+  const segmentKey = bookCode + "|" + chapSpec;
+  const segment = YOUTUBE_SEGMENTS[segmentKey];
+  if (segment) {
+    const videoId = getVideoId(bookCode, segment.chapter);
+    if (!videoId) return [];
+    return [{
+      videoId: String(videoId).trim(),
+      bookCode,
+      chapter: segment.chapter,
+      start: segment.start,
+      end: segment.end,
+      label: (BOOKS[bookCode] || bookCode) + " " + chapSpec
+    }];
+  }
+  const parsed = getChapterRangeFromSpec(chapSpec);
+  const sequence = [];
+  for (let ch = parsed.startChapter; ch <= parsed.endChapter; ch++) {
+    const videoId = getVideoId(bookCode, ch);
+    if (!videoId) continue;
+    sequence.push({
+      videoId: String(videoId).trim(),
+      bookCode,
+      chapter: ch,
+      start: 0,
+      end: null,
+      label: (BOOKS[bookCode] || bookCode) + " " + ch + "장"
+    });
+  }
+  return sequence;
+}
+function openYoutubeExternal(sequence) {
+  if (!sequence || !sequence.length) return;
+  const first = sequence[0];
+  let url = YT_BASE + first.videoId;
+  if (first.start && first.start > 0) {
+    url += "?t=" + Math.floor(first.start);
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+function playYoutube(sequence, title) {
+  if (!sequence || !sequence.length) return;
+  if (PLAY_MODE === "external") {
+    openYoutubeExternal(sequence);
+  } else {
+    playSequence(sequence, title);
+  }
+}
+function openYoutubeModal(title) {
   const modal = document.getElementById("youtubeModal");
   const titleEl = document.getElementById("youtubeTitle");
-  titleEl.textContent = title || "공동체성경읽기";
+  titleEl.textContent = title || "유튜브 재생";
   modal.style.display = "flex";
+}
+function playSequence(sequence, title) {
+  if (!sequence || !sequence.length) return;
+  currentSequence = sequence;
+  currentIndex = 0;
+  openYoutubeModal(title || sequence[0].label);
+  loadCurrentSequenceItem();
+}
+function loadCurrentSequenceItem() {
   clearYoutubeTimer();
-  function startTimer() {
+  const item = currentSequence[currentIndex];
+  if (!item) {
+    closeSegmentPlayer();
+    return;
+  }
+  const titleEl = document.getElementById("youtubeTitle");
+  titleEl.textContent = item.label + " (" + (currentIndex + 1) + "/" + currentSequence.length + ")";
+  function startTimerIfNeeded() {
     clearYoutubeTimer();
+    if (item.end == null) return;
     ytStopTimer = setInterval(function () {
       if (!ytPlayer || typeof ytPlayer.getCurrentTime !== "function") return;
       const current = ytPlayer.getCurrentTime();
-      if (current >= end) {
-        ytPlayer.pauseVideo();
+      if (current >= item.end) {
         clearYoutubeTimer();
+        currentIndex += 1;
+        if (currentIndex < currentSequence.length) {
+          loadCurrentSequenceItem();
+        } else {
+          ytPlayer.pauseVideo();
+        }
       }
     }, 300);
   }
   function createOrLoad() {
     if (!ytPlayer) {
       ytPlayer = new YT.Player("youtubePlayer", {
-        videoId: videoId,
+        videoId: item.videoId,
         playerVars: {
           autoplay: 1,
-          start: start,
+          start: item.start || 0,
           rel: 0
         },
         events: {
           onReady: function (event) {
-            event.target.seekTo(start, true);
+            event.target.seekTo(item.start || 0, true);
             event.target.playVideo();
-            startTimer();
+            startTimerIfNeeded();
+          },
+          onStateChange: function (event) {
+            if (event.data === YT.PlayerState.ENDED) {
+              clearYoutubeTimer();
+              currentIndex += 1;
+              if (currentIndex < currentSequence.length) {
+                loadCurrentSequenceItem();
+              }
+            }
           }
         }
       });
     } else {
       ytPlayer.loadVideoById({
-        videoId: videoId,
-        startSeconds: start
+        videoId: item.videoId,
+        startSeconds: item.start || 0
       });
-      startTimer();
+      startTimerIfNeeded();
     }
   }
   if (ytApiReady && window.YT && YT.Player) {
@@ -1068,6 +1217,8 @@ function closeSegmentPlayer() {
   const modal = document.getElementById("youtubeModal");
   modal.style.display = "none";
   clearYoutubeTimer();
+  currentSequence = [];
+  currentIndex = 0;
   if (ytPlayer && typeof ytPlayer.pauseVideo === "function") {
     ytPlayer.pauseVideo();
   }
@@ -1080,17 +1231,6 @@ document.addEventListener("click", function (e) {
     closeSegmentPlayer();
   }
 });
-function lsGet(key) {
-  try {
-    if (window.localStorage) return localStorage.getItem(key);
-  } catch (e) {}
-  return null;
-}
-function lsSet(key, val) {
-  try {
-    if (window.localStorage) localStorage.setItem(key, val);
-  } catch (e) {}
-}
 function lsClearMcheyne() {
   try {
     if (!window.localStorage) return;
@@ -1106,24 +1246,15 @@ function parseFirstChapSpec(spec) {
   const s = String(spec).trim();
   const verseMatch = s.match(/^(\d+):(\d+)/);
   if (verseMatch) {
-    return {
-      chap: Number(verseMatch[1]),
-      sec: Number(verseMatch[2])
-    };
+    return { chap: Number(verseMatch[1]), sec: Number(verseMatch[2]) };
   }
   const rangeMatch = s.match(/^(\d+)-(\d+)/);
   if (rangeMatch) {
-    return {
-      chap: Number(rangeMatch[1]),
-      sec: 1
-    };
+    return { chap: Number(rangeMatch[1]), sec: 1 };
   }
   const chapMatch = s.match(/^(\d+)/);
   if (chapMatch) {
-    return {
-      chap: Number(chapMatch[1]),
-      sec: 1
-    };
+    return { chap: Number(chapMatch[1]), sec: 1 };
   }
   return { chap: 1, sec: 1 };
 }
@@ -1138,13 +1269,6 @@ function makeBibleUrl(bookCode, chap, sec) {
     + "&keyword1="
     + "&fontSize=19px"
     + "&fontWeight=bold";
-}
-function makeYoutubeUrl(bookCode, chap) {
-  const arr = YOUTUBE_LINKS[bookCode];
-  if (!arr) return null;
-  const videoId = arr[chap - 1];
-  if (!videoId) return null;
-  return YT_BASE + String(videoId).trim();
 }
 function makeCell(bookCode, chapSpec, id) {
   const wrap = document.createElement("span");
@@ -1167,55 +1291,32 @@ function makeCell(bookCode, chapSpec, id) {
   }
   bibleLink.addEventListener("click", function () {
     this.classList.toggle("read");
-    const v = this.classList.contains("read") ? "1" : "0";
-    lsSet(key, v);
+    lsSet(key, this.classList.contains("read") ? "1" : "0");
   });
   wrap.appendChild(bibleLink);
-  const segmentKey = bookCode + "|" + chapSpec;
-  const segment = YOUTUBE_SEGMENTS[segmentKey];
-  if (segment) {
-    const arr = YOUTUBE_LINKS[bookCode];
-    const videoId = arr && arr[segment.chapter - 1];
-    if (videoId) {
-      const ytLink = document.createElement("a");
-      ytLink.className = "youtube-link";
-      ytLink.href = "#";
-      ytLink.textContent = "▶";
-      ytLink.title = "공동체성경읽기 구간 재생";
-      ytLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        openSegmentPlayer(
-          String(videoId).trim(),
-          segment.start,
-          segment.end,
-          (BOOKS[bookCode] || bookCode) + " " + chapSpec
-        );
-      });
-      wrap.appendChild(ytLink);
-    }
-  } else {
-    const youtubeUrl = makeYoutubeUrl(bookCode, firstItem.chap);
-    if (youtubeUrl) {
-      const ytLink = document.createElement("a");
-      ytLink.className = "youtube-link";
-      ytLink.href = youtubeUrl;
-      ytLink.target = "_blank";
-      ytLink.rel = "noopener noreferrer";
-      ytLink.textContent = "▶";
-      ytLink.title = "공동체성경읽기 유튜브로 듣기";
-      ytLink.addEventListener("click", function () {
-        setTimeout(function () {
-          try {
-            window.focus();
-          } catch (e) {}
-        }, 300);
-      });
-      wrap.appendChild(ytLink);
-    }
+  const sequence = buildPlaySequence(bookCode, chapSpec);
+  if (sequence.length) {
+    const ytLink = document.createElement("a");
+    ytLink.className = "youtube-link";
+    ytLink.href = "#";
+    ytLink.textContent = "▶";
+    ytLink.title = "공동체성경읽기 유튜브 듣기";
+    ytLink.addEventListener("click", function (e) {
+      e.preventDefault();
+      playYoutube(sequence, (BOOKS[bookCode] || bookCode) + " " + chapSpec);
+    });
+    wrap.appendChild(ytLink);
   }
   return wrap;
 }
 (function render() {
+  updateModeUI();
+  document.getElementById("modePhone").addEventListener("click", function () {
+    setPlayMode("external");
+  });
+  document.getElementById("modeTablet").addEventListener("click", function () {
+    setPlayMode("embed");
+  });
   const root = document.getElementById("plans");
   Object.keys(plan).sort((a, b) => Number(a) - Number(b)).forEach(mStr => {
     const month = Number(mStr);
@@ -1238,7 +1339,7 @@ function makeCell(bookCode, chapSpec, id) {
       const febcId = getFebcId(month, date);
       if (febcId) {
         const dateLink = document.createElement("a");
-        dateLink.href = YT_BASE + febcId;
+        dateLink.href = YT_BASE + String(febcId).trim();
         dateLink.target = "_blank";
         dateLink.rel = "noopener noreferrer";
         dateLink.className = "date-link";
